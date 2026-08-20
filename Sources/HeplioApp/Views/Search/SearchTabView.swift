@@ -14,6 +14,8 @@ struct SearchTabView: View {
     /// debounce — waiting 400ms after tapping a menu item feels broken,
     /// while not waiting between keystrokes costs a request each.
     @State private var lastSearched = ""
+    /// One per stack, so a title zooms into the detail screen it opens.
+    @Namespace private var paperTransition
 
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \RecentSearch.searchedAt, order: .reverse) private var recentSearches: [RecentSearch]
@@ -77,6 +79,7 @@ struct SearchTabView: View {
         // the stack's environment. Anything pushed from this tab counts as
         // found by searching, and carries the query that found it.
         .environment(\.paperOrigin, .search(query: trimmedQuery))
+        .environment(\.paperTransitionNamespace, paperTransition)
         // A full-width field in its own row under the title, rather than
         // whatever `.automatic` decides. Left to itself the system
         // minimizes search into a toolbar button when the bar is busy —

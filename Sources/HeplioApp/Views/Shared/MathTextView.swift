@@ -3,10 +3,16 @@ import WebKit
 
 /// Renders text that may contain inline (`$...$`, `\(...\)`) or display
 /// (`$$...$$`, `\[...\]`) LaTeX, or literal MathML (`<math>...</math>`),
-/// using MathJax inside a transparent, self-sizing web view — the same
-/// approach arXiv.org and inspirehep.net use on their own pages, since
-/// SwiftUI/UIKit have no native math typesetting. Used by both
-/// `PaperDetailView` and `PaperRowView`, hence its place under `Shared`.
+/// inside a transparent, self-sizing web view — the same approach
+/// arXiv.org and inspirehep.net use on their own pages, since SwiftUI and
+/// UIKit have no native math typesetting. Used by both `PaperDetailView`
+/// and `PaperRowView`, hence its place under `Shared`.
+///
+/// **What's left here is web-view plumbing only.** The page itself is
+/// `MathDocument`, and turning INSPIRE's markup into its body is
+/// `String.mathRenderingHTML` — both `Foundation`-only, and deliberately
+/// so: they're the parts that can be exercised against live records, and
+/// rendered in a real browser, from a Linux dev machine.
 struct MathTextView: View {
     let text: String
     var fontTextStyle: Font.TextStyle = .body
@@ -46,8 +52,9 @@ private struct MathWebView: UIViewRepresentable {
     func updateUIView(_ webView: WKWebView, context: Context) {
         context.coordinator.height = $height
         // SwiftUI re-invokes this on unrelated re-renders too, so skip the
-        // expensive MathJax reload unless the HTML actually changed.
-        let html = html
+        // expensive reload — fetching and running a typesetter — unless the
+        // page actually changed.
+        let html = document.html
         guard context.coordinator.lastLoadedHTML != html else { return }
         context.coordinator.lastLoadedHTML = html
         webView.loadHTMLString(html, baseURL: nil)
@@ -57,104 +64,16 @@ private struct MathWebView: UIViewRepresentable {
         Coordinator(height: $height)
     }
 
-    private var html: String {
-        let uiFont = UIFont.preferredFont(forTextStyle: fontTextStyle.uiTextStyle)
-        let textColor = colorScheme == .dark ? "#EBEBF5" : "#1C1C1E"
-        let weight = fontWeight == .semibold || fontWeight == .bold ? "600" : "400"
-
-        return """
-        <!DOCTYPE html>
-        <html>
-        <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-        <script>
-        window.MathJax = {
-          tex: {
-            inlineMath: [['$', '$'], ['\\\\(', '\\\\)']],
-            displayMath: [['$$', '$$'], ['\\\\[', '\\\\]']]
-          },
-          svg: { fontCache: 'global' },
-          startup: {
-            ready: function () {
-              MathJax.startup.defaultReady();
-              MathJax.startup.promise.then(reportHeight);
-            }
-          }
-        };
-        function reportHeight() {
-          window.webkit.messageHandlers.sizeHandler.postMessage(document.body.scrollHeight);
-        }
-        window.addEventListener('load', reportHeight);
-        </script>
-        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js" id="MathJax-script" async></script>
-        <style>
-          body {
-            margin: 0;
-            padding: 0;
-            background: transparent;
-            color: \(textColor);
-            font-family: -apple-system, system-ui, sans-serif;
-            font-size: \(uiFont.pointSize)px;
-            font-weight: \(weight);
-            line-height: 1.4;
-            -webkit-text-size-adjust: 100%;
-          }
-          \(lineClampCSS)
-        </style>
-        </head>
-        <body>
-        <div id="content">\(Self.htmlEscaped(text))</div>
-        </body>
-        </html>
-        """
-    }
-
-    private var lineClampCSS: String {
-        guard let lineLimit else { return "" }
-        return """
-        #content {
-          display: -webkit-box;
-          -webkit-line-clamp: \(lineLimit);
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-        """
-    }
-
-    /// HTML-escapes the text, then un-escapes `<math>...</math>` spans back
-    /// into real markup — MathJax's MathML processor only typesets actual
-    /// DOM elements, not escaped text.
-    private static func htmlEscaped(_ text: String) -> String {
-        let escaped = text
-            .replacingOccurrences(of: "&", with: "&amp;")
-            .replacingOccurrences(of: "<", with: "&lt;")
-            .replacingOccurrences(of: ">", with: "&gt;")
-        return unescapeMathMLBlocks(in: escaped)
-    }
-
-    private static func unescapeMathMLBlocks(in text: String) -> String {
-        guard let regex = try? NSRegularExpression(
-            pattern: "&lt;math\\b[\\s\\S]*?&lt;/math&gt;",
-            options: [.caseInsensitive]
-        ) else {
-            return text
-        }
-        let nsText = text as NSString
-        let matches = regex.matches(in: text, range: NSRange(location: 0, length: nsText.length))
-        guard !matches.isEmpty else { return text }
-
-        var result = text
-        for match in matches.reversed() {
-            let block = nsText.substring(with: match.range)
-            let unescapedBlock = block
-                .replacingOccurrences(of: "&lt;", with: "<")
-                .replacingOccurrences(of: "&gt;", with: ">")
-                .replacingOccurrences(of: "&amp;", with: "&")
-            if let range = Range(match.range, in: result) {
-                result.replaceSubrange(range, with: unescapedBlock)
-            }
-        }
-        return result
+    /// Resolves everything platform-shaped — Dynamic Type, the colour
+    /// scheme — so `MathDocument` can stay a pure function of plain values.
+    private var document: MathDocument {
+        MathDocument(
+            text: text,
+            fontSize: UIFont.preferredFont(forTextStyle: fontTextStyle.uiTextStyle).pointSize,
+            isBold: fontWeight == .semibold || fontWeight == .bold,
+            isDark: colorScheme == .dark,
+            lineLimit: lineLimit
+        )
     }
 
     final class Coordinator: NSObject, WKScriptMessageHandler {
@@ -198,6 +117,8 @@ private extension Font.TextStyle {
         MathTextView(text: "A search for $H\\to\\gamma\\gamma$ and $H\\to ZZ^{\\star}\\to 4\\ell$ decays.")
         MathTextView(text: "Using \\(x^2 + y^2 = z^2\\) as the base relation.")
         MathTextView(text: "MathML sample: <math><mi>E</mi><mo>=</mo><mi>m</mi><msup><mi>c</mi><mn>2</mn></msup></math>")
+        MathTextView(text: "The virtual N<sup loc=\"post\">3</sup>LO contribution to $gg\\to H$")
+        MathTextView(text: "<inline-formula><tex-math notation=\"LaTeX\">$^{94}$</tex-math></inline-formula>Zr from a publisher's JATS")
     }
     .padding()
 }

@@ -9,6 +9,9 @@ struct LibraryTabView: View {
     /// Explicit rather than implicit, so opening a paper from inside the
     /// History sheet can push it here directly.
     @State private var path = NavigationPath()
+    /// One per stack, so a title zooms into the detail screen it opens.
+    /// The History sheet has its own — a sheet is a separate stack.
+    @Namespace private var paperTransition
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -52,6 +55,7 @@ struct LibraryTabView: View {
         // rather than pinned open the way the History sheet's is — this
         // is a main tab you mostly browse, not a filter you mostly type.
         .searchable(text: $filter, prompt: "Title or Author")
+        .environment(\.paperTransitionNamespace, paperTransition)
     }
 }
 

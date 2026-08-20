@@ -56,6 +56,11 @@ struct PaperCardView: View {
                 .strokeBorder(Color(.separator), lineWidth: 0.5)
         )
         .shadow(color: .black.opacity(0.08), radius: 6, x: 0, y: 3)
+        // Outside the card's own chrome, so the shape that grows into the
+        // detail screen is the rounded card the reader tapped. Cards
+        // zoom; `PaperRowView` deliberately doesn't — see
+        // `paperTransitionSource`.
+        .paperTransitionSource(paper)
     }
 }
 

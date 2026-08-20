@@ -44,6 +44,48 @@ Dynamic Type. No custom color palettes or bespoke card chrome.
   system's tab-bar-customize button). Settled on the simplest option:
   plain `.navigationTitle(title)` on a `List`, accept whatever the system
   renders. Only revisit if a future SDK changes this.
+- **Tapping a carousel card grows it into the detail screen**, via the
+  stock `.matchedTransitionSource(id:in:)` /
+  `.navigationTransition(.zoom(sourceID:in:))` pair — the App Store's
+  card-to-page transition. No custom animation code; the interactive
+  pinch-to-dismiss back gesture comes with it.
+  `Utilities/PaperTransition.swift` holds both halves as
+  `.paperTransitionSource(_:)` and `.paperZoomTransition(_:)`.
+  - **`PaperCardView` zooms; `PaperRowView` deliberately doesn't.** A
+    card is a bounded, rounded, elevated object, so growing it into a
+    screen reads as opening the thing you touched. A `List` row is
+    full-width and chrome-less, and its disclosure chevron already
+    promises a push — so it gets the plain push it promises.
+  - **That's why `PaperDetailView` is registered under two navigation
+    values.** A destination can't tell what pushed it, so the zoom can't
+    be applied conditionally from inside it — and **a `.zoom` whose
+    source id isn't registered doesn't fall back to a push; the screen
+    pops in from nothing** (seen on device, and the reason this split
+    exists). A carousel card pushes `ZoomedPaper`; every list row pushes
+    a plain `Paper`. Both land on the same screen.
+  - **`.zoom` is not the web's View Transitions API, and the source has
+    to be the whole card.** It scales the source's rectangle up to the
+    full destination and cross-fades — it does not pair elements across
+    the push. Anchoring it to just the title (tried, confirmed broken on
+    device) makes the title inflate to fill the screen and fly off, then
+    the detail screen fades in from nothing. SwiftUI has no
+    shared-element morph to reach for instead: `matchedGeometryEffect`
+    doesn't cross a `NavigationStack` push. Don't re-attempt.
+  - The namespace travels in the environment, for the same reason
+    `paperOrigin` does: the push is a plain `NavigationLink(value:)` deep
+    inside a shared row, and which stack it belongs to is context, not
+    something a row should be handed. **Same placement rule, too — on the
+    `NavigationStack`, never on a view inside it.** One `@Namespace` per
+    stack (Search, Library, Explore, and the History sheet); every pushed
+    screen inherits it, so the carousels on `PaperDetailView` and the
+    "See All" lists get it for free.
+  - It's `Namespace.ID?` because `Namespace.ID` has no initializer. A
+    screen with no namespace installed — a `#Preview`, or a future stack
+    that hasn't opted in — falls back to the standard push rather than
+    failing to compile or animating wrongly. The source half is also
+    inert for papers with no INSPIRE record: those rows open the web
+    instead of pushing, so there's no destination to pair with, and
+    they'd otherwise crowd the namespace with unused ids.
 - Exceptions to "standard components only", each narrowly scoped:
   - `TightLabelStyle` (`Extensions/LabelStyle+Tight.swift`): custom
     `LabelStyle` tightening `Label`'s icon-to-title spacing at small text
@@ -53,11 +95,34 @@ Dynamic Type. No custom color palettes or bespoke card chrome.
     have no native math typesetting, and INSPIRE titles/abstracts contain
     LaTeX (`$...$`, `\(...\)`, `$$...$$`, `\[...\]`) or, in some
     publisher-sourced JATS abstracts, literal MathML (`<math>...</math>`).
-    Wraps a transparent, self-sizing `WKWebView` running MathJax from CDN
-    (`tex-mml-svg.js`, handling both TeX and MathML input) — the same
-    approach arXiv.org/inspirehep.net use. Text is HTML-escaped except
-    `<math>...</math>` spans, left as real markup so MathJax's MathML
-    processor (which only scans actual DOM nodes) can find them. Supports
+    Wraps a transparent, self-sizing `WKWebView` running a typesetter
+    from CDN — the same approach arXiv.org/inspirehep.net use.
+    **Which typesetter is picked per string: KaTeX normally, MathJax only
+    when `String.containsMathML` says so.** KaTeX takes TeX input only, so
+    the 2.5% of abstracts carrying a literal `<math>` element still need
+    MathJax's `tex-mml-svg.js`. Measured on the wire: KaTeX's three files
+    total 80,788 bytes against MathJax's 618,769 — 7.7× — and KaTeX is
+    synchronous, where MathJax adds an async startup promise chain.
+    That ratio is the entire point, because **the cost of this screen is
+    the number of `WKWebView`s, and that number can't be reduced** (see
+    `AdaptiveMathText`). KaTeX supports less of LaTeX, so
+    `throwOnError: false` is paired with `errorColor` set to the body
+    colour: INSPIRE abstracts do contain author-defined macros (`\ord`,
+    `\eps` in a 500-record sample), and this degrades them to plain
+    source text rather than MathJax-style red. Verified by generating the
+    real HTML and rendering it in a browser: `p_T`, `M_W`,
+    `E_T^{\rm miss}`, `\frac`, `\int`, `<sup>`, JATS wrappers and both
+    plain and namespaced MathML all typeset, with the right engine each
+    time. **The view itself is web-view plumbing and nothing else.** The
+    page is `MathDocument` (`Utilities/MathDocument.swift`) and its body
+    is `String.mathRenderingHTML`
+    (`Extensions/String+MathMarkup.swift`) — both `Foundation`-only, and
+    that's the point: they're the half of this feature that can be
+    generated, diffed and rendered in a real browser from a Linux dev
+    machine. `MathWebView` resolves the platform-shaped inputs (the
+    `UIFont.preferredFont` point size, the colour scheme) into plain
+    values and hands them over, so `MathDocument` stays a pure function.
+    Supports
     an optional `lineLimit:` (CSS `-webkit-line-clamp`) for row use;
     height always comes from measured content, never a precomputed
     fixed value. Needs network access and on-device verification.
@@ -75,6 +140,42 @@ Dynamic Type. No custom color palettes or bespoke card chrome.
     `MathWebView.updateUIView` also skips reloading when the generated
     HTML hasn't changed, since SwiftUI re-invokes it on unrelated
     parent re-renders too.
+    The plain-`Text` branch still runs `String.resolvingInlineMarkup`:
+    text needing no math typesetting can still carry `<sup>` or `<i>`,
+    which a bare `Text` renders as literal angle brackets. `<sup>`/`<sub>`
+    become Unicode (`N³LO`, `⁹⁴Zr`) rather than triggering a web view —
+    a superscript isn't worth a web process.
+    **Converting the rows' LaTeX to Unicode to avoid the web view
+    entirely was measured and rejected. Don't re-attempt.** With a
+    generous ~90-entry whitelist (Greek, arrows, relations, `\mathrm`/
+    `\text` unwrapping, `\sqrt`, `\bar`), only 40.1% of the 319
+    TeX-carrying abstracts in a 499-record sample converted fully; the
+    other 59.9% would still need a web view, so the win is 64% → 38%,
+    not 64% → 0%. The failures aren't missing table entries, they're
+    structural: **Unicode has no uppercase subscripts**, which rules out
+    `p_T`, `M_W`, `E_T` — the most common notation in the field — and no
+    way to put a command inside a script (`_{\rm eff}`, `_{\odot}`, 67
+    occurrences). Making each web view cheap (KaTeX) beat making them
+    fewer.
+  - **INSPIRE text is markup, not plain text, and it's four different
+    kinds of markup** (measured over 600 live records, 2026-08-20):
+    LaTeX in 15.5% of titles and 64% of abstracts; MathML in 0.5% and
+    2.5%, sometimes namespaced as `<mml:math>`; presentational HTML
+    (`<sup>`, `<i>`, `<p>`, `<ul>`) in well under 1%; and JATS wrappers
+    from a publisher's XML (`<inline-formula>`, `<tex-math
+    notation="LaTeX">$…$</tex-math>`) in 1.5% of abstracts. The last
+    three are rare, but unhandled they show up as raw `<sup>3</sup>` on
+    screen, which is worse than any of them being absent.
+    `mathRenderingHTML` therefore isn't an escape — it's a policy:
+    MathML passes through with any namespace prefix stripped (an HTML
+    parser reads `<mml:math>` as an element literally named "mml:math",
+    which MathJax never finds); presentational tags pass through without
+    their attributes, costing MathJax nothing; **any other well-formed
+    tag is dropped while its contents are kept**, which is what unwraps
+    the JATS wrappers and hands the `$…$` inside straight to MathJax;
+    everything else is escaped as before. Dropping rather than escaping
+    is right for this data — a `<` that forms a well-formed tag is
+    always markup, never something an author typed.
   - `FigureCarouselView` (`Views/Detail/FigureCarouselView.swift`): the
     plots INSPIRE extracts from a paper (`metadata.figures[]`, public,
     unauthenticated PNGs at `inspirehep.net/files/…`), as a full-bleed
@@ -459,6 +560,18 @@ requests to confirm the rate limiter avoids 429s. Delete the scratch
 package after. UI-level verification (layout, navigation, animations) has
 to happen in Swift Playgrounds on-device and should be called out as
 unverified when it hasn't been checked there.
+
+**Anything that generates HTML can go further than that: render it.**
+`MathDocument` is `Foundation`-only precisely so a scratch executable can
+write its real output to disk, serve it, and check the result in a
+browser — which is how the KaTeX switch was confirmed (`p_T`, `\frac`,
+`<sup>`, JATS wrappers and both plain and namespaced MathML all typeset,
+each by the intended engine). Inspect the DOM rather than eyeballing a
+screenshot: counting `.katex` / `mjx-container` nodes and reading back
+`innerText` says exactly what happened. **Copy the real file in; never
+retype the template into the test.** An earlier round did that and the
+copy is what a refactor then has to keep in sync — which is half the
+reason the document moved out of the view.
 
 ## INSPIRE query syntax (verified live, 2026-08-20)
 

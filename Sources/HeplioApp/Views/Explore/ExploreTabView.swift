@@ -20,6 +20,10 @@ struct ExploreTabView: View {
     /// entire 15 requests / 5s window before anything is scrolled.
     @State private var trending: LoadState<[Paper]> = .loading
 
+    /// One per stack, so a Trending card's title zooms into the detail
+    /// screen it opens.
+    @Namespace private var paperTransition
+
     private static let columns = [GridItem(.adaptive(minimum: 150), spacing: 12)]
 
     var body: some View {
@@ -52,6 +56,7 @@ struct ExploreTabView: View {
                 }
             }
         }
+        .environment(\.paperTransitionNamespace, paperTransition)
     }
 
     private func gridShelf(title: String, icon: String, topics: [BrowseTopic]) -> some View {

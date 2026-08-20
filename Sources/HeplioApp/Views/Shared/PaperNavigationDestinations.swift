@@ -14,6 +14,13 @@ extension View {
         navigationDestination(for: Paper.self) { paper in
             PaperDetailView(paper: paper)
         }
+        // The same screen, reached from a carousel card, which it grows
+        // out of. Two values rather than one because the zoom can't be
+        // applied conditionally from in here — see `ZoomedPaper`.
+        .navigationDestination(for: ZoomedPaper.self) { zoomed in
+            PaperDetailView(paper: zoomed.paper)
+                .paperZoomTransition(zoomed.paper)
+        }
         .navigationDestination(for: RelatedPapersDestination.self) { destination in
             RelatedPapersListView(destination: destination)
         }

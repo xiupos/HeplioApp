@@ -12,6 +12,8 @@ struct HistoryView: View {
     /// Filters what's already here — it never queries INSPIRE, so unlike
     /// the Search tab's field it isn't recorded as a recent search.
     @State private var filter = ""
+    /// One per stack, so a title zooms into the detail screen it opens.
+    @Namespace private var paperTransition
 
     /// Decoded once and narrowed in memory: history is capped at
     /// `ViewedPaper.limit`, so there's nothing to gain from making the
@@ -85,6 +87,7 @@ struct HistoryView: View {
                 }
             }
         }
+        .environment(\.paperTransitionNamespace, paperTransition)
     }
 }
 

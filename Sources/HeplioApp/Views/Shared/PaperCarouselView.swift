@@ -88,7 +88,9 @@ struct PaperCarouselView<EmptyContent: View, Destination: Hashable>: View {
     @ViewBuilder
     private func card(for paper: Paper, number: String?) -> some View {
         if paper.hasInspireRecord {
-            NavigationLink(value: paper) {
+            // `ZoomedPaper`, not `paper`: a card grows into the detail
+            // screen, where a `PaperRowView` pushes it the ordinary way.
+            NavigationLink(value: ZoomedPaper(paper)) {
                 PaperCardView(paper: paper, number: number)
             }
             .buttonStyle(.plain)
