@@ -1,16 +1,18 @@
-<center>
-
-<p>
+<p align="center" width="100%">
 <img alt="AppIcon" src="./Docs/logo.png" width="150px">
 </p>
 
-# Heplio
+<p align="center" width="100%">
+<h1 align="center">Heplio</h1>
+</p>
 
+<p align="center" width="100%">
 Unofficial INSPIRE-HEP client for iOS/iPadOS.
+</p>
 
-~~App Store~~ | ~~TestFlight~~ (coming soon)
-
-</center>
+<p align="center" width="100%">
+<del>App Store</del> | <del>TestFlight</del> (coming soon)
+</p>
 
 Heplio is an unofficial INSPIRE-HEP client for iPhone and iPad, designed for researchers and students in high-energy physics.
 
