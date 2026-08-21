@@ -58,8 +58,24 @@ struct RelatedPapersDestination: Hashable {
                 try await PaperService.shared.citations(of: id, page: page, size: size, refresh: refresh)
             }
         case .related:
-            // M6: algorithmic recommendations.
-            return .empty
+            return PaperPager { page, size, refresh in
+                let record = try await PaperService.shared.details(id: id, refresh: refresh)
+                return try await Recommender.related(
+                    to: [record],
+                    via: .sharedFoundations,
+                    // Ranked purely on the paper, not the reader, and in
+                    // ranked order rather than sampled. A carousel is a
+                    // handful of suggestions and can afford to be playful;
+                    // a list someone opened deliberately should be the
+                    // ranking itself, and should stay put while they page
+                    // through it.
+                    profile: .empty,
+                    dailySeed: nil,
+                    limit: size,
+                    page: page,
+                    refresh: refresh
+                )
+            }
         }
     }
 }

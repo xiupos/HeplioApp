@@ -30,7 +30,16 @@ struct RootTabView: View {
             }
         }
         .tabViewStyle(.sidebarAdaptable)
-        .task { modelContext.backfillPaperMetadata() }
+        .task {
+            modelContext.backfillPaperMetadata()
+            // Trimming the cache lives here rather than beside `prune()`
+            // in `HeplioApp` for the same reason the backfill does: the
+            // list of papers worth protecting comes from the store, and
+            // the store isn't reachable from the `App`.
+            await ResponseCache.shared.enforceBudget(
+                protecting: modelContext.cacheKeysWorthKeeping()
+            )
+        }
     }
 }
 

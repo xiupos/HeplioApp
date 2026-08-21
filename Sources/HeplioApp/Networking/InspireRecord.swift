@@ -35,6 +35,7 @@ struct InspireRecord: Decodable {
             collaborations: metadata.collaborations?.map(\.value) ?? [],
             citationCount: metadata.citationCount ?? 0,
             earliestDate: metadata.earliestDate,
+            keywords: metadata.keywords.map { $0.compactMap(\.value) },
             figures: metadata.figures?.compactMap(Self.figure(for:)) ?? [],
             references: metadata.references?.compactMap(Self.referencePaper(for:)) ?? [],
             hasInspireRecord: true,
@@ -65,14 +66,34 @@ struct InspireRecord: Decodable {
     /// navigating to an in-app detail screen.
     private static func referencePaper(for entry: ReferenceEntry) -> Paper? {
         let detail = entry.reference
+        let recordID = entry.recordID
         // `title` is the real bibliographic title when INSPIRE parsed one
         // out; `misc` is a catch-all that's sometimes the title but for
         // collaboration-authored citations is just a bare tag like "[CMS]"
         // — so `title` has to win when both are present.
-        guard let title = detail?.title?.title ?? detail?.misc?.first ?? entry.rawRefs?.first?.value else {
+        //
+        // **A matched record survives even with no title at all**, falling
+        // back to the journal citation the entry *is* identified by. Older
+        // papers cite by journal line rather than by title, and INSPIRE
+        // stores them that way: verified live, all 40 references of
+        // "D-branes, quivers, and ALE instantons" (417064) carry a
+        // `record` and a `publication_info` but no `title`, `misc` or
+        // `raw_refs` — where Maldacena's 1997 paper has 70 with arXiv ids.
+        // Dropping those left the paper with an empty `references` array,
+        // which silently emptied both the References carousel and
+        // `Recommender`'s `.sharedFoundations` edge, since that walks out
+        // through exactly these record ids. It read as "old papers have no
+        // related papers"; it was a decoding gap.
+        //
+        // The stub label rarely reaches the screen anyway —
+        // `PaperService.references(of:)` swaps every matched entry for its
+        // full record — and `Recommender` only ever reads the id.
+        let parsedTitle = detail?.title?.title ?? detail?.misc?.first ?? entry.rawRefs?.first?.value
+        guard let title = parsedTitle
+                ?? Self.citationLabel(for: detail)
+                ?? (recordID != nil ? "Untitled" : nil) else {
             return nil
         }
-        let recordID = entry.recordID
         let hasAuthors = !(detail?.authors?.isEmpty ?? true)
         let hasDOI = !(detail?.dois?.isEmpty ?? true)
         let hasURL = !(detail?.urls?.isEmpty ?? true)
@@ -98,11 +119,26 @@ struct InspireRecord: Decodable {
             collaborations: detail?.collaborations ?? [],
             citationCount: 0,
             earliestDate: nil,
+            // A bibliography entry carries no keywords of its own;
+            // `PaperService.references(of:)` swaps in the full record.
+            keywords: nil,
             figures: [],
             references: [],
             hasInspireRecord: recordID != nil,
             referenceURL: detail?.urls?.first?.value
         )
+    }
+
+    /// How a citation names itself when it has no parsed title: the
+    /// journal line ("Mod.Phys.Lett.A 4 2073"), or the arXiv id. Both are
+    /// what a bibliography would print, so neither reads as a placeholder.
+    private static func citationLabel(for detail: ReferenceEntry.ReferenceDetail?) -> String? {
+        if let info = detail?.publicationInfo, let journal = info.journalTitle {
+            return [journal, info.journalVolume, info.pageStart]
+                .compactMap { $0 }
+                .joined(separator: " ")
+        }
+        return detail?.arxivEprint.map { "arXiv:\($0)" }
     }
 
     /// A stable negative id for references INSPIRE couldn't match to a
@@ -134,6 +170,7 @@ struct InspireRecord: Decodable {
         var collaborations: [ValueField]?
         var citationCount: Int?
         var earliestDate: String?
+        var keywords: [KeywordField]?
         var figures: [FigureField]?
         var references: [ReferenceEntry]?
 
@@ -145,6 +182,7 @@ struct InspireRecord: Decodable {
             case collaborations
             case citationCount = "citation_count"
             case earliestDate = "earliest_date"
+            case keywords
             case figures
             case references
         }
@@ -154,6 +192,19 @@ struct InspireRecord: Decodable {
 
     private struct TitleField: Decodable {
         let title: String
+    }
+
+    /// One subject keyword. `schema` distinguishes INSPIRE's own curated
+    /// vocabulary from a publisher's author-supplied list, and there is a
+    /// real difference: measured by year, INSPIRE-curated keywords cover
+    /// 100% of hep-th papers up to about 2022 and 0% from 2024 on — the
+    /// indexing runs a couple of years behind. Recent papers carry only
+    /// the free-form author keywords, which are inconsistent
+    /// ("holography" next to "Gauge-Gravity Correspondence") but real.
+    /// Both are taken; `value` is the only field either kind needs.
+    private struct KeywordField: Decodable {
+        let value: String?
+        let schema: String?
     }
 
     private struct ValueField: Decodable {

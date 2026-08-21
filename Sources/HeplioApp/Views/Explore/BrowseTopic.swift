@@ -11,6 +11,13 @@ enum BrowseTopic: Hashable, Codable {
     case trending
     case category(ArxivCategory)
     case collaboration(String)
+    /// One of INSPIRE's own subject keywords — "field theory: conformal",
+    /// "neutrino: oscillation". Much finer than a category, which is the
+    /// point: two papers in hep-th can be in different worlds, and the
+    /// category can't tell them apart. Not on Explore's shelves (there's
+    /// no fixed list to hard-code — the vocabulary runs to thousands of
+    /// terms), only reached from a reader's own profile on Home.
+    case keyword(String)
     case reviews
     case lectureNotes
     case landmarks
@@ -20,6 +27,11 @@ enum BrowseTopic: Hashable, Codable {
         case .trending: return "Trending"
         case .category(let category): return category.displayName
         case .collaboration(let name): return name
+        // INSPIRE writes its vocabulary lowercase ("field theory:
+        // conformal"); only the first letter is raised, because
+        // `.capitalized` would wreck the acronyms and particle names all
+        // through it ("AdS/CFT", "p p", "CP").
+        case .keyword(let keyword): return keyword.prefix(1).uppercased() + keyword.dropFirst()
         case .reviews: return "Review Articles"
         case .lectureNotes: return "Lecture Notes"
         case .landmarks: return "Landmarks"
@@ -35,6 +47,7 @@ enum BrowseTopic: Hashable, Codable {
         switch self {
         case .category(let category): return category.rawValue
         case .collaboration(let name): return Self.facilities[name]
+        case .keyword: return nil
         case .reviews: return "Surveys of a field"
         case .lectureNotes: return "Written to teach"
         case .landmarks: return "The most cited work"
@@ -56,6 +69,13 @@ enum BrowseTopic: Hashable, Codable {
             // Quoted: names with spaces or hyphens ("Muon g-2",
             // "LIGO Scientific") don't match reliably bare.
             return "collaboration:\"\(name)\""
+        case .keyword(let keyword):
+            // `k` is INSPIRE's shorthand for `keywords.value`; verified
+            // live that all three spellings return the same count.
+            // Quoted for the same reason as a collaboration name — these
+            // contain spaces, colons and slashes ("field theory:
+            // conformal", "AdS/CFT correspondence").
+            return "k \"\(keyword)\""
         case .reviews:
             // INSPIRE's type codes, not a `document_type` field —
             // `doc_type:review` returns zero hits.

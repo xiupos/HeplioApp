@@ -41,28 +41,26 @@ struct HeadlineFeedView: View {
 
     var body: some View {
         List {
-            if pager.papers.isEmpty, pager.isLoadingMore {
-                ProgressView()
-                    .frame(maxWidth: .infinity)
-                    .listRowSeparator(.hidden)
-            } else if pager.papers.isEmpty, pager.loadError != nil {
-                ContentUnavailableView(
-                    "Couldn't Load",
-                    systemImage: "exclamationmark.triangle",
-                    description: Text("Check your connection and try again.")
-                )
-                .listRowSeparator(.hidden)
-            } else if pager.papers.isEmpty, pager.reachedEnd {
+            switch pager.phase {
+            case .idle:
+                EmptyView()
+            case .loading:
+                PagerLoadingRow()
+            case .failed:
+                PagerFailureRow(error: pager.loadError)
+            case .empty:
                 ContentUnavailableView(
                     "Nothing New",
                     systemImage: "calendar.badge.clock",
                     description: Text("No papers were posted here in the last \(NewFeedSelection.windowDays) days.")
                 )
                 .listRowSeparator(.hidden)
-            } else {
+            case .content:
                 days
                 sentinel
-                footer
+                PagerFooter(pager: pager, verticalPadding: 24) { count in
+                    "\(count) papers in the last \(NewFeedSelection.windowDays) days"
+                }
             }
         }
         .listStyle(.plain)
@@ -154,23 +152,6 @@ struct HeadlineFeedView: View {
                 .onAppear {
                     Task { await pager.loadMoreIfNeeded(currentItem: last) }
                 }
-        }
-    }
-
-    @ViewBuilder
-    private var footer: some View {
-        if pager.isLoadingMore {
-            ProgressView()
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 24)
-                .listRowSeparator(.hidden)
-        } else if pager.reachedEnd {
-            Text("\(pager.papers.count) papers in the last \(NewFeedSelection.windowDays) days")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 24)
-                .listRowSeparator(.hidden)
         }
     }
 

@@ -26,14 +26,19 @@ struct PaperDetailView: View {
 
     private var isSaved: Bool { !savedMatches.isEmpty }
 
-    /// Three independent loads, each with its own state: the screen waits
-    /// on the record itself, while the two carousels below show their own
-    /// spinners until their pages arrive. They overlap — `PaperService`
-    /// de-duplicates the record fetch `references` also needs — so nothing
-    /// waits on anything it doesn't actually need.
+    /// Four independent loads, each with its own state: the screen waits
+    /// on the record itself, while the three carousels below show their
+    /// own spinners until their pages arrive. They overlap — three of the
+    /// four want the same record, and `PaperService` de-duplicates that
+    /// down to one request — so nothing waits on anything it doesn't
+    /// actually need.
     @State private var detail: LoadState<Paper> = .loading
     @State private var references: LoadState<[Paper]> = .loading
     @State private var citations: LoadState<[Paper]> = .loading
+    @State private var related: LoadState<[Paper]> = .loading
+    /// Set once the four loads above have been kicked off for this screen
+    /// instance. See the `.task` below for why this exists at all.
+    @State private var hasLoadedOnce = false
 
     /// One Quick Look presentation shared by the PDF button and the
     /// figure strip: `items` is what a swipe can page through (a lone PDF,
@@ -57,13 +62,20 @@ struct PaperDetailView: View {
             case .loading:
                 ProgressView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-            case .failed:
+            case .failed(let error):
                 // This branch replaces the ScrollView, so there's nothing
-                // left to pull on — hence an explicit retry.
+                // left to pull on — hence an explicit retry. The wording
+                // comes from the shared source so a rate limit reads the
+                // same here as it does on any list.
                 ContentUnavailableView {
-                    Label("Couldn't Load Paper", systemImage: "exclamationmark.triangle")
+                    Label(
+                        error.isRateLimited ? "Too Many Requests" : "Couldn't Load Paper",
+                        systemImage: error.isRateLimited
+                            ? "clock.badge.exclamationmark"
+                            : "exclamationmark.triangle"
+                    )
                 } description: {
-                    Text("Check your connection and try again.")
+                    Text(error.loadFailureAdvice)
                 } actions: {
                     Button("Try Again") {
                         Task { await refreshAll() }
@@ -112,9 +124,26 @@ struct PaperDetailView: View {
         .alert("Couldn't Open Figure", isPresented: $figureDownloadFailed) {
             Button("OK", role: .cancel) {}
         }
-        .task(id: paper.id) { await loadRecord() }
-        .task(id: paper.id) { await loadReferences() }
-        .task(id: paper.id) { await loadCitations() }
+        // Guarded, not four bare `.task(id:)` calls: `.task(id:)` restarts
+        // whenever its view reappears, even with the same id, and popping
+        // a pushed paper back off counts as reappearing — the same
+        // behaviour `PaperPager.reload` and `HomeTabView`'s `.task` each
+        // guard against. Without the guard, going to a Related card and
+        // coming back re-ran `loadRelated` — and by then `recordView` (in
+        // `loadRecord`) had already logged that card as read, which
+        // changes `ReadingProfile` and re-ranks the whole shelf under the
+        // reader mid-glance. The four loads still run concurrently and
+        // still fill their own `LoadState`s independently, exactly as
+        // before; only the *reappearance* re-fire is what's suppressed.
+        .task(id: paper.id) {
+            guard !hasLoadedOnce else { return }
+            hasLoadedOnce = true
+            async let record: Void = loadRecord()
+            async let refs: Void = loadReferences()
+            async let cites: Void = loadCitations()
+            async let rel: Void = loadRelated()
+            _ = await (record, refs, cites, rel)
+        }
     }
 
     // MARK: - Loading
@@ -144,15 +173,41 @@ struct PaperDetailView: View {
         }
     }
 
-    /// Pull-to-refresh. The three loads run concurrently, as on first
-    /// open, and the spinner stays until the last one lands. The carousels
-    /// aren't put back into `.loading` first — their existing cards are
-    /// better company for the refresh control than two empty spinners.
+    /// The Related carousel: other work built on the same foundations as
+    /// this paper.
+    ///
+    /// Not "papers that cite this one" — that's the Cited By carousel
+    /// sitting right next to it, and Related has to mean something Cited
+    /// By doesn't. `Recommender` walks out through this paper's *own*
+    /// bibliography instead, which is why the full record is needed
+    /// first: the stub that pushed this screen has no references on it.
+    ///
+    /// Ranked against the reader as well as the paper, so two people
+    /// looking at the same record see a shelf leaning their own way.
+    /// `DailySeed` gives it the same day-to-day movement Home has.
+    private func loadRelated(refresh: Bool = false) async {
+        related = await .load {
+            let record = try await PaperService.shared.details(id: paper.id, refresh: refresh)
+            return try await Recommender.related(
+                to: [record],
+                via: .sharedFoundations,
+                profile: modelContext.readingProfile(),
+                dailySeed: DailySeed(salt: "related-\(paper.id)"),
+                refresh: refresh
+            )
+        }
+    }
+
+    /// Pull-to-refresh. The loads run concurrently, as on first open, and
+    /// the spinner stays until the last one lands. The carousels aren't
+    /// put back into `.loading` first — their existing cards are better
+    /// company for the refresh control than three empty spinners.
     private func refreshAll() async {
         async let record: Void = loadRecord(refresh: true)
         async let refs: Void = loadReferences(refresh: true)
         async let cites: Void = loadCitations(refresh: true)
-        _ = await (record, refs, cites)
+        async let rel: Void = loadRelated(refresh: true)
+        _ = await (record, refs, cites, rel)
     }
 
     private var content: some View {
@@ -344,24 +399,20 @@ struct PaperDetailView: View {
         VStack(alignment: .leading, spacing: 20) {
             carousel(kind: .references, state: references)
             carousel(kind: .citedBy, state: citations)
-
-            PaperCarouselView(
-                title: RelatedPapersDestination.Kind.related.title,
-                destination: destination(for: .related),
-                state: .loaded([])
-            ) {
-                ContentUnavailableView("No Related Papers Yet", systemImage: "sparkles")
-                    .frame(width: 260, height: 148)
-                    .scaleEffect(0.8)
-                    .cardChrome()
-            }
+            carousel(kind: .related, state: related)
         }
         .padding(.bottom)
     }
 
     /// Hidden entirely once it's known there's nothing to show — a paper
-    /// with no references, or one nothing has cited yet, shouldn't leave
-    /// an empty heading behind.
+    /// with no references, one nothing has cited yet, or one whose
+    /// bibliography INSPIRE hasn't matched to records for `.related` to
+    /// walk out through, shouldn't leave an empty heading behind. An
+    /// earlier version gave Related its own placeholder card here
+    /// ("No Related Papers", scaled to card size) rather than hiding —
+    /// the inconsistency read as a hedge, not as information, and a
+    /// shelf with nothing in it is better silence than a card announcing
+    /// its own emptiness.
     @ViewBuilder
     private func carousel(kind: RelatedPapersDestination.Kind, state: LoadState<[Paper]>) -> some View {
         if state.isLoading || state.value?.isEmpty == false {

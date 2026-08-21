@@ -15,6 +15,7 @@ extension Paper {
         collaborations: ["ATLAS"],
         citationCount: 17601,
         earliestDate: "2012-07",
+        keywords: ["Higgs particle: hadroproduction", "CERN LHC Coll", "experimental results"],
         figures: [],
         references: [],
         hasInspireRecord: true,

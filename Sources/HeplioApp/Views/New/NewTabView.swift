@@ -31,12 +31,9 @@ struct NewTabView: View {
 
     private var selection: NewFeedSelection { NewFeedSelection(id: selectionID) }
 
-    /// How narrow a column of newsprint is allowed to get. One column on
-    /// a phone, two on an iPad in portrait, three in landscape — and
-    /// three is the cap, because a fourth column of this type size reads
-    /// as a table of contents rather than a page.
+    /// How narrow a column of newsprint is allowed to get.
     private static let minimumColumnWidth: CGFloat = 320
-    private static let maximumColumnCount = 3
+    private static let maximumColumnCount = 5
 
     /// Measured rather than taken from the size class, which only knows
     /// "phone-ish" and "iPad-ish" and so has no way to say two. Read off

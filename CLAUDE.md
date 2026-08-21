@@ -266,9 +266,11 @@ Dynamic Type. No custom color palettes or bespoke card chrome.
 - **The card material lives in one place**, `.cardChrome()`
   (`Views/Shared/CardChrome.swift`): `systemBackground` fill, hairline
   `separator` border, radius 14, a soft shadow. `PaperCardView`,
-  `BrowseTileView` and the Related placeholder all wear it, which is what
-  makes "the carousel and the grids read as one screen made of one thing"
-  true by construction rather than by three hand-kept copies. The two
+  `BrowseTileView`, `AuthorTileView` and the Related placeholder all wear
+  it, which is what makes "the carousel and the grids read as one screen
+  made of one thing" true by construction rather than by four hand-kept
+  copies — and it's why Home could add a shelf of people without adding a
+  design vocabulary. The two
   surfaces that hold *plots* (`FigureCarouselView`, `HeadlineView`'s
   thumbnail) deliberately don't: they're a literal white, because line
   art on transparency has to survive dark mode.
@@ -326,6 +328,16 @@ Four layers, each with one job. Views only ever call `PaperService`.
   sometimes a bare `"[CMS]"` tag while the real title sits in
   `reference.title.title`, so `title` wins; entries that are only a
   `"[hep-th]"`-style tag with no author/record/DOI/URL are dropped.
+  **A reference with a matched `record` is kept even with no title at
+  all**, labelled by its journal line instead — older papers cite by
+  journal rather than by title and INSPIRE stores them that way, so
+  requiring a title silently emptied `references` for a whole era.
+  Measured over 20 top-cited papers each: pre-1996 hep-th lost its
+  bibliography entirely in 17/20 cases, 1996–2005 in 12/20, post-2023 in
+  0/20 — which is why it looked like "old papers have no related papers".
+  It took both the References carousel and `Recommender`'s
+  `.sharedFoundations` edge down with it, since that walks out through
+  exactly these record ids.
 - `PaperService` (`Networking/PaperService.swift`): the app's single
   entry point for paper data — `search`/`details`/`citations`/
   `references`, each 10 per page (`PaperService.pageSize`). Wraps the
@@ -351,6 +363,20 @@ Four layers, each with one job. Views only ever call `PaperService`.
   it can't name files that outlive a launch). 24h lifetime; `prune()`
   runs once at launch; `clear()`/`diskSize()` back the Settings screen's
   "Clear Cache".
+  **A size budget on top of the lifetime**, since 24h of Home shelves is
+  a lot of JSON: `enforceBudget(protecting:)` deletes oldest-first until
+  the directory fits `ResponseCache.budget` (a `@AppStorage` Int, default
+  500 MB, `0` meaning no limit; the Settings picker offers 50 MB – 1 GB).
+  It runs at launch from `RootTabView`, whenever the picker changes, and
+  after every 5 MB written — a whole-directory `stat` per store would be
+  wasteful, but once a launch isn't often enough for a long session.
+  **Protected keys go last and in practice never go at all**: the caller
+  passes `ModelContext.cacheKeysWorthKeeping()`, the `detail|<id>` of
+  every saved paper, which is what keeps the library readable offline.
+  The list is built in `LibraryStore` rather than looked up here — a
+  cache has no business reaching into SwiftData. Nothing here is
+  irreplaceable either way; the library and history hold their own
+  snapshots.
 - `PaperPager` (`Networking/PaperPager.swift`): drives infinite-scroll
   loading for any `List` of papers, a page at a time, more when the last
   loaded row appears. The page source is a closure, so a search query, a
@@ -445,6 +471,31 @@ subtle — the loading-state gap, cancellation — lives in
   wait after tapping a menu item reads as broken. Both feed one
   `.task(id: Request(query:sort:))`, since two separate `.task(id:)`
   blocks would each fire on appear and load the same page twice.
+- **`PaperPager.phase` is what a list switches on, not the three flags.**
+  `isLoadingMore` / `loadError` / `reachedEnd` mean nothing individually;
+  it's their combination that says "spinner" or "there is genuinely
+  nothing here", and `PapersListView` and `HeadlineFeedView` were each
+  deriving that from the same four `if` branches in the same order — the
+  drift `LoadState` exists to prevent, in the paged case. `.idle`
+  (nothing loaded, nothing in flight) is a real case and renders as
+  *nothing*: a screen one frame before its `.task` runs shouldn't flash a
+  spinner. `.content` deliberately beats a `loadError`, so a failed page
+  two doesn't blank page one.
+- The rows those two screens share live in
+  `Views/Shared/PagerStateViews.swift` — `PagerLoadingRow`,
+  `PagerFailureRow`, `PagerFooter`. New keeps its own row *layout* (it
+  can't use `PapersListView` at all), so only these three are shared. The
+  footer's `verticalPadding` is a parameter rather than a constant
+  because New zeroes its `listRowInsets` and has to space itself, and
+  unifying it would silently respace every other list.
+- **A rate limit is named apart from a network failure, everywhere.**
+  `Error.isRateLimited` / `.loadFailureAdvice` (same file) back every
+  failure state in the app. INSPIRE caps at 15 requests / 5s and Home
+  spends one per shelf while scrolling, so this is reachable in normal
+  use — and "check your connection" is actively wrong advice for it.
+  Search had the distinction first and privately; it's shared now, and
+  `PaperDetailView` (a `ScrollView`, so it keeps its explicit "Try
+  Again") reads its wording from the same place.
 - **`pagedPapersList(_:)` carries chrome only — flat rows and
   pull-to-refresh — never loading.** It used to bundle a one-shot
   `.task { loadInitialIfNeeded() }`, which silently did the wrong thing
@@ -558,7 +609,10 @@ trimming live in one place rather than in each view.
   it should be an iCloud container plus
   `ModelConfiguration(cloudKitDatabase:)` in `LibraryStore`. Keep new
   models to these rules. `ResponseCache` deliberately stays local — it's
-  a cache, not user data.
+  a cache, not user data. **The recommendation layer adds nothing here on
+  purpose**: `ReadingProfile` is recomputed from these three models rather
+  than stored, so there are still exactly three things to sync — see
+  "Home, and the recommendation function".
 
 ## Explore
 
@@ -780,6 +834,241 @@ device, each cost a rewrite, and none of them is a style preference.**
   of it (see `paperTransitionSource`); `.zoom` pairs with a programmatic
   push exactly as it does with a `NavigationLink`.
 
+## Home, and the recommendation function
+
+Home is *you*. Everything on it is keyed to what this reader has read,
+which is what keeps it from collapsing into Explore — and the two
+impersonal shelves that do appear (Trending, "New This Fortnight") are
+deliberately kept out of the top of the screen for exactly that reason.
+
+The whole feature is `Recommendation/` (three `Foundation`-only files)
+plus `Views/Home/`. It backs two screens: Home's shelves and
+`PaperDetailView`'s Related carousel. **One function, built general from
+the start** — *given a set of papers, return ranked related ones* — since
+a Related-only shortcut would have had to be thrown away the moment Home
+needed the same thing over a library.
+
+### Nothing derived is ever stored, and that's the design
+
+The SwiftData store is destined for iCloud. Syncing an algorithm's
+scratch paper — profiles, "already featured" lists, scores — means
+migrations and merge conflicts for data that can be recomputed in
+milliseconds. So none of it exists.
+
+- **`ReadingProfile` is a fold over the library and the history**, rebuilt
+  on each Home appearance from `ModelContext.readingSignals()`. A few
+  hundred rows of row-sized snapshots; cheap enough that storing it would
+  cost more than recomputing it. A fresh device gets the right Home the
+  moment the records land, with nothing to migrate.
+- **Day-to-day variety is a pure function of the calendar day**, not
+  stored state: `DailySeed` is FNV-1a over `localDay + a per-shelf salt`,
+  driving a SplitMix64 `RandomNumberGenerator`. Stable however often the
+  app is reopened that day, different tomorrow, and identical on two
+  devices that never exchanged a byte about it. `String.fnv1aHash`
+  (`Utilities/FNV1a.swift`) is shared with `ResponseCache`'s file naming
+  for the same reason both need it: `hashValue` is seeded per process.
+- **Repeat suppression rides on `ViewedPaper`.** Instead of remembering
+  what Home has featured, a paper the reader has *opened* is excluded
+  from every discovery shelf and appears only on the re-read shelves. The
+  store already keeps that fact and will already sync it. A
+  recommendation the reader ignores can come back — ignoring isn't
+  rejecting, and the App Store behaves the same way.
+
+### The two edges, and why there are two
+
+`Recommender.Edge` picks which citation edge to walk. Both are **one
+request**, because INSPIRE performs the join: a whole reading profile is
+one `or` of `refersto` clauses. Verified live — 12 seeds, 285 hits, a
+433-character URL, and the results were topically coherent before any
+local scoring at all.
+
+- `.citingWork` — `(refersto:recid:S1 or …) and de > <180d>`, papers that
+  *cite* the seeds. "What's new that builds on what you read." Home's
+  "For You".
+- `.sharedFoundations` — `(refersto:recid:R1 or …) and not recid:X`,
+  where the `R` are the seed's own references: papers built on the same
+  foundations, i.e. siblings rather than descendants. **A single paper's
+  "Related" has to use this one**, because for one paper
+  `refersto:recid:X` is *already* the Cited By carousel sitting next to
+  it. The references come free from the cached detail record, ranked by
+  title overlap with the source so the anchors are the real foundations
+  rather than the hat-tips (a software citation, the PDG).
+
+**Candidates are always re-ranked against the seeds, not just the
+reader** (`Recommender.related`'s `subject` profile). Skipping this was a
+real bug caught in verification: with an empty reader profile the only
+surviving signal is the citation prior, and a citation prior on its own
+doesn't return related papers, it returns famous ones — asked for work
+related to Maldacena's AdS/CFT paper it answered with the *Review of
+Particle Physics*. With the seed profile blended in it answers with
+Gubser-Klebanov-Polyakov and Strominger-Vafa, which is right.
+
+**`ReadingProfile.score` is ordering only; eligibility is
+`Recommender`'s.** Score once returned 0 for "already seen" and
+`Recommender` filtered on `score > 0` — but zero is a legitimate score
+(an uncited preprint under an empty profile earns exactly it), so that
+silently dropped every new paper for a first-launch reader. Read/saved/
+seed exclusion is now stated explicitly where the filtering happens.
+
+### INSPIRE keywords, and why they can't be the only signal
+
+`Paper.keywords` carries INSPIRE's subject terms; `topicalKeywords`
+filters them. Two facts about the data decide how they're used:
+
+- **The vocabulary contains structural markers, and they're among the
+  most common values in it.** Over 400 well-cited papers: "experimental
+  results" 82, "bibliography" 65, "numerical calculations" 40, "review"
+  27. Left in, they'd be the top "topic" for most readers while saying
+  nothing about subject matter. `Paper.structuralKeywords` drops those,
+  plus anything ending in " Coll" ("CERN LHC Coll") — that axis is
+  `BrowseTopic.collaboration`'s job and it does it properly.
+- **Curation runs about two years behind.** Measured by year on hep-th:
+  INSPIRE-schema keywords cover 100% of papers up to ~2022 and **0% from
+  2024 on**. Recent papers carry only free-form author keywords (~30%,
+  no `schema`), which are inconsistent — "holography" beside
+  "Gauge-Gravity Correspondence". Both kinds are taken. This is why
+  `ReadingProfile.score` keeps its category term alongside the keyword
+  one: for a paper too new to be indexed, the category is all there is.
+  It's also why keyword *queries* still work for recent material —
+  `k "AdS/CFT correspondence"` sorted `mostrecent` returns 2026 papers.
+
+Keywords come free: search hits carry them without a `fields` parameter,
+so no shelf costs an extra request. They're kept in `Paper.summary` (a
+dozen short strings against a 1.6 KB snapshot) because a library storing
+only categories could only ever recommend by category.
+
+**`Paper.keywords` is `[String]?`, and must stay optional.** `Paper`'s
+`Codable` is synthesized, and a synthesized decoder throws `keyNotFound`
+for a missing non-optional — a default value does *not* rescue it
+(verified: `var x: [String] = []` still throws; `let x: [String] = []`
+compiles but is never decoded). Every `SavedPaper`/`ViewedPaper` snapshot
+already on disk predates the field, so a non-optional here would fail to
+decode the reader's whole library. The same applies to any future field.
+
+Other scoring notes: weight is `base × exp(-ageDays / 30)`, saved `1.0`
+against viewed `0.6`, and a paper in both tables counts once at the
+heavier weight. Each facet's weight is divided across the paper's own
+keys, so a 2,932-author collaboration record doesn't hand every author a
+full vote. The stopword list is tiny and physics-blind on purpose:
+"measurement", "search", "effective", "model" look like filler in English
+and are exactly what separates an experimental paper from a theory one
+here.
+
+### The shelves, and the infinite stream
+
+**Home scrolls as far as there is material, and it's the shelf *list*
+that paginates**, not the papers in any one shelf. `HomeShelfStream` is a
+pure `(profile, preferredCategory, day) -> [HomeShelf]`, built whole
+(about a hundred entries, bounded by the library, the history and the
+`BrowseTopic` catalog), so paging is a `prefix` and the end is known.
+
+- **A fixed spine, then a day-rotating stream.** `For You` and `Because
+  You Read X` always lead — a tab whose first row moves around is one you
+  have to re-read every morning. What changes daily is *which paper* `X`
+  is, drawn by `DailySeed` from the top 30 seeds, so the shelf's own
+  title is different each day. That is most of the answer to "毎日同じ
+  では単調".
+- **The rotation alternates local, network, local, network — local
+  first.** Local shelves (`readAgain`, `fromLibrary`, the two tile grids)
+  cost nothing; the rest cost a request each. Local first because the
+  spine is itself two network shelves, and opening the rotation with a
+  third would put the worst burst of the whole screen where every reader
+  meets it. One local per network rather than two, because local shelves
+  are the scarcer resource — bounded by how much the reader has actually
+  read — and spending them singly doubles the protected stretch.
+  **The guarantee ends when the local queue runs dry** (about shelf 20)
+  and the tail is network-only; that's fine because
+  `InspireHEPClient.throttle()` blocks rather than fails at 15 req/5s, so
+  a fast scroll down the tail is slow, not broken.
+- **Local shelves are sliced by category** — "Read Again · Cosmology",
+  "From Your Library · Theory". Repeating one title four times is a bug
+  report; slicing is also what makes them deep enough to scroll.
+- **Topic shelves are INSPIRE keywords first, arXiv categories last**
+  (`HomeShelfStream.interestTiers`). A category is far too coarse to be
+  "a topic you're interested in" — two hep-th readers can be in entirely
+  different worlds, and a shelf called "Theory" tells someone nothing.
+  `BrowseTopic.keyword` queries `k "field theory: conformal"`, INSPIRE's
+  own indexing vocabulary. Categories stay on the end rather than being
+  dropped because keyword coverage isn't universal — see "INSPIRE
+  keywords" below. **The tiers are shuffled within themselves, never
+  across**: the shuffle is for daily variety, and shuffling the
+  *flattened* list silently throws the whole ordering away. That mistake
+  was made twice — once in `topicShelves`, caught by a test asking
+  whether keywords really did come first, and then again in the tile
+  grid. Both go through `shuffledInterests(of:dice:)` now, so there is no
+  correct-looking way left to write it wrong.
+- **A shelf that comes back empty renders as nothing.** The stream can't
+  know the reader has nothing saved under `hep-lat`. The row survives (it
+  carries the pagination trigger) but the spacing lives *inside* it, so an
+  empty shelf leaves no gap.
+- **The cold start is Explore-lite, never an empty state**, ordered with
+  the New tab's `@AppStorage("newFeedSelection")` chip first — the one
+  interest the reader states out loud rather than one this app infers. A
+  footer says what would change; the screen itself is already full.
+- Two shelves reuse another tab's query string *exactly*
+  (`NewFeedSelection.all.query`, `BrowseTopic.trending.query`), so they
+  are `ResponseCache` hits rather than second requests for the same
+  thing.
+- Every "See All" pushes a value already registered in
+  `paperNavigationDestinations()` — `RelatedPapersDestination`,
+  `Paper.Author`, `BrowseTopic`. Home adds no destination of its own.
+
+### Container choice: a `List`, like New
+
+Home paginates, so it takes New's side of the argument rather than
+Explore's: `ScrollView` + `LazyVStack` estimates the height of rows it
+hasn't built and corrects itself as they materialise, which drags the
+content offset out from under the reader. The standing objection to a
+`List` — it mis-manages sibling `NavigationLink`s in a row and staples
+chevrons onto them — is answered the way New answered it: **there are no
+`NavigationLink`s on Home at all**, only `Button`s appending to the
+tab's own `NavigationPath`.
+
+That's what `PaperCarouselView`'s `onSelect` / `onSeeAll` are for. When
+they're set the cards and the header become `Button`s; when they're nil
+the existing `NavigationLink` path is untouched, so Explore and
+`PaperDetailView` are unaffected. The `Destination == AnyHashable`
+convenience init exists only because Swift can't default a generic
+parameter at a call site that never mentions one.
+
+**The footer spinner deliberately does not also trigger the next page**,
+the way New's sentinel row does. Revealing more shelves makes the footer
+re-appear a moment later, so one scroll to the bottom would cascade into
+revealing the whole stream and firing every request in it at once. The
+last shelf's own `.onAppear` is the single trigger and advances one page
+per render — including through shelves that turn out to be empty, since
+the next one then becomes the last.
+
+`.task` on the tab is guarded (`guard stream == nil`) for the reason
+`PaperPager.reload` and Explore's Trending task are: `.task` re-runs on
+every re-appearance and popping a paper back off counts, so rebuilding
+there would re-deal the screen under a reader on their way back to where
+they were.
+
+Pull-to-refresh rebuilds the profile and bumps a `reloadToken` that each
+shelf passes to `PaperService` as `refresh:`. The shelf *order*
+deliberately doesn't change — it's a function of today's date, and today
+is the same after a pull as before it. What refreshes is what's on the
+shelves. `HomeShelfView` tells a first load from a refresh with
+`loadedToken`, so a row built late doesn't refetch merely because the
+token was already high when it appeared.
+
+Also extracted while building this: `.shelfPanel()`
+(`Views/Shared/ShelfPanel.swift`), the rounded `secondarySystemBackground`
+backdrop one shelf sits on, previously private to `ExploreTabView` and
+now drawn by both screens.
+
+**`shelfPanel(tinted:)` has exactly two treatments, and that's the
+point.** Shelves that exist because of who the reader is — `For You`,
+`Because You Read`, `More By` (`HomeShelf.isPersonal`) — sit on the
+accent colour at 10% over the gray; everything else keeps the plain
+gray. A colour per shelf kind would be a palette, which this app
+deliberately doesn't have, and the accent is the one colour the system
+already gives every control here. The wash goes *over*
+`secondarySystemBackground` rather than replacing it, or the panel loses
+its value in dark mode; it stays barely-there because the cards on top
+are `systemBackground` and need a quiet backdrop.
+
 ## Testing approach
 
 SwiftUI can't build on this Linux dev machine, so model/networking changes
@@ -840,6 +1129,22 @@ Combine with ` and `. Sorting is the `sort` parameter (`mostrecent` /
 - `tc`-style type codes are the working syntax; `doc_type:review`
   returns 0.
 
+Verified separately (2026-08-21) for the recommendation layer:
+
+| Purpose | Query |
+| --- | --- |
+| Papers citing a record | `refersto:recid:451647` (22,479) |
+| Citing **any** of a set | `refersto:recid:A or refersto:recid:B` — a true union (23,756 for 22,479 + 14,320) |
+| Citing **both** (co-citation) | `refersto:recid:A and refersto:recid:B` (13,043) |
+| A record's own references | `citedby:recid:451647` (92) |
+| Exclusion | `… and not recid:X` |
+| Authors as a set | `(authors.recid:A or authors.recid:B) and de > …` |
+| Subject keyword | `k "AdS/CFT correspondence"` (10,719) — `keyword` and `keywords.value:` are the same thing |
+| Keywords combined | `k "A" and k "B"` (2,498), `k "A" or k "B"` (53,723) |
+
+The union is the load-bearing one: **INSPIRE performs the join, so a
+whole reading profile costs one request**, not one per seed.
+
 ## Milestones
 
 - [x] M0: Project skeleton (tab structure, empty views)
@@ -867,17 +1172,23 @@ Combine with ` and `. Sorting is the `sort` parameter (`mostrecent` /
       solves the same cold start a multi-select would, and `lastOpenedNew`
       turned out to be a marker with nothing to mark — the day headers
       already say what's new. See "New".
-- [ ] M7: Related — the ranking function itself, backing the "Related"
-      tab already scaffolded in `PaperDetailView`'s References/Cited By/
-      Related picker (references and citations are covered by M3).
-      This is where recommendation logic starts, and it should be built
-      as the general thing from the start: *given a set of papers,
-      return ranked related ones*. Related passes one paper; M8 passes a
-      library. Writing a Related-only shortcut here means rewriting it
-      for Home.
-- [ ] M8: Home tab — the same function from M7 applied to the library
-      (recency-weighted), plus recent history cards and suggested
-      authors.
+- [x] M7: Related — the ranking function itself, now backing
+      `PaperDetailView`'s Related carousel and its "See All" list.
+      Built as the general thing it had to be: *given a set of papers,
+      return ranked related ones* (`Recommender.related(to:via:…)`).
+      Related passes one paper via `.sharedFoundations`; M8 passes a
+      library via `.citingWork`. See "Home, and the recommendation
+      function".
+- [x] M8: Home tab — that same function over the library and history,
+      recency-weighted, as a fixed spine (`For You`, `Because You Read
+      X`) above a day-rotating, indefinitely-scrolling stream of shelves:
+      topics, authors, re-read and library shelves sliced by category,
+      plus Trending and a random look at the fortnight for variety.
+      **No derived state is stored** — the profile is recomputed and the
+      daily rotation is a pure function of the date — so turning on
+      iCloud sync stays a matter of the three existing models and
+      nothing else. Cold start is Explore-lite seeded by the New tab's
+      chip, never an empty screen.
 - [ ] M9: Polish (dark mode, Dynamic Type, offline cache, TestFlight)
 
 Ordering rationale: M5 and M6 need no recommendation logic at all, so

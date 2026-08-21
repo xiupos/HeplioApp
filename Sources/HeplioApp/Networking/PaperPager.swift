@@ -38,10 +38,40 @@ final class PaperPager {
     }
 
     /// A pager with nothing behind it — a placeholder for a screen whose
-    /// real query doesn't exist yet (Search before anything is typed) or
-    /// whose source isn't built yet (Related, M6).
+    /// real query doesn't exist yet, like Search before anything is typed.
+    /// Every screen that starts with one replaces it via `reload` once it
+    /// knows what to ask for.
     static var empty: PaperPager {
         PaperPager { _, _, _ in [] }
+    }
+
+    /// What a list should be showing right now.
+    ///
+    /// The three published flags don't mean anything on their own — it's
+    /// their *combination* that says "spinner" or "there is genuinely
+    /// nothing here", and two screens were each deriving that combination
+    /// by hand from the same four `if` branches in the same order. That's
+    /// the drift `LoadState` was introduced to prevent elsewhere; this is
+    /// the same argument for the paged case.
+    enum Phase {
+        /// Nothing loaded and nothing in flight — a screen that hasn't
+        /// started yet. Renders as nothing at all, not as a spinner: a
+        /// screen one frame before its `.task` runs shouldn't flash one.
+        case idle
+        case loading
+        case failed
+        /// Settled, and there really is nothing to show.
+        case empty
+        /// There are rows. More may still be loading underneath.
+        case content
+    }
+
+    var phase: Phase {
+        guard papers.isEmpty else { return .content }
+        if isLoadingMore { return .loading }
+        if loadError != nil { return .failed }
+        if reachedEnd { return .empty }
+        return .idle
     }
 
     func loadInitialIfNeeded() async {

@@ -15,19 +15,18 @@ struct RelatedPapersListView: View {
 
     var body: some View {
         List {
-            if destination.kind == .related {
-                ContentUnavailableView(
-                    "No Related Papers Yet",
-                    systemImage: "sparkles",
-                    description: Text("Recommendations based on this paper aren't available yet.")
-                )
-                .listRowSeparator(.hidden)
-            } else {
-                PapersListView(
-                    pager: pager,
-                    numberFor: destination.kind.numberFor,
-                    itemNoun: destination.kind.itemNoun
-                ) {
+            PapersListView(
+                pager: pager,
+                numberFor: destination.kind.numberFor,
+                itemNoun: destination.kind.itemNoun
+            ) {
+                if destination.kind == .related {
+                    ContentUnavailableView(
+                        "No Related Papers",
+                        systemImage: "sparkles",
+                        description: Text("INSPIRE hasn't matched enough of this paper's own references to build a list.")
+                    )
+                } else {
                     ContentUnavailableView("No Results", systemImage: "doc.text.magnifyingglass")
                 }
             }

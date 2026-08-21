@@ -77,6 +77,69 @@ extension ModelContext {
         try? delete(model: RecentSearch.self)
     }
 
+    // MARK: Reading signals
+
+    /// Everything the reader has done with a paper, as the plain values
+    /// `ReadingProfile` folds into a taste profile.
+    ///
+    /// Both tables whole, every time. They're capped at a hundred visits
+    /// and however much someone bookmarks, and the snapshots are the
+    /// row-sized copies — so this is a few hundred small JSON decodes,
+    /// which is the entire reason the profile can be recomputed on every
+    /// appearance instead of being stored and synced.
+    private func readingSignals() -> [ReadingSignal] {
+        let saved = (try? fetch(FetchDescriptor<SavedPaper>())) ?? []
+        let viewed = (try? fetch(FetchDescriptor<ViewedPaper>())) ?? []
+        return saved.compactMap { record in
+            record.paper.map { ReadingSignal(paper: $0, isSaved: true, date: record.savedAt) }
+        } + viewed.compactMap { record in
+            record.paper.map { ReadingSignal(paper: $0, isSaved: false, date: record.viewedAt) }
+        }
+    }
+
+    /// What this reader is interested in, folded out of the library and
+    /// the history.
+    ///
+    /// The one place the two are turned into a profile, so Home and the
+    /// detail screen's Related carousel can't end up ranking against
+    /// subtly different inputs. Nothing is cached: see `ReadingProfile`
+    /// for why recomputing is the point rather than a cost.
+    func readingProfile() -> ReadingProfile {
+        ReadingProfile(signals: readingSignals())
+    }
+
+    /// Bookmarked papers, most recently saved first — what Home's "From
+    /// Your Library" shelf draws from.
+    func savedPapers() -> [Paper] {
+        let descriptor = FetchDescriptor<SavedPaper>(sortBy: [SortDescriptor(\.savedAt, order: .reverse)])
+        return ((try? fetch(descriptor)) ?? []).compactMap(\.paper)
+    }
+
+    /// Papers opened but never bookmarked, most recent first. The ones a
+    /// reader passed through and might mean to come back to — which is
+    /// exactly the set a "Read Again" shelf is for, and why it excludes
+    /// the saved ones rather than repeating the Library.
+    func unsavedViewedPapers() -> [Paper] {
+        let descriptor = FetchDescriptor<ViewedPaper>(sortBy: [SortDescriptor(\.viewedAt, order: .reverse)])
+        let saved = Set(((try? fetch(FetchDescriptor<SavedPaper>())) ?? []).map(\.paperID))
+        return ((try? fetch(descriptor)) ?? [])
+            .filter { !saved.contains($0.paperID) }
+            .compactMap(\.paper)
+    }
+
+    /// The `ResponseCache` keys worth keeping when the cache is over
+    /// budget: the detail record behind every saved paper, which is what
+    /// lets the library open without a network round trip.
+    ///
+    /// Built here rather than inside `ResponseCache` because the cache
+    /// shouldn't know SwiftData exists. The key format has to match
+    /// `PaperService.details(id:)`, which is the one thing tying the two
+    /// together.
+    func cacheKeysWorthKeeping() -> Set<String> {
+        let saved = (try? fetch(FetchDescriptor<SavedPaper>())) ?? []
+        return Set(saved.map { "detail|\($0.paperID)" })
+    }
+
     // MARK: Migration
 
     /// Fills in the columns added for the Library's sort menu on records

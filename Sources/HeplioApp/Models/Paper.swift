@@ -19,6 +19,18 @@ struct Paper: Identifiable, Codable, Hashable {
     let collaborations: [String]
     let citationCount: Int
     let earliestDate: String?
+    /// INSPIRE's subject keywords — "field theory: conformal",
+    /// "neutrino: oscillation", "AdS/CFT correspondence". Far finer than
+    /// an arXiv category, which is why Home's topic shelves prefer them.
+    ///
+    /// **Optional, and it has to stay that way.** `Paper`'s `Codable` is
+    /// the synthesized one, and a synthesized decoder throws on a missing
+    /// key for any non-optional property — a default value doesn't save
+    /// it (verified: `var x: [String] = []` still throws
+    /// `keyNotFound`). Every `SavedPaper`/`ViewedPaper` snapshot already
+    /// written to disk predates this field, so a non-optional here would
+    /// fail to decode the reader's entire library.
+    let keywords: [String]?
     /// Plots and diagrams INSPIRE extracted from the paper and hosts
     /// itself. Empty for records it has no fulltext for.
     let figures: [Figure]
@@ -117,6 +129,12 @@ extension Paper {
             collaborations: collaborations,
             citationCount: citationCount,
             earliestDate: earliestDate,
+            // Kept, unlike the figures and the bibliography: a dozen short
+            // strings is nothing next to what's being dropped, and they're
+            // what `ReadingProfile` builds its finest-grained topics out
+            // of — a library that stored only categories could only ever
+            // recommend by category.
+            keywords: keywords,
             // Figures are the detail screen's, and it always refetches.
             figures: [],
             references: [],
@@ -124,6 +142,36 @@ extension Paper {
             referenceURL: referenceURL
         )
     }
+
+    /// The keywords worth treating as a *topic*, which is not all of them.
+    ///
+    /// INSPIRE's indexers add structural markers alongside the subject
+    /// terms — "bibliography", "experimental results", "numerical
+    /// calculations", "review". Measured over 400 well-cited papers these
+    /// are among the very most common values in the whole vocabulary
+    /// ("experimental results" 82, "bibliography" 65), so leaving them in
+    /// would make them the top "topics" for most readers while saying
+    /// nothing about what a paper is *about*.
+    ///
+    /// Facility and collaboration markers ("CERN LHC Coll", "ATLAS") are
+    /// dropped too — not because they're meaningless, but because
+    /// `BrowseTopic.collaboration` already covers that axis properly.
+    var topicalKeywords: [String] {
+        (keywords ?? []).filter { keyword in
+            let folded = keyword.lowercased()
+            guard !Self.structuralKeywords.contains(folded) else { return false }
+            // "CERN LHC Coll", "Batavia TEVATRON Coll" — an indexing
+            // convention for where the data came from, not a subject.
+            return !folded.hasSuffix(" coll")
+        }
+    }
+
+    private static let structuralKeywords: Set<String> = [
+        "bibliography", "experimental results", "numerical calculations",
+        "numerical calculations: monte carlo", "programming: monte carlo",
+        "review", "data analysis method", "background", "new physics",
+        "talk", "lectures", "thesis", "conference"
+    ]
 
     /// The one plot a headline shows. INSPIRE lists figures in the order
     /// they appear in the paper, so the first is usually apparatus or a

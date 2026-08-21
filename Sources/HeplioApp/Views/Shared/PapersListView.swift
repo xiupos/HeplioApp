@@ -15,38 +15,24 @@ struct PapersListView<EmptyContent: View>: View {
     @ViewBuilder var emptyContent: () -> EmptyContent
 
     var body: some View {
-        if pager.papers.isEmpty && pager.isLoadingMore {
-            ProgressView()
-                .frame(maxWidth: .infinity)
-                .listRowSeparator(.hidden)
-        } else if pager.papers.isEmpty, pager.loadError != nil {
-            ContentUnavailableView(
-                "Couldn't Load",
-                systemImage: "exclamationmark.triangle",
-                description: Text("Check your connection and try again.")
-            )
-            .listRowSeparator(.hidden)
-        } else if pager.papers.isEmpty, pager.reachedEnd {
+        switch pager.phase {
+        case .idle:
+            EmptyView()
+        case .loading:
+            PagerLoadingRow()
+        case .failed:
+            PagerFailureRow(error: pager.loadError)
+        case .empty:
             emptyContent()
                 .listRowSeparator(.hidden)
-        } else {
+        case .content:
             ForEach(Array(pager.papers.enumerated()), id: \.element.id) { index, paper in
                 row(for: paper, number: numberFor?(index, paper))
                     .onAppear {
                         Task { await pager.loadMoreIfNeeded(currentItem: paper) }
                     }
             }
-            if pager.isLoadingMore {
-                ProgressView()
-                    .frame(maxWidth: .infinity)
-                    .listRowSeparator(.hidden)
-            } else if pager.reachedEnd {
-                Text("\(pager.papers.count) \(itemNoun)")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity)
-                    .listRowSeparator(.hidden)
-            }
+            PagerFooter(pager: pager, itemNoun: itemNoun)
         }
     }
 

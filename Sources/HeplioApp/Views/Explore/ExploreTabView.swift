@@ -30,14 +30,13 @@ struct ExploreTabView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
-                    panel {
-                        PaperCarouselView(
-                            title: BrowseTopic.trending.title,
-                            icon: "flame",
-                            destination: BrowseTopic.trending,
-                            state: trending
-                        )
-                    }
+                    PaperCarouselView(
+                        title: BrowseTopic.trending.title,
+                        icon: "flame",
+                        destination: BrowseTopic.trending,
+                        state: trending
+                    )
+                    .shelfPanel()
 
                     gridShelf(title: "Categories", icon: "square.grid.2x2", topics: BrowseTopic.categories)
                     gridShelf(title: "Collaborations", icon: "person.3", topics: BrowseTopic.collaborations)
@@ -65,35 +64,20 @@ struct ExploreTabView: View {
     }
 
     private func gridShelf(title: String, icon: String, topics: [BrowseTopic]) -> some View {
-        panel {
-            VStack(alignment: .leading, spacing: 12) {
-                Label(title, systemImage: icon)
-                    .font(.headline)
-                LazyVGrid(columns: Self.columns, spacing: 12) {
-                    ForEach(topics, id: \.self) { topic in
-                        NavigationLink(value: topic) {
-                            BrowseTileView(topic: topic)
-                        }
-                        .buttonStyle(.plain)
+        VStack(alignment: .leading, spacing: 12) {
+            Label(title, systemImage: icon)
+                .font(.headline)
+            LazyVGrid(columns: Self.columns, spacing: 12) {
+                ForEach(topics, id: \.self) { topic in
+                    NavigationLink(value: topic) {
+                        BrowseTileView(topic: topic)
                     }
+                    .buttonStyle(.plain)
                 }
             }
-            .padding(.horizontal)
         }
-    }
-
-    /// Each shelf gets its own rounded backdrop rather than the whole
-    /// screen sharing one gray field — the same `secondarySystemBackground`
-    /// behind `systemBackground`-carded content `PaperDetailView` already
-    /// uses for its related-content zone, just broken into one panel per
-    /// part instead of a single continuous one. That's what turns "flat
-    /// gray page" into the grouped-section rhythm Settings.app and
-    /// Reminders have, without introducing any new color or material.
-    private func panel<Content: View>(@ViewBuilder content: () -> Content) -> some View {
-        content()
-            .padding(.vertical)
-            .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-            .padding(.horizontal)
+        .padding(.horizontal)
+        .shelfPanel()
     }
 }
 

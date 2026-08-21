@@ -39,27 +39,16 @@ struct SearchTabView: View {
         query.trimmingCharacters(in: .whitespaces)
     }
 
-    private var errorMessage: String? {
-        switch pager.loadError {
-        case .some(InspireHEPError.rateLimited):
-            return "Too many requests right now. Please wait a moment and try again."
-        case .some:
-            return "Couldn't load results. Check your connection and try again."
-        case .none:
-            return nil
-        }
-    }
-
     var body: some View {
         NavigationStack {
             List {
-                if let errorMessage {
-                    ContentUnavailableView(
-                        "Something Went Wrong",
-                        systemImage: "exclamationmark.triangle",
-                        description: Text(errorMessage)
-                    )
-                    .listRowSeparator(.hidden)
+                // Search shows a failure *instead of* results rather than
+                // under them, unlike the other paged lists: a stale result
+                // set beneath a newly-failed query reads as an answer to
+                // what was just typed. Only the placement differs — the
+                // row itself is the one every screen uses.
+                if pager.loadError != nil {
+                    PagerFailureRow(error: pager.loadError)
                 } else if trimmedQuery.isEmpty {
                     idleContent
                 } else {
