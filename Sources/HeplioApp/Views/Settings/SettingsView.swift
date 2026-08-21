@@ -41,6 +41,7 @@ struct SettingsView: View {
                 Section {
                     LabeledContent("Version", value: appVersion)
                     Link("inspirehep.net", destination: URL(string: "https://inspirehep.net")!)
+                    Link("Source on GitHub", destination: URL(string: "https://github.com/xiupos/HeplioApp")!)
                 } header: {
                     Text("About")
                 } footer: {

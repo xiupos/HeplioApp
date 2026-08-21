@@ -8,11 +8,25 @@ import Foundation
 actor ResponseCache {
     static let shared = ResponseCache()
 
-    /// How long an entry stays usable. Literature records barely change
-    /// (citation counts drift, little else), so a day keeps a whole
-    /// session of browsing instant without going stale in any way a reader
-    /// would notice.
+    /// How long an entry answers a request without going back to the
+    /// network. Literature records barely change (citation counts drift,
+    /// little else), so a day keeps a whole session of browsing instant
+    /// without going stale in any way a reader would notice.
     static let lifetime: TimeInterval = 60 * 60 * 24
+
+    /// How long an entry stays *on disk*, which is a much longer time and
+    /// deliberately so — **freshness and retention are different
+    /// questions.** `lifetime` decides when to re-fetch; this decides when
+    /// the copy is worth nothing at all. Pruning at `lifetime` (which this
+    /// used to do) made the offline fallback almost inert: `prune()` runs
+    /// at every launch, so opening the app the next day with no signal
+    /// deleted yesterday's entries before anything could fall back to
+    /// them, which is precisely the case the fallback exists for.
+    /// Disk space is governed by `enforceBudget(protecting:)`, not by
+    /// this — that's the real cap, and it evicts oldest-first when it
+    /// bites. So this only has to be short enough that a copy nobody has
+    /// opened in a month doesn't linger.
+    static let retention: TimeInterval = 60 * 60 * 24 * 30
 
     private let directory: URL
     private var memory: [String: Entry] = [:]
@@ -29,14 +43,10 @@ actor ResponseCache {
         try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
     }
 
+    /// What a request is normally answered from: the stored papers, or
+    /// nil once the entry is older than `lifetime`.
     func papers(forKey key: String) -> [Paper]? {
-        if let entry = memory[key] {
-            return entry.isFresh ? entry.papers : nil
-        }
-        guard let data = try? Data(contentsOf: fileURL(for: key)),
-              let entry = try? JSONDecoder().decode(Entry.self, from: data),
-              entry.isFresh else { return nil }
-        memory[key] = entry
+        guard let entry = entry(forKey: key), entry.isFresh else { return nil }
         return entry.papers
     }
 
@@ -53,8 +63,33 @@ actor ResponseCache {
         }
     }
 
-    /// Forgets one request, so the next ask for it goes to the network.
-    /// What backs pull-to-refresh.
+    /// The same entry with the freshness check skipped. Only for
+    /// `PaperService`'s offline fallback: a reader with no connectivity is
+    /// better served a day-old paper than a hard failure, since Library
+    /// and History already work with zero network and a paper shouldn't
+    /// stop being readable the moment its entry turns a day old.
+    func stalePapers(forKey key: String) -> [Paper]? {
+        entry(forKey: key)?.papers
+    }
+
+    /// Both lookups above, minus the freshness policy that separates
+    /// them. Reading through to disk populates `memory` regardless of
+    /// age — an aged-out entry is exactly what `stalePapers` wants, and
+    /// `papers(forKey:)` filters it out either way.
+    private func entry(forKey key: String) -> Entry? {
+        if let entry = memory[key] { return entry }
+        guard let data = try? Data(contentsOf: fileURL(for: key)),
+              let entry = try? JSONDecoder().decode(Entry.self, from: data) else { return nil }
+        memory[key] = entry
+        return entry
+    }
+
+    /// Forgets one request outright. Nothing calls this now that a
+    /// refresh overwrites in place rather than clearing first — see
+    /// `PaperService.papers(forKey:refresh:fetch:)`, which stopped
+    /// deleting so a failed refresh can't cost the reader their offline
+    /// copy. Kept because "drop exactly this entry" is a reasonable thing
+    /// to want from a cache.
     func remove(forKey key: String) {
         memory[key] = nil
         try? FileManager.default.removeItem(at: fileURL(for: key))
@@ -68,14 +103,19 @@ actor ResponseCache {
         }
     }
 
-    /// Drops aged-out entries. Nothing else would ever notice them (reads
-    /// already check freshness), so this only exists to stop the directory
-    /// growing forever — cheap enough to run once at launch.
+    /// Drops entries past `retention` — long dead rather than merely
+    /// stale. Reads already check freshness for themselves, so nothing
+    /// here is about correctness; it only stops the directory keeping
+    /// copies nobody will ever want. Cheap enough to run once at launch.
+    ///
+    /// **Deliberately `retention`, not `lifetime`.** A stale entry is
+    /// still the offline fallback, so pruning at the freshness threshold
+    /// deleted exactly what `stalePapers(forKey:)` is there to find.
     func prune() {
-        memory = memory.filter { $0.value.isFresh }
+        memory = memory.filter { Date.now.timeIntervalSince($0.value.storedAt) < Self.retention }
         for url in files() {
             guard let modified = try? url.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate,
-                  Date.now.timeIntervalSince(modified) > Self.lifetime else { continue }
+                  Date.now.timeIntervalSince(modified) > Self.retention else { continue }
             try? FileManager.default.removeItem(at: url)
         }
     }

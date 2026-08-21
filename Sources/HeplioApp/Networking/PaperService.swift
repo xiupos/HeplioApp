@@ -102,17 +102,52 @@ actor PaperService {
         // request already in flight — that one is as fresh as it gets.
         if let existing = inFlight[key] { return try await existing.value }
         let task = Task { [cache] in
-            if refresh {
-                await cache.remove(forKey: key)
-            } else if let cached = await cache.papers(forKey: key) {
+            // A refresh skips the *read* rather than deleting the entry.
+            // Deleting up front — which this used to do — threw the copy
+            // away before knowing whether a replacement was coming, so a
+            // pull-to-refresh with no signal left the reader worse off
+            // than not having pulled: the entry that made the paper
+            // readable offline was gone, and the fetch that was meant to
+            // replace it had failed. A successful `store` overwrites it
+            // anyway, so nothing is gained by clearing it first.
+            if !refresh, let cached = await cache.papers(forKey: key) {
                 return cached
             }
-            let fresh = try await fetch()
-            await cache.store(fresh, forKey: key)
-            return fresh
+            do {
+                let fresh = try await fetch()
+                await cache.store(fresh, forKey: key)
+                return fresh
+            } catch let error as URLError where error.isOffline {
+                // Nothing fresh cached and the network is unreachable, so
+                // an aged-out entry beats a hard failure — see
+                // `ResponseCache.stalePapers`. A refresh is excluded on
+                // purpose: "show me this again, now" that can't reach the
+                // network should say so rather than re-serve what's
+                // already on screen. The entry itself survives either way.
+                if !refresh, let stale = await cache.stalePapers(forKey: key) { return stale }
+                throw error
+            }
         }
         inFlight[key] = task
         defer { inFlight[key] = nil }
         return try await task.value
+    }
+}
+
+private extension URLError {
+    /// Codes that mean "never reached the server" rather than "the server
+    /// answered badly" — the distinction that decides whether an aged-out
+    /// cache entry is a reasonable fallback. A timeout is included: it's
+    /// as often a dead connection as a slow one, and the alternative is a
+    /// hard failure over a paper the reader has already read once.
+    var isOffline: Bool {
+        switch code {
+        case .notConnectedToInternet, .networkConnectionLost, .timedOut,
+             .dataNotAllowed, .internationalRoamingOff, .cannotFindHost,
+             .cannotConnectToHost, .dnsLookupFailed:
+            return true
+        default:
+            return false
+        }
     }
 }

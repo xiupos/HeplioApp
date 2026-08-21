@@ -75,15 +75,12 @@ struct InspireRecord: Decodable {
         // **A matched record survives even with no title at all**, falling
         // back to the journal citation the entry *is* identified by. Older
         // papers cite by journal line rather than by title, and INSPIRE
-        // stores them that way: verified live, all 40 references of
-        // "D-branes, quivers, and ALE instantons" (417064) carry a
-        // `record` and a `publication_info` but no `title`, `misc` or
-        // `raw_refs` — where Maldacena's 1997 paper has 70 with arXiv ids.
-        // Dropping those left the paper with an empty `references` array,
-        // which silently emptied both the References carousel and
-        // `Recommender`'s `.sharedFoundations` edge, since that walks out
-        // through exactly these record ids. It read as "old papers have no
-        // related papers"; it was a decoding gap.
+        // stores them that way. Dropping those left old papers with an
+        // empty `references` array, which silently emptied both the
+        // References carousel and `Recommender`'s `.sharedFoundations`
+        // edge, since that walks out through exactly these record ids. It
+        // read as "old papers have no related papers"; it was a decoding
+        // gap.
         //
         // The stub label rarely reaches the screen anyway —
         // `PaperService.references(of:)` swaps every matched entry for its

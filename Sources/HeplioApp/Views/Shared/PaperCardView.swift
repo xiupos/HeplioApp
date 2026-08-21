@@ -46,7 +46,13 @@ struct PaperCardView: View {
             }
         }
         .padding(12)
-        .frame(width: 200, height: 148, alignment: .topLeading)
+        // `minHeight`, not `height` — at large Dynamic Type sizes the
+        // three-line title and the author line both grow, and a fixed
+        // height would clip or overflow into the next card. A fixed
+        // *width* is fine: these sit in a horizontal scroll, not a grid
+        // that needs matched heights.
+        .frame(width: 200, alignment: .topLeading)
+        .frame(minHeight: 148, alignment: .topLeading)
         .cardChrome()
         // Outside the card's own chrome, so the shape that grows into the
         // detail screen is the rounded card the reader tapped. Cards

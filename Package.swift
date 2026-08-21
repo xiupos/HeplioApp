@@ -16,7 +16,9 @@ let package = Package(
         .iOSApplication(
             name: "Heplio",
             targets: ["AppModule"],
-            displayVersion: "1.0",
+            bundleIdentifier: "net.xiupos.heplio",
+            teamIdentifier: "YL679VBY6X",
+            displayVersion: "0.1",
             bundleVersion: "1",
             appIcon: .asset("AppIcon"),
             accentColor: .presetColor(.orange),
@@ -29,7 +31,8 @@ let package = Package(
                 .landscapeRight,
                 .landscapeLeft,
                 .portraitUpsideDown(.when(deviceFamilies: [.pad]))
-            ]
+            ],
+            appCategory: .education
         )
     ],
     targets: [

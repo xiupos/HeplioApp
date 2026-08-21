@@ -1,4 +1,14 @@
-#if DEBUG
+/// A real record (the ATLAS Higgs discovery paper) for `#Preview` blocks
+/// to draw, so a canvas shows the LaTeX, the long author list and the
+/// citation count a row actually has to cope with.
+///
+/// **Deliberately not behind `#if DEBUG`, and putting it back breaks the
+/// archive.** `#Preview` blocks are compiled into a release build too, so
+/// a fixture that exists only in debug fails every view that references
+/// it — the App Store Connect upload came back with a dozen "type 'Paper'
+/// has no member 'preview'" errors from exactly that. Guarding each
+/// `#Preview` instead would work, but it's a rule every new view has to
+/// remember; one shipped struct is cheaper.
 extension Paper {
     static let preview = Paper(
         id: 1124337,
@@ -22,4 +32,3 @@ extension Paper {
         referenceURL: nil
     )
 }
-#endif

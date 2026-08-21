@@ -13,7 +13,6 @@ import Foundation
 /// come from the API and the ranking happens here. What makes that cheap
 /// is that **INSPIRE performs the join**: a whole reading profile is one
 /// `or` of `refersto` clauses, one request, not one request per seed.
-/// Verified live — 12 seeds, 285 hits, a 433-character URL.
 enum Recommender {
     /// Which citation edge to follow out of the seeds. Both are one
     /// query; they answer different questions.
