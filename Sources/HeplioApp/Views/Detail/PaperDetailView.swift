@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 import QuickLook
+import Translation
 
 struct PaperDetailView: View {
     let paper: Paper
@@ -44,6 +45,7 @@ struct PaperDetailView: View {
     @State private var pdfDownloadFailed = false
     @State private var preparingFigureID: Paper.Figure.ID?
     @State private var figureDownloadFailed = false
+    @State private var isTranslatingAbstract = false
 
     /// The row/card that got us here already carries most of the record;
     /// the fetched one fills in the abstract and the bibliography.
@@ -280,12 +282,40 @@ struct PaperDetailView: View {
         previewURL = selected
     }
 
+    /// The one place in the app that shows a full abstract, and the one
+    /// that isn't inside a button — so unlike `AdaptiveMathText`'s rows
+    /// and headlines, this web view keeps its touches and its text stays
+    /// selectable.
     private var abstractSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Abstract")
                 .font(.headline)
             MathTextView(text: displayedPaper.abstract ?? "", fontTextStyle: .body)
+
+            // The system translation sheet, the same one Safari and Mail
+            // put behind a selection — no API key, no network code, and
+            // it downloads its language packs itself. HEP abstracts are
+            // written in English by authors who mostly don't speak it at
+            // home. The sheet can be reached by selecting the text — and
+            // still can — but dragging a selection across a paragraph
+            // inside a web view is the fiddly part, so it gets a button.
+            //
+            // Handed `resolvingInlineMarkup`, not the raw record: INSPIRE
+            // abstracts carry `<sup>`, `<i>` and JATS wrappers, and a
+            // translator shown `<inline-formula>` will do something with
+            // it. Inline LaTeX is left alone — `$\alpha_s$` isn't prose,
+            // and every engine passes it through untouched.
+            Button("Translate", systemImage: "translate") {
+                isTranslatingAbstract = true
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.small)
+            .padding(.top, 4)
         }
+        .translationPresentation(
+            isPresented: $isTranslatingAbstract,
+            text: (displayedPaper.abstract ?? "").resolvingInlineMarkup
+        )
     }
 
     /// Muted footer, like Apple Music's album/song credits treatment.
@@ -323,11 +353,7 @@ struct PaperDetailView: View {
                 ContentUnavailableView("No Related Papers Yet", systemImage: "sparkles")
                     .frame(width: 260, height: 148)
                     .scaleEffect(0.8)
-                    .background(Color(.systemBackground), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .strokeBorder(Color(.separator), lineWidth: 0.5)
-                    )
+                    .cardChrome()
             }
         }
         .padding(.bottom)

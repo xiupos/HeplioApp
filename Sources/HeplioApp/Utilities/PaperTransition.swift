@@ -40,11 +40,13 @@ extension View {
     /// Marks this view as the thing a paper's detail screen grows out of,
     /// and shrinks back into on the way out.
     ///
-    /// **Only `PaperCardView` uses this, and only the whole card.** A
-    /// card is a bounded, rounded, elevated object, so growing it into a
-    /// screen reads as opening the thing you touched. A `List` row isn't:
-    /// it's full-width, chrome-less, and already carries a disclosure
-    /// chevron promising a push — so it gets the plain push it promises.
+    /// **`PaperCardView` and `HeadlineView` use this, and only the whole
+    /// card or headline.** Both are bounded blocks with an edge of their
+    /// own — a rounded, elevated card, or a column of newsprint boxed in
+    /// by rules — so growing one into a screen reads as opening the thing
+    /// you touched. A `List` row isn't: it's full-width, chrome-less, and
+    /// already carries a disclosure chevron promising a push, so it gets
+    /// the plain push it promises.
     ///
     /// **Never attach it to a subview.** `.zoom` scales the source's
     /// rectangle up to the full destination and cross-fades; it does not

@@ -126,15 +126,15 @@ enum BrowseTopic: Hashable, Codable {
         "Muon g-2": "Fermilab"
     ]
 
-    /// Ninety days back, as INSPIRE's `yyyy-MM-dd`. Recomputed per call
-    /// rather than cached: it moves once a day, which costs one extra
-    /// request on the first launch of each day and keeps the shelf from
-    /// quietly aging.
+    /// How far back "recent, and already being cited" reaches. Long
+    /// enough that a paper has had time to collect its first citations,
+    /// short enough that the shelf isn't just Landmarks again.
+    private static let trendingWindowDays = 60
+
+    /// The window's start, as INSPIRE's `yyyy-MM-dd`. Recomputed per call
+    /// — see `Date.daysAgo(_:)` for why that's the point rather than an
+    /// oversight.
     private static var trendingWindowStart: String {
-        let start = Date(timeIntervalSinceNow: -60 * 24 * 60 * 60)
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.dateFormat = "yyyy-MM-dd"
-        return formatter.string(from: start)
+        Date.daysAgo(trendingWindowDays).inspireDay
     }
 }

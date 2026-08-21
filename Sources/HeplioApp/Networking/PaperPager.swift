@@ -24,6 +24,11 @@ final class PaperPager {
     /// pager at a new source — see there for why that matters.
     private var fetchPage: (_ page: Int, _ size: Int, _ refresh: Bool) async throws -> [Paper]
 
+    /// Which query/ordering is currently loaded, so `reload(query:sort:)`
+    /// can tell "the reader picked something else" from "this screen came
+    /// back". See there.
+    private var loadedSource: String?
+
     init(
         pageSize: Int = PaperService.pageSize,
         fetchPage: @escaping (_ page: Int, _ size: Int, _ refresh: Bool) async throws -> [Paper]
@@ -116,7 +121,23 @@ final class PaperPager {
     /// every sortable screen in the app actually wants from `reload`.
     /// Search, an author's papers, and each Explore browse list differ
     /// only in the query string they pass here.
+    ///
+    /// **Asking for what's already loaded does nothing, and that's the
+    /// point.** `.task(id:)` re-runs every time its view re-appears, and
+    /// popping a pushed detail screen back off counts as re-appearing —
+    /// so without this guard, returning from a paper wiped `papers`,
+    /// reloaded page one, and dropped the reader at the top of a feed
+    /// they were twenty rows down. The marker is cleared when a load
+    /// doesn't land (cancelled, or failed), so the next appearance
+    /// retries rather than sitting on a spinner forever.
+    ///
+    /// Pull-to-refresh goes through `refresh()`, which deliberately
+    /// doesn't consult this: "give me this same query again" is exactly
+    /// what it means.
     func reload(query: String, sort: InspireHEPClient.SortOrder) async {
+        let source = "\(sort.rawValue)|\(query)"
+        guard source != loadedSource else { return }
+        loadedSource = source
         await reload { page, size, refresh in
             try await PaperService.shared.search(
                 query: query,
@@ -126,6 +147,12 @@ final class PaperPager {
                 refresh: refresh
             )
         }
+        // Nothing to show and not a settled "there is nothing" — the load
+        // failed or was cancelled, so forget the marker and let the next
+        // appearance try again. A load that *did* land keeps it even if
+        // the task was cancelled on the way out: the rows are there, and
+        // re-fetching them would throw the reader's place away.
+        if papers.isEmpty, !reachedEnd { loadedSource = nil }
     }
 
     private func loadNextPage() async {

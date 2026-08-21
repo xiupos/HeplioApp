@@ -17,14 +17,11 @@ struct PaperCardView: View {
                         .foregroundStyle(.secondary)
                 }
                 if let kicker = paper.kicker {
-                    Text(kicker.uppercased())
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(.tint)
-                        .lineLimit(1)
+                    KickerText(text: kicker, textStyle: .caption2)
                 }
             }
 
-            AdaptiveMathText(text: paper.title, font: .subheadline.weight(.semibold), fontTextStyle: .subheadline, fontWeight: .semibold, lineLimit: 3)
+            AdaptiveMathText(text: paper.title, textStyle: .subheadline, weight: .semibold, lineLimit: 3)
 
             if !paper.authorsSummaryLine.isEmpty {
                 Text(paper.authorsSummaryLine)
@@ -50,12 +47,7 @@ struct PaperCardView: View {
         }
         .padding(12)
         .frame(width: 200, height: 148, alignment: .topLeading)
-        .background(Color(.systemBackground), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .strokeBorder(Color(.separator), lineWidth: 0.5)
-        )
-        .shadow(color: .black.opacity(0.08), radius: 6, x: 0, y: 3)
+        .cardChrome()
         // Outside the card's own chrome, so the shape that grows into the
         // detail screen is the rounded card the reader tapped. Cards
         // zoom; `PaperRowView` deliberately doesn't — see

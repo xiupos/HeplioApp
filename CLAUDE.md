@@ -44,6 +44,36 @@ Dynamic Type. No custom color palettes or bespoke card chrome.
   system's tab-bar-customize button). Settled on the simplest option:
   plain `.navigationTitle(title)` on a `List`, accept whatever the system
   renders. Only revisit if a future SDK changes this.
+- **Known accepted limitation, don't re-attempt: the iOS 26 search-tab
+  morph doesn't happen here, and it isn't this app's fault.**
+  `Tab(role: .search)` is supposed to widen into the search field when
+  selected. It doesn't — and the tell is that **the tab bar renders as
+  Liquid Glass while the navigation bar and its search field render in
+  the iOS 18 style**. That mismatch is the documented signature of the
+  navigation bar not receiving the new SDK's adoption: the search field
+  is therefore the *old* component, and the old component has no morph.
+  Cause and effect run that way round, not the other.
+  Ruled out, in this order: `.searchable` inside the `NavigationStack`
+  vs. on it, with and without
+  `placement: .navigationBarDrawer(displayMode: .always)` (all four
+  combinations); `.tabViewStyle(.sidebarAdaptable)` removed; the sort
+  toolbar item removed; the deployment target (`Package.swift` already
+  says `.iOS("26.0")`); and any UIKit appearance proxy (there is no
+  `UINavigationBar.appearance()` anywhere in `Sources/`). Then the
+  decisive one: **a brand-new empty `.swiftpm` App Project containing
+  nothing but Apple's canonical `Tab(role: .search)` + `NavigationStack`
+  + `.searchable` doesn't morph either.** So it's the Swift Playgrounds
+  toolchain, and `.swiftpm` App Projects can't edit Info.plist, so there
+  is no intervention point. Compare: IceCubes (built with Xcode 26)
+  behaves correctly on the same iPad at the same width.
+  This is why `SearchTabView` keeps
+  `.navigationBarDrawer(displayMode: .always)` — the drawer is what
+  actually renders, so pinning it open is the right adaptation, and the
+  sort-menu crowding reason in its comment stands on its own regardless.
+  **The large-title bug above may share this root cause** rather than
+  being a separate `.sidebarAdaptable` limitation — both are navigation
+  bar failures in the same process. Recheck both together if a future
+  Swift Playgrounds release changes the rendering.
 - **Tapping a carousel card grows it into the detail screen**, via the
   stock `.matchedTransitionSource(id:in:)` /
   `.navigationTransition(.zoom(sourceID:in:))` pair — the App Store's
@@ -51,11 +81,13 @@ Dynamic Type. No custom color palettes or bespoke card chrome.
   pinch-to-dismiss back gesture comes with it.
   `Utilities/PaperTransition.swift` holds both halves as
   `.paperTransitionSource(_:)` and `.paperZoomTransition(_:)`.
-  - **`PaperCardView` zooms; `PaperRowView` deliberately doesn't.** A
-    card is a bounded, rounded, elevated object, so growing it into a
-    screen reads as opening the thing you touched. A `List` row is
-    full-width and chrome-less, and its disclosure chevron already
-    promises a push — so it gets the plain push it promises.
+  - **`PaperCardView` and `HeadlineView` zoom; `PaperRowView`
+    deliberately doesn't.** A card is a bounded, rounded, elevated
+    object and a headline is a fixed-height column of newsprint boxed in
+    by rules, so growing either into a screen reads as opening the thing
+    you touched. A `List` row is full-width and chrome-less, and its
+    disclosure chevron already promises a push — so it gets the plain
+    push it promises.
   - **That's why `PaperDetailView` is registered under two navigation
     values.** A destination can't tell what pushed it, so the zoom can't
     be applied conditionally from inside it — and **a `.zoom` whose
@@ -122,10 +154,15 @@ Dynamic Type. No custom color palettes or bespoke card chrome.
     machine. `MathWebView` resolves the platform-shaped inputs (the
     `UIFont.preferredFont` point size, the colour scheme) into plain
     values and hands them over, so `MathDocument` stays a pure function.
-    Supports
-    an optional `lineLimit:` (CSS `-webkit-line-clamp`) for row use;
-    height always comes from measured content, never a precomputed
+    Supports an optional `lineLimit:` (CSS `-webkit-line-clamp`) for row
+    use; height always comes from measured content, never a precomputed
     fixed value. Needs network access and on-device verification.
+    **It keeps its touches** — `PaperDetailView` uses it directly, isn't
+    inside a button, and its abstract has to stay selectable so it can be
+    copied or translated. The opt-out lives on `AdaptiveMathText`; see
+    there. **Its measured height also arrives asynchronously**, after
+    KaTeX's web fonts load, which is fine in a `List` (self-sizing cells
+    stay anchored) and ruinous in a `LazyVStack` — see New.
   - `AdaptiveMathText` (`Views/Shared/AdaptiveMathText.swift`) +
     `String.containsMathMarkup` (`Extensions/String+MathMarkup.swift`):
     a `WKWebView` per row is expensive and `List` recreates offscreen
@@ -140,6 +177,18 @@ Dynamic Type. No custom color palettes or bespoke card chrome.
     `MathWebView.updateUIView` also skips reloading when the generated
     HTML hasn't changed, since SwiftUI re-invokes it on unrelated
     parent re-renders too.
+    **This is also where math text stops taking touches, which is why
+    the split matters beyond scroll performance.** A `WKWebView` is a
+    real UIKit view and takes the touch, so typeset text inside a
+    `Button` swallows the tap — found on device as "tapping a headline's
+    abstract doesn't open the paper". `.allowsHitTesting(false)` belongs
+    here, where every call site is inside something tappable, and *not*
+    on `MathTextView`, which the detail screen uses directly and needs
+    selectable. Putting it on the wrong one of the two broke exactly that.
+    It takes one `textStyle` (plus an optional `weight`) rather than a
+    `Font` *and* a `Font.TextStyle`: the two paths need the value in
+    different forms, and asking each call site to say it twice and keep
+    the two in agreement was a standing invitation to drift.
     The plain-`Text` branch still runs `String.resolvingInlineMarkup`:
     text needing no math typesetting can still carry `<sup>` or `<i>`,
     which a bare `Text` renders as literal angle brackets. `<sup>`/`<sub>`
@@ -208,13 +257,34 @@ Dynamic Type. No custom color palettes or bespoke card chrome.
     abstract-less card sized for horizontal carousels, since a full
     `PaperRowView` doesn't fit side by side. Used for the References/
     Cited By/Related carousels on `PaperDetailView`, mirroring Music's
-    "You Might Also Like" row — rounded, `systemBackground`-filled cards
-    with a hairline `separator` border and a subtle shadow (system
-    semantic colors only, no custom palette) sitting on a
-    `secondarySystemBackground` panel, in a horizontal `ScrollView`. The
-    panel isn't a `List` — a `NavigationLink` inside a `List` row gets an
-    auto-added disclosure chevron on top of any drawn here, and `List`
-    mis-manages multiple sibling `NavigationLink`s sharing one row.
+    "You Might Also Like" row — cards in the shared `cardChrome()`
+    material sitting on a `secondarySystemBackground` panel, in a
+    horizontal `ScrollView`. The panel isn't a `List` — a
+    `NavigationLink` inside a `List` row gets an auto-added disclosure
+    chevron on top of any drawn here, and `List` mis-manages multiple
+    sibling `NavigationLink`s sharing one row.
+- **The card material lives in one place**, `.cardChrome()`
+  (`Views/Shared/CardChrome.swift`): `systemBackground` fill, hairline
+  `separator` border, radius 14, a soft shadow. `PaperCardView`,
+  `BrowseTileView` and the Related placeholder all wear it, which is what
+  makes "the carousel and the grids read as one screen made of one thing"
+  true by construction rather than by three hand-kept copies. The two
+  surfaces that hold *plots* (`FigureCarouselView`, `HeadlineView`'s
+  thumbnail) deliberately don't: they're a literal white, because line
+  art on transparency has to survive dark mode.
+- Likewise `KickerText` (`Views/Shared/KickerText.swift`) — the tinted,
+  uppercased line over a title that four screens draw. Only the size
+  varies (a card's is `.caption2`), and the detail header is the one that
+  passes `lineLimit: nil`, having the width to wrap a long collaboration
+  name.
+- The detail screen's abstract carries a **Translate** button, presenting
+  `.translationPresentation` (the Translation framework's system sheet —
+  the same one Safari and Mail show, no key and no networking of ours).
+  It's handed `resolvingInlineMarkup` rather than the raw record, so a
+  translator isn't shown `<inline-formula>`; inline LaTeX passes through
+  untouched. Selecting the text by hand still works and reaches the same
+  sheet — the button is a shortcut, not a replacement, which is why
+  `MathTextView` must stay hit-testable there.
 - The Library tab's toolbar holds the two app-level entry points, as one
   `ToolbarItemGroup`: History (`clock.arrow.circlepath`) and Settings
   (`gearshape`), each a sheet. Settings
@@ -298,8 +368,20 @@ Four layers, each with one job. Views only ever call `PaperService`.
   between two generations of one switch. Don't reintroduce
   "assign a new pager, then load"; three screens would each need to
   re-derive this. `reload(query:sort:)` is the overload views actually
-  call — Search, an author's papers and a browse list differ only in the
-  query string they hand it. `refresh()`
+  call — Search, an author's papers, New and a browse list differ only in
+  the query string they hand it.
+  **It no-ops when asked for the query it already has, and that's what
+  keeps a reader's place.** `.task(id:)` re-runs every time its view
+  re-appears, and popping a pushed paper back off counts as re-appearing
+  — so returning from a detail screen used to wipe `papers`, reload page
+  one, and drop the reader at the top of a feed they were twenty rows
+  down (reported on device for both New and Explore). The `sort|query`
+  marker is cleared when a load doesn't land, so a cancelled or failed
+  one is retried on the next appearance rather than leaving a permanent
+  spinner. `ExploreTabView`'s Trending task carries the same guard by
+  hand (`guard trending.value == nil`). `refresh()` deliberately ignores
+  the marker: "this same query, again" is exactly what pull-to-refresh
+  means. `refresh()`
   backs `.refreshable` and resets paging state only once the new page is
   in hand: resetting up front and then failing would leave loaded rows
   next to a page counter pointing back at them, and the next scroll would
@@ -498,7 +580,7 @@ query.
   somewhere to wander.
 - **Opens with papers, not a table of contents.** Music's Browse doesn't
   start with genre names and News doesn't start with topic names. The
-  Trending shelf is `de > (90 days ago) and topcite 5+` sorted by
+  Trending shelf is `de > (60 days ago) and topcite 5+` sorted by
   citations — recent work that is *already* being cited. No inference and
   no editorial pick: the citations are real, which is exactly why this
   belongs on Explore while a "top story" slot doesn't belong on New. It's
@@ -549,6 +631,154 @@ query.
   pass through, so each push starts at `topic.defaultSort` — Most Recent
   for the shelves that mean "what's new in this corner", Most Cited for
   Trending and Landmarks, where a date ordering would be nonsense.
+
+## New
+
+The front page: what arrived, in the order it arrived. **The axis is
+time and nothing on the screen ranks anything** — no sort control, no
+search field, no "top story". The only choice is which corner of the
+literature to watch, and it's the reader's explicit one.
+
+- **A picker of chips at the top: All, then the twelve `ArxivCategory`
+  values by their arXiv identifier** (`NewFeedSelection`). Stock capsule
+  buttons — `.borderedProminent` for the one in effect, `.bordered` for
+  the rest — because that's how Apple's own apps build a chip row. Two
+  `if` branches rather than one styled button: the two styles are
+  different types, so there's nothing to pick between in a single
+  expression. It sits *above* the feed rather than scrolling with it, so
+  switching corners never means scrolling back up first.
+  The choice is remembered in `@AppStorage` as the raw id, and
+  `NewFeedSelection(id:)` is total rather than failable — an id written
+  by a build carrying a category this one doesn't falls back to All
+  instead of leaving the tab empty. That single remembered choice is all
+  of `My Categories` that turned out to be needed: it solves the same
+  cold start a multi-select would, and a feed you can retarget in one tap
+  doesn't also need a settings screen.
+- **The feed is bounded to a rolling 14-day window
+  (`NewFeedSelection.windowDays`), and that window is what keeps the tab
+  fresh.** `ResponseCache` lives for 24h, so a New tab built on a
+  timeless query would serve yesterday's front page all of today. The
+  window's start date is *inside* the query string, so it moves at local
+  midnight, the cache key moves with it, and the day's first look is a
+  real fetch. Same trick as `BrowseTopic.trendingWindowStart`; both go
+  through `Date.daysAgo(_:).inspireDay`
+  (`Extensions/Date+Inspire.swift`), which also owns the two
+  `DateFormatter`s the app parses INSPIRE dates with — held as statics
+  because `Paper.formattedDate` runs once per row per render and a
+  `DateFormatter` is expensive to build.
+  Pull-to-refresh exists as well, but the window is what makes the tab
+  right without anyone having to reach for it.
+- **"All" is the union of the twelve categories, not an unfiltered
+  query, and it has to be.** Asked for everything recent, INSPIRE leads
+  with journal records whose `earliest_date` is a *future* month
+  ("2026-12", month precision, no arXiv entry) — papers that aren't out
+  yet and can't be filed under a day. Requiring an arXiv category is
+  what makes every entry a dated preprint (verified live: 30/30 hits
+  day-precision across All, hep-th and hep-lat). The union has to be
+  parenthesised: `de > X and A or B` binds the wrong way and would
+  quietly return all of B, window or not.
+  Expect the mix to be about a third quant-ph — that's real (54 of ~150
+  on a sample day), and the chips are the answer to it.
+- **The layout is a newspaper page, and the rules between the columns
+  are the entire design.** A horizontal rule under every row, a vertical
+  one between columns, and nothing else: no fill, no border, no shadow.
+  `HeadlineView` therefore carries only padding, and `HeadlineFeedView`
+  draws every line. Rows are cut by hand rather than handed to
+  `LazyVGrid`, because a grid gives nowhere to put a rule between
+  columns (cells don't know their neighbours) and an `.adaptive` grid
+  doesn't even know how many columns there are. A short last row is
+  padded with `Color.clear` so its columns stay the width of every other
+  row's, and gets no rule before the blanks — a line into empty space
+  reads as a missing story.
+- **The column count follows the measured width, not the size class:**
+  one below 640pt, two below 960, three above, capped there
+  (`NewTabView.minimumColumnWidth` = 320). The size class only knows
+  "phone-ish" and "iPad-ish", so it has no way to say two, which is what
+  an iPad in portrait wants. The width is read with `onGeometryChange`
+  on the list rather than by wrapping it in a `GeometryReader` — no
+  greedy layout container between the navigation stack and its list.
+
+**Three container choices here are scar tissue. Each was a bug on
+device, each cost a rewrite, and none of them is a style preference.**
+
+- **A `List` — never `ScrollView` + `LazyVStack`.** A lazy stack has to
+  *estimate* the height of rows it hasn't built and corrects the
+  estimate the instant one materialises, so the content offset moves out
+  from under the reader: the first page-two load blanked the screen, and
+  scrolling back up threw the reader to the bottom, every time. **Pinning
+  each headline to a fixed height did not fix it** — the estimate is made
+  before the view exists, so there is nothing to ask. `List` is
+  `UICollectionView` underneath: it anchors the visible rows when a cell
+  resizes and reuses cells instead of rebuilding them. Every other
+  paginated screen here is a `List` carrying the same
+  asynchronously-measured `MathTextView`s and none has ever had this
+  problem; New was the only one that wasn't.
+  What `List` was avoided for is handled rather than traded away: there
+  are no `NavigationLink`s in the feed at all, just `Button`s appending
+  to the `NavigationPath` `NewTabView` owns, so there are no sibling
+  links to mis-manage and no row to staple a chevron onto. Rows run edge
+  to edge (`.listRowInsets(EdgeInsets())`) with the system separators
+  hidden. Pull-to-refresh comes back for free.
+- **Flat day-header rows — never `Section`.** `Section` brought two more
+  bugs, both long-reported and still open upstream: ghost separator
+  lines at section boundaries that no combination of
+  `.listRowSeparator(.hidden)` / `.listSectionSeparator(.hidden)`
+  suppresses, and `onAppear` on a row *inside* a `Section` not firing
+  reliably even when the row is genuinely on screen. The second silently
+  stalled pagination on hep-th while hep-ex kept paging, with no error
+  shown anywhere. The cost of flattening is that day headers no longer
+  pin while scrolling. **If a ghost line or a stalled loadMore ever
+  reappears, look for whatever introduced a `Section` first.**
+  `HeadlineFeedView` also keeps `sentinel`, a 1pt invisible row after the
+  last day, as a second pagination trigger — the underlying `onAppear`
+  unreliability isn't `Section`-specific enough to trust one trigger.
+- **`Rectangle` rules — never `Divider()`.** `Divider()` picks its
+  orientation from the stack it is a *direct* child of, and the
+  between-column rule sits behind `if index > 0`, which wraps it in
+  `_ConditionalContent` and loses that context; it fell back to
+  horizontal. Inside a `List` row that surfaced as a cluster of stray
+  horizontal lines under each day, one per gap between columns, inert to
+  the touch. A `Rectangle` has no orientation to infer. **If a rule ever
+  moves back to `Divider()`, keep it an unconditional direct child of its
+  stack — never behind an `if`.**
+
+- **Every headline is a fixed height** (`HeadlineView.cellHeight`): the
+  rule under a row of three stops at one distance rather than three, the
+  collection view never has to re-measure a cell, and a plot-less
+  headline can be filled out instead of left hollow. `@ScaledMetric`
+  keeps it honest under Dynamic Type, the reserve is deliberately
+  generous (KaTeX line boxes are taller than plain text), slack collects
+  in one `Spacer` above the footer, and `.clipped()` is the backstop.
+- A headline shows one plot, `Paper.headlineFigure` — the *last* figure,
+  since INSPIRE lists them in the paper's own order and the last is
+  usually the result rather than the apparatus schematic the first
+  usually is. Search hits already carry `metadata.figures[]`, so the
+  image costs no extra request. Fixed height rather than an aspect ratio,
+  for the reason `FigureCarouselView` fixes its card size. Measured live:
+  21/30 hits have one.
+- **A headline with no plot gets the abstract lines the plot would have
+  taken**, which is also how the two variants come out the same height.
+  The extra count is rounded *down* and less two lines' margin:
+  overshooting is the one way this layout breaks, because the surplus
+  pushes the footer past the clip and out of the box, where slack merely
+  sits under the abstract.
+- **The abstract runs to six lines** (`HeadlineView.abstractLines`),
+  against `PaperRowView`'s two. That's the point of the screen — a search
+  result is something you scan past, a front page is something you read.
+  Six is what the web version of this feed uses.
+- Day sections come from `[Paper].groupedByDay()`, which groups
+  *contiguous* runs rather than sorting: `mostrecent` already returns
+  non-increasing dates (verified over 50 hits), so a page loaded later
+  just extends the day it fell in. `PaperDay.title` checks the component
+  count before parsing, because `yyyy-MM-dd` will happily read INSPIRE's
+  month-precision "2026-12" as the first of December; a date it can't
+  place to the day is shown as INSPIRE wrote it.
+- Tapping a headline appends `ZoomedPaper` to the path, so the block
+  grows into the detail screen the way a card does — once headlines
+  became fixed-height boxes fenced in by rules they *are* the bounded
+  objects the zoom asks for. The source is the whole block, never a part
+  of it (see `paperTransitionSource`); `.zoom` pairs with a programmatic
+  push exactly as it does with a `NavigationLink`.
 
 ## Testing approach
 
@@ -626,12 +856,17 @@ Combine with ` and `. Sorting is the `sort` parameter (`mostrecent` /
       Landmarks); each entry a page with a Recent ⇄ Most Cited toggle.
       Introduced `ArxivCategory`. Conferences, if ever, come much later.
       See "Explore".
-- [ ] M6: `My Categories` + New tab — **no algorithm either.** The tab's
-      axis is time: papers grouped by day, newest first, never ranked.
-      Filtering is by the reader's explicitly chosen categories, not
-      inferred from history — inference would make New a weaker Home and
-      dissolve the distinction between the two tabs. Stores the chosen
-      categories and a `lastOpenedNew` date; nothing else.
+- [x] M6: New tab — **no algorithm either.** The tab's axis is time:
+      papers grouped by day, newest first, never ranked. Filtering is by
+      the reader's explicitly chosen category, not inferred from history —
+      inference would make New a weaker Home and dissolve the distinction
+      between the two tabs. Shipped as a chip picker (All + the twelve
+      categories) over a newspaper page of headlines, each with a plot and
+      six lines of abstract, cut into day sections. `My Categories`
+      collapsed into that picker: one remembered choice in `@AppStorage`
+      solves the same cold start a multi-select would, and `lastOpenedNew`
+      turned out to be a marker with nothing to mark — the day headers
+      already say what's new. See "New".
 - [ ] M7: Related — the ranking function itself, backing the "Related"
       tab already scaffolded in `PaperDetailView`'s References/Cited By/
       Related picker (references and citations are covered by M3).

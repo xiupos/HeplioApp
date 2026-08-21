@@ -47,7 +47,12 @@ struct ExploreTabView: View {
             }
             .navigationTitle("Explore")
             .paperNavigationDestinations()
+            // `.task` re-runs whenever this screen re-appears, and popping
+            // a pushed paper back off counts — so this asks only once per
+            // visit to the tab, rather than re-deciding the shelf under a
+            // reader who is on their way back to where they were.
             .task {
+                guard trending.value == nil else { return }
                 trending = await .load {
                     try await PaperService.shared.search(
                         query: BrowseTopic.trending.query,

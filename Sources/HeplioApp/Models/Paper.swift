@@ -125,6 +125,14 @@ extension Paper {
         )
     }
 
+    /// The one plot a headline shows. INSPIRE lists figures in the order
+    /// they appear in the paper, so the first is usually apparatus or a
+    /// Feynman diagram and the last is usually the result — which is the
+    /// one worth putting above a headline. (The same choice the web
+    /// version of this feed makes; `PaperDetailView` still shows all of
+    /// them.)
+    var headlineFigure: Figure? { figures.last }
+
     var inspireURL: URL? {
         guard hasInspireRecord else { return nil }
         return URL(string: "https://inspirehep.net/literature/\(id)")
@@ -183,17 +191,16 @@ extension Paper {
         guard let earliestDate, !earliestDate.isEmpty else {
             return year.map(String.init)
         }
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US_POSIX")
+        // The component count decides the precision before anything is
+        // parsed: `yyyy-MM-dd` will happily read "2026-12" as the first of
+        // December, which would invent a day INSPIRE never claimed.
         switch earliestDate.split(separator: "-").count {
         case 3:
-            formatter.dateFormat = "yyyy-MM-dd"
-            if let date = formatter.date(from: earliestDate) {
+            if let date = DateFormatter.inspireDay.date(from: earliestDate) {
                 return date.formatted(.dateTime.year().month(.abbreviated).day())
             }
         case 2:
-            formatter.dateFormat = "yyyy-MM"
-            if let date = formatter.date(from: earliestDate) {
+            if let date = DateFormatter.inspireMonth.date(from: earliestDate) {
                 return date.formatted(.dateTime.year().month(.abbreviated))
             }
         default:

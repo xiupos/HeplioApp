@@ -16,9 +16,9 @@ struct PaperHeaderView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             if let kicker = paper.kicker {
-                Text(kicker.uppercased())
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.tint)
+                // No line limit: this screen has the width to wrap a long
+                // collaboration name where a row or a card doesn't.
+                KickerText(text: kicker, lineLimit: nil)
             }
 
             // Titles/abstracts in this field are essentially always LaTeX,

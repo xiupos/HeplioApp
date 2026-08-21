@@ -1,10 +1,9 @@
 import SwiftUI
 
-/// One shelf entry as a grid tile. Deliberately the same material as
-/// `PaperCardView` — `systemBackground` fill, a hairline `separator`
-/// border, the same corner radius and shadow — so the carousel above and
-/// the grids below read as one screen made of one thing, and no new
-/// design vocabulary is introduced.
+/// One shelf entry as a grid tile. Deliberately the same `cardChrome()`
+/// as `PaperCardView`, so the carousel above and the grids below read as
+/// one screen made of one thing and no new design vocabulary is
+/// introduced.
 ///
 /// Fixed height, not intrinsic: a row of tiles whose heights depend on
 /// whether the subtitle wrapped ("CERN, LHC" vs "T2K to Super-Kamiokande")
@@ -30,12 +29,7 @@ struct BrowseTileView: View {
         }
         .padding(12)
         .frame(maxWidth: .infinity, minHeight: 72, alignment: .topLeading)
-        .background(Color(.systemBackground), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .strokeBorder(Color(.separator), lineWidth: 0.5)
-        )
-        .shadow(color: .black.opacity(0.08), radius: 6, x: 0, y: 3)
+        .cardChrome()
     }
 }
 

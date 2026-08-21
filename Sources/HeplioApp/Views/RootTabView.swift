@@ -13,7 +13,7 @@ struct RootTabView: View {
                 HomeTabView()
             }
 
-            Tab("New", systemImage: "clock.arrow.circlepath") {
+            Tab("New", systemImage: "newspaper.fill") {
                 NewTabView()
             }
 

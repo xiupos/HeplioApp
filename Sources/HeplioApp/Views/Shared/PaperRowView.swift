@@ -22,13 +22,10 @@ struct PaperRowView: View {
 
                 VStack(alignment: .leading, spacing: 6) {
                     if let kicker = paper.kicker {
-                        Text(kicker.uppercased())
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.tint)
-                            .lineLimit(1)
+                        KickerText(text: kicker)
                     }
 
-                    AdaptiveMathText(text: paper.title, font: .title3.weight(.semibold), fontTextStyle: .title3, fontWeight: .semibold, lineLimit: 3)
+                    AdaptiveMathText(text: paper.title, textStyle: .title3, weight: .semibold, lineLimit: 3)
 
                     if !paper.authorsSummaryLine.isEmpty {
                         Text(paper.authorsSummaryLine)
@@ -38,7 +35,7 @@ struct PaperRowView: View {
                     }
 
                     if let abstract = paper.abstract, !abstract.isEmpty {
-                        AdaptiveMathText(text: abstract, font: .footnote, fontTextStyle: .footnote, lineLimit: 2)
+                        AdaptiveMathText(text: abstract, textStyle: .footnote, lineLimit: 2)
                             .foregroundStyle(.primary)
                     } else if !paper.hasInspireRecord, let externalLinkURL = paper.externalLinkURL {
                         // Nothing INSPIRE-side to show — the link this row
