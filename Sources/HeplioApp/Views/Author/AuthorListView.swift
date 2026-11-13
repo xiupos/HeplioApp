@@ -61,7 +61,7 @@ struct AuthorListView: View {
             prompt: "Name or Affiliation"
         )
         .navigationTitle(title)
-        .navigationBarTitleDisplayMode(.inline)
+        .toolbarTitleDisplayMode(.inlineLarge)
         .task(id: destination.paperID) {
             authors = await .load {
                 try await PaperService.shared.details(id: destination.paperID).authors

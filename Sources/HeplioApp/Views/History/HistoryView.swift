@@ -73,7 +73,7 @@ struct HistoryView: View {
             // sheet — tighter fits a single-section list like this one.
             .listSectionSpacing(.compact)
             .navigationTitle("History")
-            .navigationBarTitleDisplayMode(.inline)
+            .toolbarTitleDisplayMode(.inlineLarge)
             .paperNavigationDestinations()
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {

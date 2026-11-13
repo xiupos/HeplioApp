@@ -33,7 +33,7 @@ struct BrowseListView: View {
         }
         .pagedPapersList(pager)
         .navigationTitle(topic.title)
-        .navigationBarTitleDisplayMode(.inline)
+        .toolbarTitleDisplayMode(.inlineLarge)
         .sortToolbarItem($sort, options: .browseOptions)
         // Switching the sort reloads from page one rather than re-sorting
         // what's loaded: the ordering is INSPIRE's, and page 4 of "most

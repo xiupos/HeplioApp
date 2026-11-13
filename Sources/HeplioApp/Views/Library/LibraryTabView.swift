@@ -22,6 +22,7 @@ struct LibraryTabView: View {
             // rows in memory.
             SavedPapersList(sort: sort, filter: filter)
                 .navigationTitle("Library")
+                .toolbarTitleDisplayMode(.inlineLarge)
                 .paperNavigationDestinations()
                 .sortToolbarItem($sort, options: LibrarySort.allCases)
                 .toolbar {

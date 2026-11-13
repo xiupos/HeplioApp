@@ -59,6 +59,7 @@ struct SearchTabView: View {
             }
             .pagedPapersList(pager)
             .navigationTitle("Search")
+            .toolbarTitleDisplayMode(.inlineLarge)
             .paperNavigationDestinations()
             // Empty options while the field is empty, so the button only
             // appears once there are results to order.

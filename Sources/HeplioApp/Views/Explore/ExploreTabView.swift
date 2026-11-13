@@ -45,6 +45,7 @@ struct ExploreTabView: View {
                 .padding(.vertical)
             }
             .navigationTitle("Explore")
+            .toolbarTitleDisplayMode(.inlineLarge)
             .paperNavigationDestinations()
             // `.task` re-runs whenever this screen re-appears, and popping
             // a pushed paper back off counts — so this asks only once per

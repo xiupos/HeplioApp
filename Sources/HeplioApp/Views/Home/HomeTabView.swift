@@ -74,6 +74,7 @@ struct HomeTabView: View {
             }
             .listStyle(.plain)
             .navigationTitle("Home")
+            .toolbarTitleDisplayMode(.inlineLarge)
             .paperNavigationDestinations()
             .refreshable { await refresh() }
             // Guarded, because `.task` re-runs every time this screen

@@ -63,6 +63,7 @@ struct NewTabView: View {
                 }
             }
             .navigationTitle("New")
+            .toolbarTitleDisplayMode(.inlineLarge)
             .paperNavigationDestinations()
             // No sort control and no search field, deliberately: a feed
             // sorted by anything but time isn't a feed, and looking

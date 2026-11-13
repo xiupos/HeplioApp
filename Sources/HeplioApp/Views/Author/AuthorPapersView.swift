@@ -25,7 +25,7 @@ struct AuthorPapersView: View {
         }
         .pagedPapersList(pager)
         .navigationTitle(author.fullName)
-        .navigationBarTitleDisplayMode(.inline)
+        .toolbarTitleDisplayMode(.inlineLarge)
         .sortToolbarItem($sort, options: .browseOptions)
         .toolbar {
             if let inspireURL = author.inspireURL {

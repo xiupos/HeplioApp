@@ -33,7 +33,7 @@ struct RelatedPapersListView: View {
         }
         .pagedPapersList(pager)
         .navigationTitle(destination.kind.title)
-        .navigationBarTitleDisplayMode(.inline)
+        .toolbarTitleDisplayMode(.inlineLarge)
         // The one paged screen with a fixed source — the destination
         // decided what it lists — so this loads once and never reloads.
         .task { await pager.loadInitialIfNeeded() }

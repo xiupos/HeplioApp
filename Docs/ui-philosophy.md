@@ -22,6 +22,11 @@ Dynamic Type. No custom color palettes or bespoke card chrome.
   visual bug for another. Settled on the simplest option: plain
   `.navigationTitle(title)` on a `List`, accept whatever the system
   renders. Only revisit if a future SDK changes this.
+- **Every titled page uses `.toolbarTitleDisplayMode(.inlineLarge)`**
+  (tab roots and pushed lists alike), so titles look the same
+  everywhere instead of mixing large and inline. The one exception is
+  `PaperDetailView`, whose title is deliberately empty and stays
+  `.inline`.
 - **Known accepted limitation, don't re-attempt: the iOS 26 search-tab
   morph doesn't happen here, and it isn't this app's fault.**
   `Tab(role: .search)` is supposed to widen into the search field when
