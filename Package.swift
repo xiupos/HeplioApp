@@ -19,7 +19,7 @@ let package = Package(
             bundleIdentifier: "net.xiupos.heplio",
             teamIdentifier: "YL679VBY6X",
             displayVersion: "0.1",
-            bundleVersion: "1",
+            bundleVersion: "4",
             appIcon: .asset("AppIcon"),
             accentColor: .presetColor(.orange),
             supportedDeviceFamilies: [
@@ -32,7 +32,8 @@ let package = Package(
                 .landscapeLeft,
                 .portraitUpsideDown(.when(deviceFamilies: [.pad]))
             ],
-            appCategory: .education
+            appCategory: .education,
+            additionalInfoPlistContentFilePath: "Info.plist"
         )
     ],
     targets: [

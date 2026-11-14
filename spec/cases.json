@@ -1,0 +1,2424 @@
+{
+  "now": "2026-11-14T10:00:00Z",
+  "records": {
+    "3118866": {
+      "id": "3118866",
+      "metadata": {
+        "authors": [
+          {
+            "full_name": "Baruah, Sukanya",
+            "ids": [
+              {
+                "schema": "ORCID",
+                "value": "0009-0001-2056-7560"
+              },
+              {
+                "schema": "INSPIRE BAI",
+                "value": "S.Baruah.1"
+              }
+            ]
+          },
+          {
+            "full_name": "Popov, Ruslan",
+            "ids": [
+              {
+                "schema": "ORCID",
+                "value": "0000-0003-1688-5811"
+              },
+              {
+                "schema": "INSPIRE BAI",
+                "value": "J.R.Popov.1"
+              }
+            ]
+          },
+          {
+            "full_name": "Hänisch, Jens",
+            "ids": [
+              {
+                "schema": "ORCID",
+                "value": "0000-0003-2757-236X"
+              },
+              {
+                "schema": "INSPIRE BAI",
+                "value": "R.J.Hanisch.1"
+              }
+            ]
+          },
+          {
+            "full_name": "Matias, Vladimir",
+            "ids": [
+              {
+                "schema": "INSPIRE BAI",
+                "value": "V.Matias.2"
+              }
+            ]
+          },
+          {
+            "full_name": "Bagrets, Nadezda",
+            "ids": [
+              {
+                "schema": "ORCID",
+                "value": "0000-0003-0323-4972"
+              },
+              {
+                "schema": "INSPIRE BAI",
+                "value": "N.Bagrets.1"
+              }
+            ]
+          },
+          {
+            "full_name": "Nast, Rainer",
+            "ids": [
+              {
+                "schema": "INSPIRE BAI",
+                "value": "R.Nast.1"
+              }
+            ]
+          },
+          {
+            "full_name": "Singhal, Shraddha",
+            "ids": [
+              {
+                "schema": "ORCID",
+                "value": "0009-0000-8930-5123"
+              },
+              {
+                "schema": "INSPIRE BAI",
+                "value": "S.K.Singhal.1"
+              }
+            ]
+          },
+          {
+            "full_name": "Korvink, Jan",
+            "ids": [
+              {
+                "schema": "ORCID",
+                "value": "0000-0003-4354-7295"
+              },
+              {
+                "schema": "INSPIRE BAI",
+                "value": "J.G.Korvink.1"
+              }
+            ]
+          },
+          {
+            "full_name": "Barth, Christian",
+            "ids": [
+              {
+                "schema": "ORCID",
+                "value": "0000-0001-9476-8595"
+              },
+              {
+                "schema": "INSPIRE BAI",
+                "value": "C.Barth.1"
+              }
+            ]
+          },
+          {
+            "full_name": "Ballarino, Amalia",
+            "ids": [
+              {
+                "schema": "ORCID",
+                "value": "0000-0002-1705-4537"
+              },
+              {
+                "schema": "INSPIRE BAI",
+                "value": "A.Ballarino.1"
+              }
+            ]
+          },
+          {
+            "full_name": "Holzapfel, Bernhard",
+            "ids": [
+              {
+                "schema": "ORCID",
+                "value": "0000-0002-8420-4777"
+              },
+              {
+                "schema": "INSPIRE BAI",
+                "value": "B.Holzapfel.1"
+              }
+            ]
+          }
+        ],
+        "texkeys": [
+          "Baruah:2026nnw"
+        ],
+        "control_number": 3118866,
+        "dois": [
+          {
+            "value": "10.1109/TASC.2026.3661464"
+          },
+          {
+            "value": "10.1109/tasc.2026.3661464"
+          }
+        ],
+        "titles": [
+          {
+            "title": "30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC<sup>4</sup> Facility"
+          },
+          {
+            "title": "30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC\n                    <sup>4</sup>\n                    Facility"
+          }
+        ],
+        "earliest_date": "2026-08",
+        "publication_info": [
+          {
+            "journal_volume": "36",
+            "artid": "6602405",
+            "page_end": "5",
+            "year": 2026,
+            "journal_record": {
+              "$ref": "https://inspirehep.net/api/journals/1213547"
+            },
+            "page_start": "1",
+            "journal_issue": "5",
+            "journal_title": "IEEE Trans.Appl.Supercond."
+          }
+        ],
+        "references": [
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/1733765"
+            }
+          }
+        ],
+        "number_of_pages": 5,
+        "document_type": [
+          "article"
+        ]
+      }
+    },
+    "3227694": {
+      "id": "3227694",
+      "metadata": {
+        "authors": [
+          {
+            "full_name": "Iguri, Sergio",
+            "ids": [
+              {
+                "schema": "INSPIRE BAI",
+                "value": "S.Iguri.1"
+              }
+            ]
+          },
+          {
+            "full_name": "Kovensky, Nicolas",
+            "ids": [
+              {
+                "schema": "INSPIRE BAI",
+                "value": "Nicolas.Kovensky.1"
+              }
+            ]
+          },
+          {
+            "full_name": "Toro, Julian H.",
+            "ids": [
+              {
+                "schema": "INSPIRE BAI",
+                "value": "Julian.H.Toro.1"
+              }
+            ]
+          }
+        ],
+        "citation_count": 0,
+        "texkeys": [
+          "Iguri:2026aer"
+        ],
+        "abstracts": [
+          {
+            "value": "Strings in AdS$_3$ with pure NS-NS flux are described by the exactly solvable SL(2,$\\mathbb{R}$) WZW model, yet correlators of winding strings, given by spectrally flowed operators, were so far known only up to three points. We obtain all of them, for any number of insertions and windings, in terms of unflowed correlators, proving the four-point conjecture of Dei and Eberhardt. The key ingredient is a pencil of rational maps from the worldsheet to the boundary which exists for generic insertion points, unwinds all insertions at once, and collapses to the covering map when the latter exists."
+          }
+        ],
+        "control_number": 3227694,
+        "titles": [
+          {
+            "title": "Solving spectral flow in AdS$_3$: from covering maps to pencils"
+          }
+        ],
+        "arxiv_eprints": [
+          {
+            "value": "2611.15070",
+            "categories": [
+              "hep-th"
+            ]
+          }
+        ],
+        "earliest_date": "2026-11-11",
+        "references": [
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/415163"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/32290"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/452915"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/314576"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/1663973"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/1862335"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/2059237"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/1510082"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/1732544"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/2814155"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/497373"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/522878"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/1662310"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/1706786"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/1762625"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/1944927"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/1914775"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/566998"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/1865629"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/2613301"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/1876828"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/2734739"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/2737249"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/2776365"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/3208967"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/3223043"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/529319"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/210258"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/2129552"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/676124"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/687228"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/2058457"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/452942"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/502579"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/2795406"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/2915617"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/497378"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/1722880"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/396446"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/2176746"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/3070865"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/3131540"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/786611"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/1923692"
+            }
+          }
+        ],
+        "number_of_pages": 8,
+        "document_type": [
+          "article"
+        ]
+      }
+    },
+    "451647": {
+      "id": "451647",
+      "metadata": {
+        "authors": [
+          {
+            "full_name": "Maldacena, Juan Martin",
+            "ids": [
+              {
+                "schema": "INSPIRE ID",
+                "value": "INSPIRE-00304313"
+              },
+              {
+                "schema": "INSPIRE BAI",
+                "value": "Juan.M.Maldacena.1"
+              },
+              {
+                "schema": "ORCID",
+                "value": "0000-0002-9127-1687"
+              }
+            ]
+          }
+        ],
+        "citation_count": 22814,
+        "texkeys": [
+          "Maldacena:1997re"
+        ],
+        "abstracts": [
+          {
+            "value": "We show that the large $N$ limit of certain conformal field theories in various dimensions include in their Hilbert space a sector describing supergravity on the product of Anti-deSitter spacetimes, spheres and other compact manifolds. This is shown by taking some branes in the full M/string theory and then taking a low energy limit where the field theory on the brane decouples from the bulk. We observe that, in this limit, we can still trust the near horizon geometry for large $N$. The enhanced supersymmetries of the near horizon geometry correspond to the extra supersymmetry generators present in the superconformal group (as opposed to just the super-Poincare group). The 't Hooft limit of 4-d ${\\cal N} =4$ super-Yang-Mills at the conformal point is shown to contain strings: they are IIB strings. We conjecture that compactifications of M/string theory on various Anti-deSitter spacetimes are dual to various conformal field theories. This leads to a new proposal for a definition of M-theory which could be extended to include five non-compact dimensions."
+          }
+        ],
+        "control_number": 451647,
+        "dois": [
+          {
+            "value": "10.4310/ATMP.1998.v2.n2.a1"
+          },
+          {
+            "value": "10.1023/A:1026654312961"
+          }
+        ],
+        "arxiv_eprints": [
+          {
+            "value": "hep-th/9711200",
+            "categories": [
+              "hep-th"
+            ]
+          }
+        ],
+        "titles": [
+          {
+            "title": "The Large $N$ limit of superconformal field theories and supergravity"
+          },
+          {
+            "title": "The large N limit of superconformal field theories and supergravity."
+          },
+          {
+            "title": "The Large N Limit of Superconformal Field Theories and Supergravity"
+          }
+        ],
+        "earliest_date": "1997-11",
+        "publication_info": [
+          {
+            "journal_volume": "38",
+            "material": "reprint",
+            "page_end": "1133",
+            "year": 1999,
+            "journal_record": {
+              "$ref": "https://inspirehep.net/api/journals/1214707"
+            },
+            "page_start": "1113",
+            "journal_title": "Int.J.Theor.Phys."
+          },
+          {
+            "journal_volume": "2",
+            "material": "publication",
+            "page_end": "252",
+            "year": 1998,
+            "journal_record": {
+              "$ref": "https://inspirehep.net/api/journals/1212914"
+            },
+            "page_start": "231",
+            "journal_title": "Adv.Theor.Math.Phys."
+          }
+        ],
+        "references": [
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/449261"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/443604"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/90850"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/120988"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/184470"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/338985"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/440361"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/35378"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/164314"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/13913"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/14743"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/206013"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/16700"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/229800"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/263090"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/266855"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/205047"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/15859"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/15064"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/207663"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/215788"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/219727"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/252628"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/262142"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/262681"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/38055"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/451355"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/29494"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/378026"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/426259"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/426372"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/440886"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/427006"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/442887"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/444186"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/450631"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/448354"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/416208"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/440239"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/440932"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/446757"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/415759"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/417717"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/403446"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/397499"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/416413"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/448411"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/449214"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/449124"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/443130"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/440339"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/428842"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/443496"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/420682"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/415163"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/416822"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/427144"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/398357"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/416207"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/416706"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/415906"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/426056"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/446062"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/445371"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/445490"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/32290"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/441733"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/444839"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/451243"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/450748"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/415870"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/419157"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/420130"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/420861"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/422847"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/422122"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/424930"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/426887"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/442119"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/444287"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/447394"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/450945"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/446238"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/443498"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/444185"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/450836"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/424833"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/440076"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/417444"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/424266"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/377340"
+            }
+          },
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/452060"
+            }
+          }
+        ],
+        "number_of_pages": 21,
+        "document_type": [
+          "article"
+        ]
+      }
+    }
+  },
+  "urls": [
+    {
+      "name": "Relevance: no sort",
+      "list": {
+        "q": "ads/cft entanglement",
+        "sort": null,
+        "page": 1
+      },
+      "expect": "https://inspirehep.net/api/literature?q=ads%2Fcft%20entanglement&size=25&page=1&fields=control_number%2Ctitles.title%2Cfirst_author.full_name%2Cauthor_count%2Cearliest_date%2Cabstracts.value%2Carxiv_eprints.value%2Ccitation_count%2Cdocument_type"
+    },
+    {
+      "name": "A sort, a later page",
+      "list": {
+        "q": "a J.M.Maldacena.1",
+        "sort": "mostrecent",
+        "page": 3
+      },
+      "expect": "https://inspirehep.net/api/literature?q=a%20J.M.Maldacena.1&sort=mostrecent&size=25&page=3&fields=control_number%2Ctitles.title%2Cfirst_author.full_name%2Cauthor_count%2Cearliest_date%2Cabstracts.value%2Carxiv_eprints.value%2Ccitation_count%2Cdocument_type"
+    },
+    {
+      "name": "`+` is encoded; the query is trimmed",
+      "list": {
+        "q": "  topcite 1000+ and t \"black hole\" ",
+        "sort": "mostcited",
+        "page": 1
+      },
+      "expect": "https://inspirehep.net/api/literature?q=topcite%201000%2B%20and%20t%20%22black%20hole%22&sort=mostcited&size=25&page=1&fields=control_number%2Ctitles.title%2Cfirst_author.full_name%2Cauthor_count%2Cearliest_date%2Cabstracts.value%2Carxiv_eprints.value%2Ccitation_count%2Cdocument_type"
+    },
+    {
+      "name": "Non-ASCII is UTF-8",
+      "list": {
+        "q": "a Hänisch",
+        "sort": null,
+        "page": 1
+      },
+      "expect": "https://inspirehep.net/api/literature?q=a%20H%C3%A4nisch&size=25&page=1&fields=control_number%2Ctitles.title%2Cfirst_author.full_name%2Cauthor_count%2Cearliest_date%2Cabstracts.value%2Carxiv_eprints.value%2Ccitation_count%2Cdocument_type"
+    },
+    {
+      "name": "References",
+      "list": {
+        "q": "citedby:recid:451647",
+        "sort": "mostrecent",
+        "page": 1
+      },
+      "expect": "https://inspirehep.net/api/literature?q=citedby%3Arecid%3A451647&sort=mostrecent&size=25&page=1&fields=control_number%2Ctitles.title%2Cfirst_author.full_name%2Cauthor_count%2Cearliest_date%2Cabstracts.value%2Carxiv_eprints.value%2Ccitation_count%2Cdocument_type"
+    },
+    {
+      "name": "A paper",
+      "paper": 451647,
+      "expect": "https://inspirehep.net/api/literature?q=recid%3A451647&size=1&fields=control_number%2Ctitles.title%2Cauthors.full_name%2Cauthors.ids%2Cearliest_date%2Cabstracts.value%2Carxiv_eprints.value%2Carxiv_eprints.categories%2Cdois.value%2Ctexkeys%2Ccitation_count%2Cpublication_info%2Cnumber_of_pages%2Creferences.record%2Cfigures.url%2Cfigures.caption%2Ccollaborations.value%2Cdocument_type"
+    },
+    {
+      "name": "BibTeX",
+      "bibtex": 451647,
+      "expect": "https://inspirehep.net/api/literature/451647?format=bibtex"
+    },
+    {
+      "name": "An arXiv PDF",
+      "pdf": "hep-th/9711200",
+      "expect": "https://arxiv.org/pdf/hep-th/9711200"
+    },
+    {
+      "name": "A new-style arXiv PDF",
+      "pdf": "2611.15070",
+      "expect": "https://arxiv.org/pdf/2611.15070"
+    }
+  ],
+  "paging": [
+    {
+      "total": 0,
+      "page": 1,
+      "more": false
+    },
+    {
+      "total": 25,
+      "page": 1,
+      "more": false
+    },
+    {
+      "total": 26,
+      "page": 1,
+      "more": true
+    },
+    {
+      "total": 92,
+      "page": 3,
+      "more": true
+    },
+    {
+      "total": 92,
+      "page": 4,
+      "more": false
+    },
+    {
+      "total": 22814,
+      "page": 399,
+      "more": true
+    },
+    {
+      "total": 22814,
+      "page": 400,
+      "more": false
+    }
+  ],
+  "names": [
+    {
+      "full_name": "Maldacena, Juan Martin",
+      "expect": "J.M. Maldacena"
+    },
+    {
+      "full_name": "He, Zhi-Guo",
+      "expect": "Z.-G. He"
+    },
+    {
+      "full_name": "Toro, Julian H.",
+      "expect": "J.H. Toro"
+    },
+    {
+      "full_name": "Hänisch, Jens",
+      "expect": "J. Hänisch"
+    },
+    {
+      "full_name": "Ertem, Ümit",
+      "expect": "Ü. Ertem"
+    },
+    {
+      "full_name": "'t Hooft, Gerard",
+      "expect": "G. 't Hooft"
+    },
+    {
+      "full_name": "ATLAS Collaboration",
+      "expect": "ATLAS Collaboration"
+    },
+    {
+      "full_name": "Witten, ",
+      "expect": "Witten"
+    }
+  ],
+  "authors": [
+    {
+      "author": {
+        "full_name": "Maldacena, Juan Martin",
+        "ids": [
+          {
+            "schema": "INSPIRE ID",
+            "value": "INSPIRE-00304313"
+          },
+          {
+            "schema": "INSPIRE BAI",
+            "value": "Juan.M.Maldacena.1"
+          },
+          {
+            "schema": "ORCID",
+            "value": "0000-0002-9127-1687"
+          }
+        ]
+      },
+      "expect": "a Juan.M.Maldacena.1"
+    },
+    {
+      "author": {
+        "full_name": "Maldacena, Juan Martin",
+        "ids": [
+          {
+            "schema": "ORCID",
+            "value": "0000-0002-9127-1687"
+          }
+        ]
+      },
+      "expect": "a \"Maldacena, Juan Martin\""
+    }
+  ],
+  "details": [
+    {
+      "name": "The journal publication, not the reprint; pages, category, linked references",
+      "recid": 451647,
+      "expect": {
+        "journal": "Adv.Theor.Math.Phys. 2 (1998) 231",
+        "pages": 21,
+        "category": "hep-th",
+        "references": 92,
+        "figures": []
+      }
+    },
+    {
+      "name": "An article ID before the first page; no arXiv",
+      "recid": 3118866,
+      "expect": {
+        "journal": "IEEE Trans.Appl.Supercond. 36 (2026) 6602405",
+        "pages": 5,
+        "category": null,
+        "references": 1,
+        "figures": []
+      }
+    },
+    {
+      "name": "Not published",
+      "recid": 3227694,
+      "expect": {
+        "journal": null,
+        "pages": 8,
+        "category": "hep-th",
+        "references": 44,
+        "figures": []
+      }
+    },
+    {
+      "name": "Only a reprint; a conference entry without a journal is skipped; references without a record are not counted; a caption of only punctuation is empty",
+      "metadata": {
+        "control_number": 1,
+        "publication_info": [
+          {
+            "cnum": "C97-06-01",
+            "year": 1997
+          },
+          {
+            "journal_title": "Phys.Rept.",
+            "journal_volume": "323",
+            "year": 2000,
+            "page_start": "183",
+            "material": "reprint"
+          }
+        ],
+        "references": [
+          {
+            "record": {
+              "$ref": "https://inspirehep.net/api/literature/2"
+            }
+          },
+          {
+            "reference": {
+              "misc": [
+                "Unlinked"
+              ]
+            }
+          }
+        ],
+        "figures": [
+          {
+            "url": "https://inspirehep.net/files/a",
+            "caption": " Feynman diagrams for $gg\\to HH$. "
+          },
+          {
+            "caption": "No URL"
+          },
+          {
+            "url": "https://inspirehep.net/files/b"
+          },
+          {
+            "url": "https://inspirehep.net/files/c",
+            "caption": " : "
+          }
+        ]
+      },
+      "expect": {
+        "journal": "Phys.Rept. 323 (2000) 183",
+        "pages": null,
+        "category": null,
+        "references": 1,
+        "figures": [
+          [
+            "https://inspirehep.net/files/a",
+            "Feynman diagrams for $gg\\to HH$."
+          ],
+          [
+            "https://inspirehep.net/files/b",
+            ""
+          ],
+          [
+            "https://inspirehep.net/files/c",
+            ""
+          ]
+        ]
+      }
+    }
+  ],
+  "csl": [
+    {
+      "name": "A journal paper: the publication, not the reprint; pages",
+      "metadata": {
+        "control_number": 451647,
+        "texkeys": [
+          "Maldacena:1997re"
+        ],
+        "titles": [
+          {
+            "title": "The Large $N$ limit of superconformal field theories and supergravity"
+          }
+        ],
+        "authors": [
+          {
+            "full_name": "Maldacena, Juan Martin"
+          }
+        ],
+        "earliest_date": "1997-11",
+        "dois": [
+          {
+            "value": "10.4310/ATMP.1998.v2.n2.a1"
+          }
+        ],
+        "publication_info": [
+          {
+            "journal_volume": "38",
+            "material": "reprint",
+            "page_end": "1133",
+            "year": 1999,
+            "page_start": "1113",
+            "journal_title": "Int.J.Theor.Phys."
+          },
+          {
+            "journal_volume": "2",
+            "material": "publication",
+            "page_end": "252",
+            "year": 1998,
+            "page_start": "231",
+            "journal_title": "Adv.Theor.Math.Phys."
+          }
+        ],
+        "document_type": [
+          "article"
+        ]
+      },
+      "expect": {
+        "id": "Maldacena:1997re",
+        "type": "article-journal",
+        "author": [
+          {
+            "family": "Maldacena",
+            "given": "Juan Martin"
+          }
+        ],
+        "container-title": "Adv. Theor. Math. Phys.",
+        "volume": "2",
+        "page": "231-252",
+        "issued": {
+          "raw": "1997-11"
+        },
+        "DOI": "10.4310/ATMP.1998.v2.n2.a1"
+      }
+    },
+    {
+      "name": "A collaboration is the author; the first texkey",
+      "metadata": {
+        "control_number": 1124337,
+        "texkeys": [
+          "ATLAS:2012yve",
+          "Aad:2012tfa"
+        ],
+        "titles": [
+          {
+            "title": "Observation of a new particle in the search for the Standard Model Higgs boson with the ATLAS detector at the LHC"
+          }
+        ],
+        "authors": [
+          {
+            "full_name": "Aad, Georges"
+          },
+          {
+            "full_name": "Abajyan, Tatevik"
+          }
+        ],
+        "collaborations": [
+          {
+            "value": "ATLAS"
+          }
+        ],
+        "earliest_date": "2012-07",
+        "publication_info": [
+          {
+            "journal_volume": "716",
+            "page_end": "29",
+            "year": 2012,
+            "page_start": "1",
+            "journal_title": "Phys.Lett.B"
+          }
+        ],
+        "dois": [
+          {
+            "value": "10.1016/j.physletb.2012.08.020"
+          }
+        ],
+        "document_type": [
+          "article"
+        ]
+      },
+      "expect": {
+        "id": "ATLAS:2012yve",
+        "type": "article-journal",
+        "author": [
+          {
+            "literal": "ATLAS Collaboration"
+          }
+        ],
+        "container-title": "Phys. Lett. B",
+        "volume": "716",
+        "page": "1-29",
+        "issued": {
+          "raw": "2012-07"
+        },
+        "DOI": "10.1016/j.physletb.2012.08.020"
+      }
+    },
+    {
+      "name": "A texkey with other characters is not the id; a thesis; a name without a comma",
+      "metadata": {
+        "control_number": 2990001,
+        "texkeys": [
+          "'tHooft:1973jz"
+        ],
+        "titles": [
+          {
+            "title": "A thesis"
+          }
+        ],
+        "authors": [
+          {
+            "full_name": "Planck"
+          }
+        ],
+        "earliest_date": "2026",
+        "document_type": [
+          "thesis"
+        ]
+      },
+      "expect": {
+        "id": "inspire:2990001",
+        "type": "thesis",
+        "author": [
+          {
+            "literal": "Planck"
+          }
+        ],
+        "issued": {
+          "raw": "2026"
+        }
+      }
+    },
+    {
+      "name": "No journal: an article; Collaboration is not added twice; pages",
+      "metadata": {
+        "control_number": 5,
+        "titles": [
+          {
+            "title": "Waves"
+          }
+        ],
+        "collaborations": [
+          {
+            "value": "LIGO Scientific Collaboration"
+          },
+          {
+            "value": "Virgo"
+          }
+        ],
+        "abstracts": [
+          {
+            "value": "$H\\to\\gamma\\gamma$ decays"
+          }
+        ],
+        "number_of_pages": 12
+      },
+      "expect": {
+        "id": "inspire:5",
+        "type": "article",
+        "author": [
+          {
+            "literal": "LIGO Scientific Collaboration"
+          },
+          {
+            "literal": "Virgo Collaboration"
+          }
+        ],
+        "number-of-pages": 12
+      }
+    },
+    {
+      "name": "A fixture: an article number before the pages; every author",
+      "recid": 3118866,
+      "expect": {
+        "id": "Baruah:2026nnw",
+        "type": "article-journal",
+        "author": [
+          {
+            "family": "Baruah",
+            "given": "Sukanya"
+          },
+          {
+            "family": "Popov",
+            "given": "Ruslan"
+          },
+          {
+            "family": "Hänisch",
+            "given": "Jens"
+          },
+          {
+            "family": "Matias",
+            "given": "Vladimir"
+          },
+          {
+            "family": "Bagrets",
+            "given": "Nadezda"
+          },
+          {
+            "family": "Nast",
+            "given": "Rainer"
+          },
+          {
+            "family": "Singhal",
+            "given": "Shraddha"
+          },
+          {
+            "family": "Korvink",
+            "given": "Jan"
+          },
+          {
+            "family": "Barth",
+            "given": "Christian"
+          },
+          {
+            "family": "Ballarino",
+            "given": "Amalia"
+          },
+          {
+            "family": "Holzapfel",
+            "given": "Bernhard"
+          }
+        ],
+        "container-title": "IEEE Trans. Appl. Supercond.",
+        "volume": "36",
+        "issue": "5",
+        "page": "6602405",
+        "issued": {
+          "raw": "2026-08"
+        },
+        "DOI": "10.1109/TASC.2026.3661464",
+        "number-of-pages": 5
+      }
+    }
+  ],
+  "entries": [
+    {
+      "name": "Saving creates the entry",
+      "recid": 3118866,
+      "files": {},
+      "do": "save",
+      "after": {
+        "Baruah-2026nnw/entry.json": "{\n  \"v\": 1,\n  \"sources\": {\n    \"inspire\": {\n      \"csl\": {\n        \"id\": \"Baruah:2026nnw\",\n        \"type\": \"article-journal\",\n        \"author\": [\n          {\n            \"family\": \"Baruah\",\n            \"given\": \"Sukanya\"\n          },\n          {\n            \"family\": \"Popov\",\n            \"given\": \"Ruslan\"\n          },\n          {\n            \"family\": \"Hänisch\",\n            \"given\": \"Jens\"\n          },\n          {\n            \"family\": \"Matias\",\n            \"given\": \"Vladimir\"\n          },\n          {\n            \"family\": \"Bagrets\",\n            \"given\": \"Nadezda\"\n          },\n          {\n            \"family\": \"Nast\",\n            \"given\": \"Rainer\"\n          },\n          {\n            \"family\": \"Singhal\",\n            \"given\": \"Shraddha\"\n          },\n          {\n            \"family\": \"Korvink\",\n            \"given\": \"Jan\"\n          },\n          {\n            \"family\": \"Barth\",\n            \"given\": \"Christian\"\n          },\n          {\n            \"family\": \"Ballarino\",\n            \"given\": \"Amalia\"\n          },\n          {\n            \"family\": \"Holzapfel\",\n            \"given\": \"Bernhard\"\n          }\n        ],\n        \"container-title\": \"IEEE Trans. Appl. Supercond.\",\n        \"volume\": \"36\",\n        \"issue\": \"5\",\n        \"page\": \"6602405\",\n        \"issued\": {\n          \"raw\": \"2026-08\"\n        },\n        \"DOI\": \"10.1109/TASC.2026.3661464\",\n        \"number-of-pages\": 5\n      },\n      \"fetched\": \"2026-11-14T10:00:00Z\",\n      \"recid\": 3118866,\n      \"title\": \"30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC<sup>4</sup> Facility\"\n    }\n  },\n  \"added\": \"2026-11-14T10:00:00Z\"\n}\n"
+      }
+    },
+    {
+      "name": "A folder name taken, ignoring case: -2",
+      "recid": 3118866,
+      "files": {
+        "baruah-2026nnw/notes.txt": "x"
+      },
+      "do": "save",
+      "after": {
+        "baruah-2026nnw/notes.txt": "x",
+        "Baruah-2026nnw-2/entry.json": "{\n  \"v\": 1,\n  \"sources\": {\n    \"inspire\": {\n      \"csl\": {\n        \"id\": \"Baruah:2026nnw\",\n        \"type\": \"article-journal\",\n        \"author\": [\n          {\n            \"family\": \"Baruah\",\n            \"given\": \"Sukanya\"\n          },\n          {\n            \"family\": \"Popov\",\n            \"given\": \"Ruslan\"\n          },\n          {\n            \"family\": \"Hänisch\",\n            \"given\": \"Jens\"\n          },\n          {\n            \"family\": \"Matias\",\n            \"given\": \"Vladimir\"\n          },\n          {\n            \"family\": \"Bagrets\",\n            \"given\": \"Nadezda\"\n          },\n          {\n            \"family\": \"Nast\",\n            \"given\": \"Rainer\"\n          },\n          {\n            \"family\": \"Singhal\",\n            \"given\": \"Shraddha\"\n          },\n          {\n            \"family\": \"Korvink\",\n            \"given\": \"Jan\"\n          },\n          {\n            \"family\": \"Barth\",\n            \"given\": \"Christian\"\n          },\n          {\n            \"family\": \"Ballarino\",\n            \"given\": \"Amalia\"\n          },\n          {\n            \"family\": \"Holzapfel\",\n            \"given\": \"Bernhard\"\n          }\n        ],\n        \"container-title\": \"IEEE Trans. Appl. Supercond.\",\n        \"volume\": \"36\",\n        \"issue\": \"5\",\n        \"page\": \"6602405\",\n        \"issued\": {\n          \"raw\": \"2026-08\"\n        },\n        \"DOI\": \"10.1109/TASC.2026.3661464\",\n        \"number-of-pages\": 5\n      },\n      \"fetched\": \"2026-11-14T10:00:00Z\",\n      \"recid\": 3118866,\n      \"title\": \"30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC<sup>4</sup> Facility\"\n    }\n  },\n  \"added\": \"2026-11-14T10:00:00Z\"\n}\n"
+      }
+    },
+    {
+      "name": "Without a usable texkey, the folder is named by the recid",
+      "metadata": {
+        "control_number": 2990001,
+        "texkeys": [
+          "'tHooft:1973jz"
+        ],
+        "titles": [
+          {
+            "title": "x"
+          }
+        ]
+      },
+      "files": {},
+      "do": "save",
+      "after": {
+        "inspire-2990001/entry.json": "{\n  \"v\": 1,\n  \"sources\": {\n    \"inspire\": {\n      \"csl\": {\n        \"id\": \"inspire:2990001\",\n        \"type\": \"article\"\n      },\n      \"fetched\": \"2026-11-14T10:00:00Z\",\n      \"recid\": 2990001,\n      \"title\": \"x\"\n    }\n  },\n  \"added\": \"2026-11-14T10:00:00Z\"\n}\n"
+      }
+    },
+    {
+      "name": "Updating replaces sources.inspire whole, in its place, and keeps everything else; the folder's name does not matter",
+      "recid": 3118866,
+      "files": {
+        "whatever/entry.json": "{\"zz\":1.50,\"v\":1,\"csl\":{\"note\":\"mine\"},\"sources\":{\"ads\":{\"csl\":{\"title\":\"x\"}},\"inspire\":{\"csl\":{\"title\":\"old\"},\"fetched\":\"2020-01-01T00:00:00Z\",\"recid\":3118866,\"extra\":1e3}},\"tags\":[\"status:read\"],\"added\":\"2020-01-01T00:00:00Z\"}"
+      },
+      "do": "save",
+      "after": {
+        "whatever/entry.json": "{\n  \"zz\": 1.5,\n  \"v\": 1,\n  \"csl\": {\n    \"note\": \"mine\"\n  },\n  \"sources\": {\n    \"ads\": {\n      \"csl\": {\n        \"title\": \"x\"\n      }\n    },\n    \"inspire\": {\n      \"csl\": {\n        \"id\": \"Baruah:2026nnw\",\n        \"type\": \"article-journal\",\n        \"author\": [\n          {\n            \"family\": \"Baruah\",\n            \"given\": \"Sukanya\"\n          },\n          {\n            \"family\": \"Popov\",\n            \"given\": \"Ruslan\"\n          },\n          {\n            \"family\": \"Hänisch\",\n            \"given\": \"Jens\"\n          },\n          {\n            \"family\": \"Matias\",\n            \"given\": \"Vladimir\"\n          },\n          {\n            \"family\": \"Bagrets\",\n            \"given\": \"Nadezda\"\n          },\n          {\n            \"family\": \"Nast\",\n            \"given\": \"Rainer\"\n          },\n          {\n            \"family\": \"Singhal\",\n            \"given\": \"Shraddha\"\n          },\n          {\n            \"family\": \"Korvink\",\n            \"given\": \"Jan\"\n          },\n          {\n            \"family\": \"Barth\",\n            \"given\": \"Christian\"\n          },\n          {\n            \"family\": \"Ballarino\",\n            \"given\": \"Amalia\"\n          },\n          {\n            \"family\": \"Holzapfel\",\n            \"given\": \"Bernhard\"\n          }\n        ],\n        \"container-title\": \"IEEE Trans. Appl. Supercond.\",\n        \"volume\": \"36\",\n        \"issue\": \"5\",\n        \"page\": \"6602405\",\n        \"issued\": {\n          \"raw\": \"2026-08\"\n        },\n        \"DOI\": \"10.1109/TASC.2026.3661464\",\n        \"number-of-pages\": 5\n      },\n      \"fetched\": \"2026-11-14T10:00:00Z\",\n      \"recid\": 3118866,\n      \"title\": \"30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC<sup>4</sup> Facility\"\n    }\n  },\n  \"tags\": [\n    \"status:read\"\n  ],\n  \"added\": \"2020-01-01T00:00:00Z\"\n}\n"
+      }
+    },
+    {
+      "name": "A citation key that another entry's resolved csl.id has, ignoring case: inspire:<recid>",
+      "recid": 3118866,
+      "files": {
+        "Other/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"X:1\"},\"recid\":1}},\"csl\":{\"id\":\"baruah:2026NNW\"}}"
+      },
+      "do": "save",
+      "after": {
+        "Other/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"X:1\"},\"recid\":1}},\"csl\":{\"id\":\"baruah:2026NNW\"}}",
+        "inspire-3118866/entry.json": "{\n  \"v\": 1,\n  \"sources\": {\n    \"inspire\": {\n      \"csl\": {\n        \"id\": \"inspire:3118866\",\n        \"type\": \"article-journal\",\n        \"author\": [\n          {\n            \"family\": \"Baruah\",\n            \"given\": \"Sukanya\"\n          },\n          {\n            \"family\": \"Popov\",\n            \"given\": \"Ruslan\"\n          },\n          {\n            \"family\": \"Hänisch\",\n            \"given\": \"Jens\"\n          },\n          {\n            \"family\": \"Matias\",\n            \"given\": \"Vladimir\"\n          },\n          {\n            \"family\": \"Bagrets\",\n            \"given\": \"Nadezda\"\n          },\n          {\n            \"family\": \"Nast\",\n            \"given\": \"Rainer\"\n          },\n          {\n            \"family\": \"Singhal\",\n            \"given\": \"Shraddha\"\n          },\n          {\n            \"family\": \"Korvink\",\n            \"given\": \"Jan\"\n          },\n          {\n            \"family\": \"Barth\",\n            \"given\": \"Christian\"\n          },\n          {\n            \"family\": \"Ballarino\",\n            \"given\": \"Amalia\"\n          },\n          {\n            \"family\": \"Holzapfel\",\n            \"given\": \"Bernhard\"\n          }\n        ],\n        \"container-title\": \"IEEE Trans. Appl. Supercond.\",\n        \"volume\": \"36\",\n        \"issue\": \"5\",\n        \"page\": \"6602405\",\n        \"issued\": {\n          \"raw\": \"2026-08\"\n        },\n        \"DOI\": \"10.1109/TASC.2026.3661464\",\n        \"number-of-pages\": 5\n      },\n      \"fetched\": \"2026-11-14T10:00:00Z\",\n      \"recid\": 3118866,\n      \"title\": \"30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC<sup>4</sup> Facility\"\n    }\n  },\n  \"added\": \"2026-11-14T10:00:00Z\"\n}\n"
+      }
+    },
+    {
+      "name": "Any entry's key counts, not only INSPIRE's",
+      "recid": 3118866,
+      "files": {
+        "Book/entry.json": "{\"v\":1,\"csl\":{\"id\":\"Baruah:2026nnw\",\"type\":\"book\"}}"
+      },
+      "do": "save",
+      "after": {
+        "Book/entry.json": "{\"v\":1,\"csl\":{\"id\":\"Baruah:2026nnw\",\"type\":\"book\"}}",
+        "inspire-3118866/entry.json": "{\n  \"v\": 1,\n  \"sources\": {\n    \"inspire\": {\n      \"csl\": {\n        \"id\": \"inspire:3118866\",\n        \"type\": \"article-journal\",\n        \"author\": [\n          {\n            \"family\": \"Baruah\",\n            \"given\": \"Sukanya\"\n          },\n          {\n            \"family\": \"Popov\",\n            \"given\": \"Ruslan\"\n          },\n          {\n            \"family\": \"Hänisch\",\n            \"given\": \"Jens\"\n          },\n          {\n            \"family\": \"Matias\",\n            \"given\": \"Vladimir\"\n          },\n          {\n            \"family\": \"Bagrets\",\n            \"given\": \"Nadezda\"\n          },\n          {\n            \"family\": \"Nast\",\n            \"given\": \"Rainer\"\n          },\n          {\n            \"family\": \"Singhal\",\n            \"given\": \"Shraddha\"\n          },\n          {\n            \"family\": \"Korvink\",\n            \"given\": \"Jan\"\n          },\n          {\n            \"family\": \"Barth\",\n            \"given\": \"Christian\"\n          },\n          {\n            \"family\": \"Ballarino\",\n            \"given\": \"Amalia\"\n          },\n          {\n            \"family\": \"Holzapfel\",\n            \"given\": \"Bernhard\"\n          }\n        ],\n        \"container-title\": \"IEEE Trans. Appl. Supercond.\",\n        \"volume\": \"36\",\n        \"issue\": \"5\",\n        \"page\": \"6602405\",\n        \"issued\": {\n          \"raw\": \"2026-08\"\n        },\n        \"DOI\": \"10.1109/TASC.2026.3661464\",\n        \"number-of-pages\": 5\n      },\n      \"fetched\": \"2026-11-14T10:00:00Z\",\n      \"recid\": 3118866,\n      \"title\": \"30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC<sup>4</sup> Facility\"\n    }\n  },\n  \"added\": \"2026-11-14T10:00:00Z\"\n}\n"
+      }
+    },
+    {
+      "name": "Updating keeps the citation key the entry has, though the texkey changed",
+      "recid": 3118866,
+      "files": {
+        "x/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"Baruah:2026old\",\"type\":\"article-journal\",\"title\":\"Old\",\"author\":[{\"family\":\"Baruah\",\"given\":\"Sukanya\"},{\"family\":\"Popov\",\"given\":\"Ruslan\"},{\"family\":\"Hänisch\",\"given\":\"Jens\"},{\"family\":\"Matias\",\"given\":\"Vladimir\"},{\"family\":\"Bagrets\",\"given\":\"Nadezda\"},{\"family\":\"Nast\",\"given\":\"Rainer\"},{\"family\":\"Singhal\",\"given\":\"Shraddha\"},{\"family\":\"Korvink\",\"given\":\"Jan\"},{\"family\":\"Barth\",\"given\":\"Christian\"},{\"family\":\"Ballarino\",\"given\":\"Amalia\"},{\"family\":\"Holzapfel\",\"given\":\"Bernhard\"}],\"container-title\":\"IEEE Trans. Appl. Supercond.\",\"volume\":\"35\",\"issue\":\"5\",\"page\":\"6602405\",\"issued\":{\"raw\":\"2026-08\"},\"DOI\":\"10.1109/TASC.2026.3661464\",\"number-of-pages\":5},\"fetched\":\"2020-01-01T00:00:00Z\",\"recid\":3118866,\"title\":\"30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC<sup>4</sup> Facility\"}},\"added\":\"2026-11-14T10:00:00Z\"}",
+        "Other/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"X:1\"},\"recid\":1}},\"csl\":{\"id\":\"baruah:2026NNW\"}}"
+      },
+      "do": "save",
+      "after": {
+        "x/entry.json": "{\n  \"v\": 1,\n  \"sources\": {\n    \"inspire\": {\n      \"csl\": {\n        \"id\": \"Baruah:2026old\",\n        \"type\": \"article-journal\",\n        \"author\": [\n          {\n            \"family\": \"Baruah\",\n            \"given\": \"Sukanya\"\n          },\n          {\n            \"family\": \"Popov\",\n            \"given\": \"Ruslan\"\n          },\n          {\n            \"family\": \"Hänisch\",\n            \"given\": \"Jens\"\n          },\n          {\n            \"family\": \"Matias\",\n            \"given\": \"Vladimir\"\n          },\n          {\n            \"family\": \"Bagrets\",\n            \"given\": \"Nadezda\"\n          },\n          {\n            \"family\": \"Nast\",\n            \"given\": \"Rainer\"\n          },\n          {\n            \"family\": \"Singhal\",\n            \"given\": \"Shraddha\"\n          },\n          {\n            \"family\": \"Korvink\",\n            \"given\": \"Jan\"\n          },\n          {\n            \"family\": \"Barth\",\n            \"given\": \"Christian\"\n          },\n          {\n            \"family\": \"Ballarino\",\n            \"given\": \"Amalia\"\n          },\n          {\n            \"family\": \"Holzapfel\",\n            \"given\": \"Bernhard\"\n          }\n        ],\n        \"container-title\": \"IEEE Trans. Appl. Supercond.\",\n        \"volume\": \"36\",\n        \"issue\": \"5\",\n        \"page\": \"6602405\",\n        \"issued\": {\n          \"raw\": \"2026-08\"\n        },\n        \"DOI\": \"10.1109/TASC.2026.3661464\",\n        \"number-of-pages\": 5\n      },\n      \"fetched\": \"2026-11-14T10:00:00Z\",\n      \"recid\": 3118866,\n      \"title\": \"30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC<sup>4</sup> Facility\"\n    }\n  },\n  \"added\": \"2026-11-14T10:00:00Z\"\n}\n",
+        "Other/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"X:1\"},\"recid\":1}},\"csl\":{\"id\":\"baruah:2026NNW\"}}"
+      }
+    },
+    {
+      "name": "An entry without a key gets one as a new entry would; its own entry aside",
+      "recid": 3118866,
+      "files": {
+        "x/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"type\":\"article-journal\",\"title\":\"Old\",\"author\":[{\"family\":\"Baruah\",\"given\":\"Sukanya\"},{\"family\":\"Popov\",\"given\":\"Ruslan\"},{\"family\":\"Hänisch\",\"given\":\"Jens\"},{\"family\":\"Matias\",\"given\":\"Vladimir\"},{\"family\":\"Bagrets\",\"given\":\"Nadezda\"},{\"family\":\"Nast\",\"given\":\"Rainer\"},{\"family\":\"Singhal\",\"given\":\"Shraddha\"},{\"family\":\"Korvink\",\"given\":\"Jan\"},{\"family\":\"Barth\",\"given\":\"Christian\"},{\"family\":\"Ballarino\",\"given\":\"Amalia\"},{\"family\":\"Holzapfel\",\"given\":\"Bernhard\"}],\"container-title\":\"IEEE Trans. Appl. Supercond.\",\"volume\":\"36\",\"issue\":\"5\",\"page\":\"6602405\",\"issued\":{\"raw\":\"2026-08\"},\"DOI\":\"10.1109/TASC.2026.3661464\",\"number-of-pages\":5},\"fetched\":\"2020-01-01T00:00:00Z\",\"recid\":3118866,\"title\":\"30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC<sup>4</sup> Facility\"}},\"added\":\"2026-11-14T10:00:00Z\"}"
+      },
+      "do": "save",
+      "after": {
+        "x/entry.json": "{\n  \"v\": 1,\n  \"sources\": {\n    \"inspire\": {\n      \"csl\": {\n        \"id\": \"Baruah:2026nnw\",\n        \"type\": \"article-journal\",\n        \"author\": [\n          {\n            \"family\": \"Baruah\",\n            \"given\": \"Sukanya\"\n          },\n          {\n            \"family\": \"Popov\",\n            \"given\": \"Ruslan\"\n          },\n          {\n            \"family\": \"Hänisch\",\n            \"given\": \"Jens\"\n          },\n          {\n            \"family\": \"Matias\",\n            \"given\": \"Vladimir\"\n          },\n          {\n            \"family\": \"Bagrets\",\n            \"given\": \"Nadezda\"\n          },\n          {\n            \"family\": \"Nast\",\n            \"given\": \"Rainer\"\n          },\n          {\n            \"family\": \"Singhal\",\n            \"given\": \"Shraddha\"\n          },\n          {\n            \"family\": \"Korvink\",\n            \"given\": \"Jan\"\n          },\n          {\n            \"family\": \"Barth\",\n            \"given\": \"Christian\"\n          },\n          {\n            \"family\": \"Ballarino\",\n            \"given\": \"Amalia\"\n          },\n          {\n            \"family\": \"Holzapfel\",\n            \"given\": \"Bernhard\"\n          }\n        ],\n        \"container-title\": \"IEEE Trans. Appl. Supercond.\",\n        \"volume\": \"36\",\n        \"issue\": \"5\",\n        \"page\": \"6602405\",\n        \"issued\": {\n          \"raw\": \"2026-08\"\n        },\n        \"DOI\": \"10.1109/TASC.2026.3661464\",\n        \"number-of-pages\": 5\n      },\n      \"fetched\": \"2026-11-14T10:00:00Z\",\n      \"recid\": 3118866,\n      \"title\": \"30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC<sup>4</sup> Facility\"\n    }\n  },\n  \"added\": \"2026-11-14T10:00:00Z\"\n}\n"
+      }
+    },
+    {
+      "name": "An entry without a key, whose texkey another entry has: inspire:<recid>",
+      "recid": 3118866,
+      "files": {
+        "x/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"type\":\"article-journal\",\"title\":\"Old\",\"author\":[{\"family\":\"Baruah\",\"given\":\"Sukanya\"},{\"family\":\"Popov\",\"given\":\"Ruslan\"},{\"family\":\"Hänisch\",\"given\":\"Jens\"},{\"family\":\"Matias\",\"given\":\"Vladimir\"},{\"family\":\"Bagrets\",\"given\":\"Nadezda\"},{\"family\":\"Nast\",\"given\":\"Rainer\"},{\"family\":\"Singhal\",\"given\":\"Shraddha\"},{\"family\":\"Korvink\",\"given\":\"Jan\"},{\"family\":\"Barth\",\"given\":\"Christian\"},{\"family\":\"Ballarino\",\"given\":\"Amalia\"},{\"family\":\"Holzapfel\",\"given\":\"Bernhard\"}],\"container-title\":\"IEEE Trans. Appl. Supercond.\",\"volume\":\"36\",\"issue\":\"5\",\"page\":\"6602405\",\"issued\":{\"raw\":\"2026-08\"},\"DOI\":\"10.1109/TASC.2026.3661464\",\"number-of-pages\":5},\"fetched\":\"2020-01-01T00:00:00Z\",\"recid\":3118866,\"title\":\"30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC<sup>4</sup> Facility\"}},\"added\":\"2026-11-14T10:00:00Z\"}",
+        "Other/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"X:1\"},\"recid\":1}},\"csl\":{\"id\":\"baruah:2026NNW\"}}"
+      },
+      "do": "save",
+      "after": {
+        "x/entry.json": "{\n  \"v\": 1,\n  \"sources\": {\n    \"inspire\": {\n      \"csl\": {\n        \"id\": \"inspire:3118866\",\n        \"type\": \"article-journal\",\n        \"author\": [\n          {\n            \"family\": \"Baruah\",\n            \"given\": \"Sukanya\"\n          },\n          {\n            \"family\": \"Popov\",\n            \"given\": \"Ruslan\"\n          },\n          {\n            \"family\": \"Hänisch\",\n            \"given\": \"Jens\"\n          },\n          {\n            \"family\": \"Matias\",\n            \"given\": \"Vladimir\"\n          },\n          {\n            \"family\": \"Bagrets\",\n            \"given\": \"Nadezda\"\n          },\n          {\n            \"family\": \"Nast\",\n            \"given\": \"Rainer\"\n          },\n          {\n            \"family\": \"Singhal\",\n            \"given\": \"Shraddha\"\n          },\n          {\n            \"family\": \"Korvink\",\n            \"given\": \"Jan\"\n          },\n          {\n            \"family\": \"Barth\",\n            \"given\": \"Christian\"\n          },\n          {\n            \"family\": \"Ballarino\",\n            \"given\": \"Amalia\"\n          },\n          {\n            \"family\": \"Holzapfel\",\n            \"given\": \"Bernhard\"\n          }\n        ],\n        \"container-title\": \"IEEE Trans. Appl. Supercond.\",\n        \"volume\": \"36\",\n        \"issue\": \"5\",\n        \"page\": \"6602405\",\n        \"issued\": {\n          \"raw\": \"2026-08\"\n        },\n        \"DOI\": \"10.1109/TASC.2026.3661464\",\n        \"number-of-pages\": 5\n      },\n      \"fetched\": \"2026-11-14T10:00:00Z\",\n      \"recid\": 3118866,\n      \"title\": \"30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC<sup>4</sup> Facility\"\n    }\n  },\n  \"added\": \"2026-11-14T10:00:00Z\"\n}\n",
+        "Other/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"X:1\"},\"recid\":1}},\"csl\":{\"id\":\"baruah:2026NNW\"}}"
+      }
+    },
+    {
+      "name": "Updating keeps the plain title while the title's TeX is the same: another device may have made it",
+      "recid": 3118866,
+      "files": {
+        "x/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"Baruah:2026nnw\",\"type\":\"article-journal\",\"author\":[{\"family\":\"Baruah\",\"given\":\"Sukanya\"},{\"family\":\"Popov\",\"given\":\"Ruslan\"},{\"family\":\"Hänisch\",\"given\":\"Jens\"},{\"family\":\"Matias\",\"given\":\"Vladimir\"},{\"family\":\"Bagrets\",\"given\":\"Nadezda\"},{\"family\":\"Nast\",\"given\":\"Rainer\"},{\"family\":\"Singhal\",\"given\":\"Shraddha\"},{\"family\":\"Korvink\",\"given\":\"Jan\"},{\"family\":\"Barth\",\"given\":\"Christian\"},{\"family\":\"Ballarino\",\"given\":\"Amalia\"},{\"family\":\"Holzapfel\",\"given\":\"Bernhard\"}],\"container-title\":\"IEEE Trans. Appl. Supercond.\",\"volume\":\"35\",\"issue\":\"5\",\"page\":\"6602405\",\"issued\":{\"raw\":\"2026-08\"},\"DOI\":\"10.1109/TASC.2026.3661464\",\"number-of-pages\":5,\"title\":\"30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC4 Facility\"},\"fetched\":\"2020-01-01T00:00:00Z\",\"recid\":3118866,\"title\":\"30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC<sup>4</sup> Facility\"}},\"added\":\"2026-11-14T10:00:00Z\"}"
+      },
+      "do": "save",
+      "after": {
+        "x/entry.json": "{\n  \"v\": 1,\n  \"sources\": {\n    \"inspire\": {\n      \"csl\": {\n        \"id\": \"Baruah:2026nnw\",\n        \"type\": \"article-journal\",\n        \"author\": [\n          {\n            \"family\": \"Baruah\",\n            \"given\": \"Sukanya\"\n          },\n          {\n            \"family\": \"Popov\",\n            \"given\": \"Ruslan\"\n          },\n          {\n            \"family\": \"Hänisch\",\n            \"given\": \"Jens\"\n          },\n          {\n            \"family\": \"Matias\",\n            \"given\": \"Vladimir\"\n          },\n          {\n            \"family\": \"Bagrets\",\n            \"given\": \"Nadezda\"\n          },\n          {\n            \"family\": \"Nast\",\n            \"given\": \"Rainer\"\n          },\n          {\n            \"family\": \"Singhal\",\n            \"given\": \"Shraddha\"\n          },\n          {\n            \"family\": \"Korvink\",\n            \"given\": \"Jan\"\n          },\n          {\n            \"family\": \"Barth\",\n            \"given\": \"Christian\"\n          },\n          {\n            \"family\": \"Ballarino\",\n            \"given\": \"Amalia\"\n          },\n          {\n            \"family\": \"Holzapfel\",\n            \"given\": \"Bernhard\"\n          }\n        ],\n        \"container-title\": \"IEEE Trans. Appl. Supercond.\",\n        \"volume\": \"36\",\n        \"issue\": \"5\",\n        \"page\": \"6602405\",\n        \"issued\": {\n          \"raw\": \"2026-08\"\n        },\n        \"DOI\": \"10.1109/TASC.2026.3661464\",\n        \"number-of-pages\": 5,\n        \"title\": \"30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC4 Facility\"\n      },\n      \"fetched\": \"2026-11-14T10:00:00Z\",\n      \"recid\": 3118866,\n      \"title\": \"30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC<sup>4</sup> Facility\"\n    }\n  },\n  \"added\": \"2026-11-14T10:00:00Z\"\n}\n"
+      }
+    },
+    {
+      "name": "Nothing but fetched changed: not rewritten",
+      "recid": 3118866,
+      "files": {
+        "x/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"Baruah:2026nnw\",\"type\":\"article-journal\",\"title\":\"30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC⁴ Facility\",\"author\":[{\"family\":\"Baruah\",\"given\":\"Sukanya\"},{\"family\":\"Popov\",\"given\":\"Ruslan\"},{\"family\":\"Hänisch\",\"given\":\"Jens\"},{\"family\":\"Matias\",\"given\":\"Vladimir\"},{\"family\":\"Bagrets\",\"given\":\"Nadezda\"},{\"family\":\"Nast\",\"given\":\"Rainer\"},{\"family\":\"Singhal\",\"given\":\"Shraddha\"},{\"family\":\"Korvink\",\"given\":\"Jan\"},{\"family\":\"Barth\",\"given\":\"Christian\"},{\"family\":\"Ballarino\",\"given\":\"Amalia\"},{\"family\":\"Holzapfel\",\"given\":\"Bernhard\"}],\"container-title\":\"IEEE Trans. Appl. Supercond.\",\"volume\":\"36\",\"issue\":\"5\",\"page\":\"6602405\",\"issued\":{\"raw\":\"2026-08\"},\"DOI\":\"10.1109/TASC.2026.3661464\",\"number-of-pages\":5},\"fetched\":\"2020-01-01T00:00:00Z\",\"recid\":3118866,\"title\":\"30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC<sup>4</sup> Facility\"}},\"added\":\"2020-01-01T00:00:00Z\"}"
+      },
+      "do": "save"
+    },
+    {
+      "name": "Two entries with the same recid: the first by folder name is the paper's, and is updated",
+      "recid": 3118866,
+      "files": {
+        "a/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"Baruah:2026nnw\",\"type\":\"article-journal\",\"title\":\"Old 30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC⁴ Facility\",\"author\":[{\"family\":\"Baruah\",\"given\":\"Sukanya\"},{\"family\":\"Popov\",\"given\":\"Ruslan\"},{\"family\":\"Hänisch\",\"given\":\"Jens\"},{\"family\":\"Matias\",\"given\":\"Vladimir\"},{\"family\":\"Bagrets\",\"given\":\"Nadezda\"},{\"family\":\"Nast\",\"given\":\"Rainer\"},{\"family\":\"Singhal\",\"given\":\"Shraddha\"},{\"family\":\"Korvink\",\"given\":\"Jan\"},{\"family\":\"Barth\",\"given\":\"Christian\"},{\"family\":\"Ballarino\",\"given\":\"Amalia\"},{\"family\":\"Holzapfel\",\"given\":\"Bernhard\"}],\"container-title\":\"IEEE Trans. Appl. Supercond.\",\"volume\":\"36\",\"issue\":\"5\",\"page\":\"6602405\",\"issued\":{\"raw\":\"2026-08\"},\"DOI\":\"10.1109/TASC.2026.3661464\",\"number-of-pages\":5},\"fetched\":\"2020-01-01T00:00:00Z\",\"recid\":3118866,\"title\":\"Old 30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC<sup>4</sup> Facility\"}},\"added\":\"2020-01-01T00:00:00Z\"}",
+        "b/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"Baruah:2026nnw\",\"type\":\"article-journal\",\"title\":\"Old 30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC⁴ Facility\",\"author\":[{\"family\":\"Baruah\",\"given\":\"Sukanya\"},{\"family\":\"Popov\",\"given\":\"Ruslan\"},{\"family\":\"Hänisch\",\"given\":\"Jens\"},{\"family\":\"Matias\",\"given\":\"Vladimir\"},{\"family\":\"Bagrets\",\"given\":\"Nadezda\"},{\"family\":\"Nast\",\"given\":\"Rainer\"},{\"family\":\"Singhal\",\"given\":\"Shraddha\"},{\"family\":\"Korvink\",\"given\":\"Jan\"},{\"family\":\"Barth\",\"given\":\"Christian\"},{\"family\":\"Ballarino\",\"given\":\"Amalia\"},{\"family\":\"Holzapfel\",\"given\":\"Bernhard\"}],\"container-title\":\"IEEE Trans. Appl. Supercond.\",\"volume\":\"36\",\"issue\":\"5\",\"page\":\"6602405\",\"issued\":{\"raw\":\"2026-08\"},\"DOI\":\"10.1109/TASC.2026.3661464\",\"number-of-pages\":5},\"fetched\":\"2020-01-01T00:00:00Z\",\"recid\":3118866,\"title\":\"Old 30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC<sup>4</sup> Facility\"}},\"added\":\"2020-01-01T00:00:00Z\"}"
+      },
+      "do": "save",
+      "after": {
+        "a/entry.json": "{\n  \"v\": 1,\n  \"sources\": {\n    \"inspire\": {\n      \"csl\": {\n        \"id\": \"Baruah:2026nnw\",\n        \"type\": \"article-journal\",\n        \"author\": [\n          {\n            \"family\": \"Baruah\",\n            \"given\": \"Sukanya\"\n          },\n          {\n            \"family\": \"Popov\",\n            \"given\": \"Ruslan\"\n          },\n          {\n            \"family\": \"Hänisch\",\n            \"given\": \"Jens\"\n          },\n          {\n            \"family\": \"Matias\",\n            \"given\": \"Vladimir\"\n          },\n          {\n            \"family\": \"Bagrets\",\n            \"given\": \"Nadezda\"\n          },\n          {\n            \"family\": \"Nast\",\n            \"given\": \"Rainer\"\n          },\n          {\n            \"family\": \"Singhal\",\n            \"given\": \"Shraddha\"\n          },\n          {\n            \"family\": \"Korvink\",\n            \"given\": \"Jan\"\n          },\n          {\n            \"family\": \"Barth\",\n            \"given\": \"Christian\"\n          },\n          {\n            \"family\": \"Ballarino\",\n            \"given\": \"Amalia\"\n          },\n          {\n            \"family\": \"Holzapfel\",\n            \"given\": \"Bernhard\"\n          }\n        ],\n        \"container-title\": \"IEEE Trans. Appl. Supercond.\",\n        \"volume\": \"36\",\n        \"issue\": \"5\",\n        \"page\": \"6602405\",\n        \"issued\": {\n          \"raw\": \"2026-08\"\n        },\n        \"DOI\": \"10.1109/TASC.2026.3661464\",\n        \"number-of-pages\": 5\n      },\n      \"fetched\": \"2026-11-14T10:00:00Z\",\n      \"recid\": 3118866,\n      \"title\": \"30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC<sup>4</sup> Facility\"\n    }\n  },\n  \"added\": \"2020-01-01T00:00:00Z\"\n}\n",
+        "b/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"Baruah:2026nnw\",\"type\":\"article-journal\",\"title\":\"Old 30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC⁴ Facility\",\"author\":[{\"family\":\"Baruah\",\"given\":\"Sukanya\"},{\"family\":\"Popov\",\"given\":\"Ruslan\"},{\"family\":\"Hänisch\",\"given\":\"Jens\"},{\"family\":\"Matias\",\"given\":\"Vladimir\"},{\"family\":\"Bagrets\",\"given\":\"Nadezda\"},{\"family\":\"Nast\",\"given\":\"Rainer\"},{\"family\":\"Singhal\",\"given\":\"Shraddha\"},{\"family\":\"Korvink\",\"given\":\"Jan\"},{\"family\":\"Barth\",\"given\":\"Christian\"},{\"family\":\"Ballarino\",\"given\":\"Amalia\"},{\"family\":\"Holzapfel\",\"given\":\"Bernhard\"}],\"container-title\":\"IEEE Trans. Appl. Supercond.\",\"volume\":\"36\",\"issue\":\"5\",\"page\":\"6602405\",\"issued\":{\"raw\":\"2026-08\"},\"DOI\":\"10.1109/TASC.2026.3661464\",\"number-of-pages\":5},\"fetched\":\"2020-01-01T00:00:00Z\",\"recid\":3118866,\"title\":\"Old 30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC<sup>4</sup> Facility\"}},\"added\":\"2020-01-01T00:00:00Z\"}"
+      }
+    },
+    {
+      "name": "Two entries with the same recid: the first by folder name is removed",
+      "recid": 3118866,
+      "files": {
+        "a/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"Baruah:2026nnw\",\"type\":\"article-journal\",\"title\":\"30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC⁴ Facility\",\"author\":[{\"family\":\"Baruah\",\"given\":\"Sukanya\"},{\"family\":\"Popov\",\"given\":\"Ruslan\"},{\"family\":\"Hänisch\",\"given\":\"Jens\"},{\"family\":\"Matias\",\"given\":\"Vladimir\"},{\"family\":\"Bagrets\",\"given\":\"Nadezda\"},{\"family\":\"Nast\",\"given\":\"Rainer\"},{\"family\":\"Singhal\",\"given\":\"Shraddha\"},{\"family\":\"Korvink\",\"given\":\"Jan\"},{\"family\":\"Barth\",\"given\":\"Christian\"},{\"family\":\"Ballarino\",\"given\":\"Amalia\"},{\"family\":\"Holzapfel\",\"given\":\"Bernhard\"}],\"container-title\":\"IEEE Trans. Appl. Supercond.\",\"volume\":\"36\",\"issue\":\"5\",\"page\":\"6602405\",\"issued\":{\"raw\":\"2026-08\"},\"DOI\":\"10.1109/TASC.2026.3661464\",\"number-of-pages\":5},\"fetched\":\"2020-01-01T00:00:00Z\",\"recid\":3118866,\"title\":\"30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC<sup>4</sup> Facility\"}},\"added\":\"2020-01-01T00:00:00Z\"}",
+        "b/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"Baruah:2026nnw\",\"type\":\"article-journal\",\"title\":\"30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC⁴ Facility\",\"author\":[{\"family\":\"Baruah\",\"given\":\"Sukanya\"},{\"family\":\"Popov\",\"given\":\"Ruslan\"},{\"family\":\"Hänisch\",\"given\":\"Jens\"},{\"family\":\"Matias\",\"given\":\"Vladimir\"},{\"family\":\"Bagrets\",\"given\":\"Nadezda\"},{\"family\":\"Nast\",\"given\":\"Rainer\"},{\"family\":\"Singhal\",\"given\":\"Shraddha\"},{\"family\":\"Korvink\",\"given\":\"Jan\"},{\"family\":\"Barth\",\"given\":\"Christian\"},{\"family\":\"Ballarino\",\"given\":\"Amalia\"},{\"family\":\"Holzapfel\",\"given\":\"Bernhard\"}],\"container-title\":\"IEEE Trans. Appl. Supercond.\",\"volume\":\"36\",\"issue\":\"5\",\"page\":\"6602405\",\"issued\":{\"raw\":\"2026-08\"},\"DOI\":\"10.1109/TASC.2026.3661464\",\"number-of-pages\":5},\"fetched\":\"2020-01-01T00:00:00Z\",\"recid\":3118866,\"title\":\"30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC<sup>4</sup> Facility\"}},\"added\":\"2020-01-01T00:00:00Z\"}"
+      },
+      "do": "remove",
+      "after": {
+        "b/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"Baruah:2026nnw\",\"type\":\"article-journal\",\"title\":\"30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC⁴ Facility\",\"author\":[{\"family\":\"Baruah\",\"given\":\"Sukanya\"},{\"family\":\"Popov\",\"given\":\"Ruslan\"},{\"family\":\"Hänisch\",\"given\":\"Jens\"},{\"family\":\"Matias\",\"given\":\"Vladimir\"},{\"family\":\"Bagrets\",\"given\":\"Nadezda\"},{\"family\":\"Nast\",\"given\":\"Rainer\"},{\"family\":\"Singhal\",\"given\":\"Shraddha\"},{\"family\":\"Korvink\",\"given\":\"Jan\"},{\"family\":\"Barth\",\"given\":\"Christian\"},{\"family\":\"Ballarino\",\"given\":\"Amalia\"},{\"family\":\"Holzapfel\",\"given\":\"Bernhard\"}],\"container-title\":\"IEEE Trans. Appl. Supercond.\",\"volume\":\"36\",\"issue\":\"5\",\"page\":\"6602405\",\"issued\":{\"raw\":\"2026-08\"},\"DOI\":\"10.1109/TASC.2026.3661464\",\"number-of-pages\":5},\"fetched\":\"2020-01-01T00:00:00Z\",\"recid\":3118866,\"title\":\"30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC<sup>4</sup> Facility\"}},\"added\":\"2020-01-01T00:00:00Z\"}"
+      }
+    },
+    {
+      "name": "Removing removes the entry's folder, with its files, and nothing else",
+      "recid": 451647,
+      "files": {
+        "Maldacena-1997re/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"Maldacena:1997re\"},\"recid\":451647,\"arxiv\":\"hep-th/9711200\"}},\"added\":\"2026-11-14T10:00:00Z\"}",
+        "Maldacena-1997re/hep-th-9711200.pdf": "%PDF-1.5\n%…",
+        "Maldacena-1997re/notes.txt": "x",
+        "Other/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"Baruah:2026nnw\",\"type\":\"article-journal\",\"title\":\"30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC⁴ Facility\",\"author\":[{\"family\":\"Baruah\",\"given\":\"Sukanya\"},{\"family\":\"Popov\",\"given\":\"Ruslan\"},{\"family\":\"Hänisch\",\"given\":\"Jens\"},{\"family\":\"Matias\",\"given\":\"Vladimir\"},{\"family\":\"Bagrets\",\"given\":\"Nadezda\"},{\"family\":\"Nast\",\"given\":\"Rainer\"},{\"family\":\"Singhal\",\"given\":\"Shraddha\"},{\"family\":\"Korvink\",\"given\":\"Jan\"},{\"family\":\"Barth\",\"given\":\"Christian\"},{\"family\":\"Ballarino\",\"given\":\"Amalia\"},{\"family\":\"Holzapfel\",\"given\":\"Bernhard\"}],\"container-title\":\"IEEE Trans. Appl. Supercond.\",\"volume\":\"36\",\"issue\":\"5\",\"page\":\"6602405\",\"issued\":{\"raw\":\"2026-08\"},\"DOI\":\"10.1109/TASC.2026.3661464\",\"number-of-pages\":5},\"fetched\":\"2020-01-01T00:00:00Z\",\"recid\":3118866,\"title\":\"30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC<sup>4</sup> Facility\"}},\"added\":\"2020-01-01T00:00:00Z\"}"
+      },
+      "do": "remove",
+      "after": {
+        "Other/entry.json": "{\n  \"v\": 1,\n  \"sources\": {\n    \"inspire\": {\n      \"csl\": {\n        \"id\": \"Baruah:2026nnw\",\n        \"type\": \"article-journal\",\n        \"author\": [\n          {\n            \"family\": \"Baruah\",\n            \"given\": \"Sukanya\"\n          },\n          {\n            \"family\": \"Popov\",\n            \"given\": \"Ruslan\"\n          },\n          {\n            \"family\": \"Hänisch\",\n            \"given\": \"Jens\"\n          },\n          {\n            \"family\": \"Matias\",\n            \"given\": \"Vladimir\"\n          },\n          {\n            \"family\": \"Bagrets\",\n            \"given\": \"Nadezda\"\n          },\n          {\n            \"family\": \"Nast\",\n            \"given\": \"Rainer\"\n          },\n          {\n            \"family\": \"Singhal\",\n            \"given\": \"Shraddha\"\n          },\n          {\n            \"family\": \"Korvink\",\n            \"given\": \"Jan\"\n          },\n          {\n            \"family\": \"Barth\",\n            \"given\": \"Christian\"\n          },\n          {\n            \"family\": \"Ballarino\",\n            \"given\": \"Amalia\"\n          },\n          {\n            \"family\": \"Holzapfel\",\n            \"given\": \"Bernhard\"\n          }\n        ],\n        \"container-title\": \"IEEE Trans. Appl. Supercond.\",\n        \"volume\": \"36\",\n        \"issue\": \"5\",\n        \"page\": \"6602405\",\n        \"issued\": {\n          \"raw\": \"2026-08\"\n        },\n        \"DOI\": \"10.1109/TASC.2026.3661464\",\n        \"number-of-pages\": 5\n      },\n      \"fetched\": \"2020-01-01T00:00:00Z\",\n      \"recid\": 3118866,\n      \"title\": \"30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC<sup>4</sup> Facility\"\n    }\n  },\n  \"added\": \"2020-01-01T00:00:00Z\"\n}\n"
+      }
+    },
+    {
+      "name": "An unreadable entry is not found: it is not removed",
+      "recid": 451647,
+      "files": {
+        "Maldacena-1997re/entry.json": "{\"v\":2,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"Maldacena:1997re\"},\"recid\":451647,\"arxiv\":\"hep-th/9711200\"}},\"added\":\"2026-11-14T10:00:00Z\"}"
+      },
+      "do": "remove",
+      "ok": false
+    },
+    {
+      "name": "An unreadable entry is not updated; saving makes another",
+      "recid": 3118866,
+      "files": {
+        "Baruah-2026nnw/entry.json": "{broken"
+      },
+      "do": "save",
+      "after": {
+        "Baruah-2026nnw/entry.json": "{broken",
+        "Baruah-2026nnw-2/entry.json": "{\n  \"v\": 1,\n  \"sources\": {\n    \"inspire\": {\n      \"csl\": {\n        \"id\": \"Baruah:2026nnw\",\n        \"type\": \"article-journal\",\n        \"author\": [\n          {\n            \"family\": \"Baruah\",\n            \"given\": \"Sukanya\"\n          },\n          {\n            \"family\": \"Popov\",\n            \"given\": \"Ruslan\"\n          },\n          {\n            \"family\": \"Hänisch\",\n            \"given\": \"Jens\"\n          },\n          {\n            \"family\": \"Matias\",\n            \"given\": \"Vladimir\"\n          },\n          {\n            \"family\": \"Bagrets\",\n            \"given\": \"Nadezda\"\n          },\n          {\n            \"family\": \"Nast\",\n            \"given\": \"Rainer\"\n          },\n          {\n            \"family\": \"Singhal\",\n            \"given\": \"Shraddha\"\n          },\n          {\n            \"family\": \"Korvink\",\n            \"given\": \"Jan\"\n          },\n          {\n            \"family\": \"Barth\",\n            \"given\": \"Christian\"\n          },\n          {\n            \"family\": \"Ballarino\",\n            \"given\": \"Amalia\"\n          },\n          {\n            \"family\": \"Holzapfel\",\n            \"given\": \"Bernhard\"\n          }\n        ],\n        \"container-title\": \"IEEE Trans. Appl. Supercond.\",\n        \"volume\": \"36\",\n        \"issue\": \"5\",\n        \"page\": \"6602405\",\n        \"issued\": {\n          \"raw\": \"2026-08\"\n        },\n        \"DOI\": \"10.1109/TASC.2026.3661464\",\n        \"number-of-pages\": 5\n      },\n      \"fetched\": \"2026-11-14T10:00:00Z\",\n      \"recid\": 3118866,\n      \"title\": \"30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC<sup>4</sup> Facility\"\n    }\n  },\n  \"added\": \"2026-11-14T10:00:00Z\"\n}\n"
+      }
+    },
+    {
+      "name": "A PDF is kept in the entry, named by the arXiv number",
+      "recid": 451647,
+      "files": {
+        "Maldacena-1997re/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"Maldacena:1997re\"},\"recid\":451647,\"arxiv\":\"hep-th/9711200\"}},\"added\":\"2026-11-14T10:00:00Z\"}"
+      },
+      "do": "pdf",
+      "data": "%PDF-1.5\n%…",
+      "after": {
+        "Maldacena-1997re/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"Maldacena:1997re\"},\"recid\":451647,\"arxiv\":\"hep-th/9711200\"}},\"added\":\"2026-11-14T10:00:00Z\"}",
+        "Maldacena-1997re/hep-th-9711200.pdf": "%PDF-1.5\n%…"
+      }
+    },
+    {
+      "name": "An answer that is not a PDF is not kept",
+      "recid": 451647,
+      "files": {
+        "Maldacena-1997re/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"Maldacena:1997re\"},\"recid\":451647,\"arxiv\":\"hep-th/9711200\"}},\"added\":\"2026-11-14T10:00:00Z\"}"
+      },
+      "do": "pdf",
+      "data": "<!DOCTYPE html><html>Rate limited</html>",
+      "ok": false
+    },
+    {
+      "name": "A paper that is not saved keeps no PDF",
+      "recid": 451647,
+      "files": {
+        "Other/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"Baruah:2026nnw\",\"type\":\"article-journal\",\"title\":\"30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC⁴ Facility\",\"author\":[{\"family\":\"Baruah\",\"given\":\"Sukanya\"},{\"family\":\"Popov\",\"given\":\"Ruslan\"},{\"family\":\"Hänisch\",\"given\":\"Jens\"},{\"family\":\"Matias\",\"given\":\"Vladimir\"},{\"family\":\"Bagrets\",\"given\":\"Nadezda\"},{\"family\":\"Nast\",\"given\":\"Rainer\"},{\"family\":\"Singhal\",\"given\":\"Shraddha\"},{\"family\":\"Korvink\",\"given\":\"Jan\"},{\"family\":\"Barth\",\"given\":\"Christian\"},{\"family\":\"Ballarino\",\"given\":\"Amalia\"},{\"family\":\"Holzapfel\",\"given\":\"Bernhard\"}],\"container-title\":\"IEEE Trans. Appl. Supercond.\",\"volume\":\"36\",\"issue\":\"5\",\"page\":\"6602405\",\"issued\":{\"raw\":\"2026-08\"},\"DOI\":\"10.1109/TASC.2026.3661464\",\"number-of-pages\":5},\"fetched\":\"2020-01-01T00:00:00Z\",\"recid\":3118866,\"title\":\"30 mm Wide IBAD-MgO REBCO Coated Conductors Developed at the KC<sup>4</sup> Facility\"}},\"added\":\"2020-01-01T00:00:00Z\"}"
+      },
+      "do": "pdf",
+      "data": "%PDF-1.5\n%…",
+      "ok": false
+    },
+    {
+      "name": "A paper without arXiv has no PDF",
+      "recid": 451647,
+      "files": {
+        "M/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"recid\":451647}}}"
+      },
+      "do": "pdf",
+      "data": "%PDF-1.5\n%…",
+      "ok": false
+    },
+    {
+      "name": "Removing the PDF removes Heplio's only",
+      "recid": 451647,
+      "files": {
+        "M/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"Maldacena:1997re\"},\"recid\":451647,\"arxiv\":\"hep-th/9711200\"}},\"added\":\"2026-11-14T10:00:00Z\"}",
+        "M/hep-th-9711200.pdf": "%PDF-1.5\n%…",
+        "M/aaa.pdf": "%PDF-1.5\n%…"
+      },
+      "do": "remove_pdf",
+      "after": {
+        "M/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"Maldacena:1997re\"},\"recid\":451647,\"arxiv\":\"hep-th/9711200\"}},\"added\":\"2026-11-14T10:00:00Z\"}",
+        "M/aaa.pdf": "%PDF-1.5\n%…"
+      }
+    },
+    {
+      "name": "A tag is added at the end, trimmed, keeping the other keys",
+      "recid": 451647,
+      "files": {
+        "M/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"Maldacena:1997re\"},\"recid\":451647}},\"added\":\"2026-11-14T10:00:00Z\",\"note\":\"mine\",\"app\":{\"x\":1},\"tags\":[\"status:read\"]}"
+      },
+      "do": "add_tag",
+      "tag": "  topic:AdS/CFT ",
+      "after": {
+        "M/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"Maldacena:1997re\"},\"recid\":451647}},\"added\":\"2026-11-14T10:00:00Z\",\"note\":\"mine\",\"app\":{\"x\":1},\"tags\":[\"status:read\",\"topic:AdS/CFT\"]}"
+      }
+    },
+    {
+      "name": "A tag is added to an entry without tags",
+      "recid": 451647,
+      "files": {
+        "M/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"Maldacena:1997re\"},\"recid\":451647}},\"added\":\"2026-11-14T10:00:00Z\"}"
+      },
+      "do": "add_tag",
+      "tag": "Holography",
+      "after": {
+        "M/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"Maldacena:1997re\"},\"recid\":451647}},\"added\":\"2026-11-14T10:00:00Z\",\"tags\":[\"Holography\"]}"
+      }
+    },
+    {
+      "name": "A tag the entry has is not added again; case counts",
+      "recid": 451647,
+      "files": {
+        "M/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"Maldacena:1997re\"},\"recid\":451647}},\"added\":\"2026-11-14T10:00:00Z\",\"tags\":[\"Holography\"]}"
+      },
+      "do": "add_tag",
+      "tag": "Holography"
+    },
+    {
+      "name": "Tags differing in case are different",
+      "recid": 451647,
+      "files": {
+        "M/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"Maldacena:1997re\"},\"recid\":451647}},\"added\":\"2026-11-14T10:00:00Z\",\"tags\":[\"Holography\"]}"
+      },
+      "do": "add_tag",
+      "tag": "holography",
+      "after": {
+        "M/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"Maldacena:1997re\"},\"recid\":451647}},\"added\":\"2026-11-14T10:00:00Z\",\"tags\":[\"Holography\",\"holography\"]}"
+      }
+    },
+    {
+      "name": "An empty tag is not added",
+      "recid": 451647,
+      "files": {
+        "M/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"Maldacena:1997re\"},\"recid\":451647}},\"added\":\"2026-11-14T10:00:00Z\",\"tags\":[\"a\"]}"
+      },
+      "do": "add_tag",
+      "tag": "   ",
+      "ok": false
+    },
+    {
+      "name": "Removing the last tag removes tags",
+      "recid": 451647,
+      "files": {
+        "M/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"Maldacena:1997re\"},\"recid\":451647}},\"added\":\"2026-11-14T10:00:00Z\",\"tags\":[\"Holography\"]}"
+      },
+      "do": "remove_tag",
+      "tag": "Holography",
+      "after": {
+        "M/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"Maldacena:1997re\"},\"recid\":451647}},\"added\":\"2026-11-14T10:00:00Z\"}"
+      }
+    },
+    {
+      "name": "An entry whose tags are not strings is not written",
+      "recid": 451647,
+      "files": {
+        "M/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"Maldacena:1997re\"},\"recid\":451647}},\"added\":\"2026-11-14T10:00:00Z\",\"tags\":[\"a\",1]}"
+      },
+      "do": "add_tag",
+      "tag": "b",
+      "ok": false
+    },
+    {
+      "name": "A paper that is not saved gets no tag",
+      "recid": 451647,
+      "files": {
+        "X/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"recid\":1}}}"
+      },
+      "do": "add_tag",
+      "tag": "b",
+      "ok": false
+    }
+  ],
+  "library": {
+    "files": {
+      "A/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"A:2020\",\"title\":\"Alpha\",\"author\":[{\"family\":\"Maldacena\",\"given\":\"Juan Martin\"}],\"issued\":{\"raw\":\"1997-11\"}},\"recid\":10,\"arxiv\":\"hep-th/9711200\"}},\"added\":\"2026-01-01T00:00:00Z\",\"tags\":[\"status:read\",\"topic:AdS/CFT\"]}",
+      "A/hep-th-9711200.pdf": "%PDF-1.5\n%…",
+      "A/.hep-th-9711200.pdf.1.tmp": "%PDF-1.5\n%…",
+      "B/entry.json": "{\"v\":1,\"csl\":{\"title\":\"Beta, mine\"},\"sources\":{\"inspire\":{\"csl\":{\"title\":\"Beta\",\"author\":[{\"family\":\"He\",\"given\":\"Zhi-Guo\"},{\"family\":\"Two\"}]},\"recid\":20}},\"added\":\"2026-02-01T00:00:00Z\",\"tags\":[\"topic:AdS/CFT\",\"Holography\"]}",
+      "B/a-notes.txt": "x",
+      "B/z.pdf": "%PDF-1.5\n%…",
+      "I/entry.json": "{\"v\":1,\"sources\":{\"ads\":{\"csl\":{\"title\":\"From ADS\",\"issued\":{\"date-parts\":[[2026,3,9]]}}},\"inspire\":{\"csl\":{\"title\":\"Iota\",\"author\":[{\"literal\":\"ATLAS Collaboration\"}]},\"recid\":30}},\"added\":\"2026-03-01T00:00:00Z\"}",
+      "I/Paper.PDF": "%PDF-1.5\n%…",
+      "C/entry.json": "{broken",
+      "F/entry.json": "{\"v\":2,\"sources\":{\"inspire\":{\"recid\":40}}}",
+      "G/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"recid\":\"40\"}}}",
+      "K/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"recid\":40}},\"added\":5}",
+      "M/entry.json": "{\"sources\":{\"inspire\":{\"recid\":40}}}",
+      "N/entry.json": "{\"v\":1,\"sources\":[]}",
+      "D/entry.json": "{\"v\":1,\"csl\":{\"id\":\"Takagi:1971\",\"type\":\"book\",\"title\":\"初等整数論講義\"},\"tags\":[\"topic:number-theory\"]}",
+      ".hidden/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"recid\":50}}}",
+      "E/notes.txt": "x",
+      "papers/60.json": "{\"recid\":60}",
+      "queries.json": "[]",
+      "J/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"recid\":35,\"arxiv\":\"2611.15070\"}},\"added\":\"2026-02-15T00:00:00Z\"}",
+      "J/2611.15070.pdf": "%PDF-1.5\n",
+      "J/notes.md": "mine",
+      "P/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"recid\":50}},\"added\":\"2026-02-10T00:00:00Z\"}",
+      "P/Paper.pdf": "%PDF-1.5\n",
+      "P/notes.txt": "mine",
+      "P/a/0.pdf": "%PDF-1.5\n",
+      "Q/entry.json": "{\"v\":1,\"sources\":{\"inspire\":{\"csl\":{\"id\":\"Gursey:1964\",\"title\":\"Gürsey–Radicati\",\"author\":[{\"family\":\"Gürsey\",\"given\":\"Feza\"}],\"container-title\":\"Phys. Lett.\",\"issued\":{\"raw\":\"1964\"}},\"recid\":70}},\"added\":\"2026-01-15T00:00:00Z\",\"tags\":[\"holography\"]}"
+    },
+    "expect": [
+      [
+        "I",
+        30,
+        true,
+        "Paper.PDF",
+        "Iota",
+        "ATLAS Collaboration",
+        "2026-03-09"
+      ],
+      [
+        "J",
+        35,
+        true,
+        "2611.15070.pdf",
+        null,
+        "",
+        null
+      ],
+      [
+        "P",
+        50,
+        true,
+        null,
+        null,
+        "",
+        null
+      ],
+      [
+        "B",
+        20,
+        true,
+        null,
+        "Beta, mine",
+        "Z.-G. He et al.",
+        null
+      ],
+      [
+        "Q",
+        70,
+        true,
+        null,
+        "Gürsey–Radicati",
+        "F. Gürsey",
+        "1964"
+      ],
+      [
+        "A",
+        10,
+        true,
+        "hep-th-9711200.pdf",
+        "Alpha",
+        "J.M. Maldacena",
+        "1997-11"
+      ],
+      [
+        "C",
+        null,
+        false,
+        null,
+        null,
+        "",
+        null
+      ],
+      [
+        "K",
+        40,
+        true,
+        null,
+        null,
+        "",
+        null
+      ],
+      [
+        "M",
+        null,
+        false,
+        null,
+        null,
+        "",
+        null
+      ]
+    ],
+    "tags": [
+      [
+        "Holography",
+        1
+      ],
+      [
+        "holography",
+        1
+      ],
+      [
+        "status:read",
+        1
+      ],
+      [
+        "topic:AdS/CFT",
+        2
+      ]
+    ],
+    "find": [
+      [
+        "",
+        [
+          "I",
+          "J",
+          "P",
+          "B",
+          "Q",
+          "A",
+          "C",
+          "K",
+          "M"
+        ]
+      ],
+      [
+        "maldacena",
+        [
+          "A"
+        ]
+      ],
+      [
+        "Juan Maldacena",
+        [
+          "A"
+        ]
+      ],
+      [
+        "J.M. Maldacena",
+        [
+          "A"
+        ]
+      ],
+      [
+        "MALDACENA 1997",
+        [
+          "A"
+        ]
+      ],
+      [
+        "maldacena 1998",
+        []
+      ],
+      [
+        "  alpha  ",
+        [
+          "A"
+        ]
+      ],
+      [
+        "a:2020",
+        [
+          "A"
+        ]
+      ],
+      [
+        "hep-th/9711200",
+        [
+          "A"
+        ]
+      ],
+      [
+        "gursey",
+        [
+          "Q"
+        ]
+      ],
+      [
+        "GÜRSEY",
+        [
+          "Q"
+        ]
+      ],
+      [
+        "phys. lett.",
+        [
+          "Q"
+        ]
+      ],
+      [
+        "mine",
+        [
+          "B"
+        ]
+      ],
+      [
+        "zhi-guo",
+        [
+          "B"
+        ]
+      ],
+      [
+        "c",
+        [
+          "I",
+          "B",
+          "Q",
+          "A",
+          "C"
+        ],
+        [
+          "topic:AdS/CFT"
+        ]
+      ],
+      [
+        "holography",
+        [
+          "B",
+          "Q"
+        ],
+        [
+          "Holography",
+          "holography"
+        ]
+      ],
+      [
+        "status:read",
+        [
+          "A"
+        ],
+        [
+          "status:read"
+        ]
+      ]
+    ],
+    "tagged": [
+      [
+        "topic:AdS/CFT",
+        [
+          "B",
+          "A"
+        ]
+      ],
+      [
+        "Holography",
+        [
+          "B"
+        ]
+      ],
+      [
+        "status:read",
+        [
+          "A"
+        ]
+      ],
+      [
+        "topic:number-theory",
+        []
+      ],
+      [
+        "holography",
+        [
+          "Q"
+        ]
+      ]
+    ]
+  },
+  "queries": [
+    {
+      "name": "Choosing a folder without queries.json creates the example",
+      "file": null,
+      "do": "choose",
+      "expect": "[\n  {\n    \"name\": \"hep-th, last 7 days\",\n    \"q\": \"arxiv_eprints.categories:hep-th and de > today - 7\",\n    \"sort\": \"mostrecent\"\n  }\n]\n"
+    },
+    {
+      "name": "Choosing a folder with queries.json leaves it alone",
+      "file": "[]",
+      "list": [],
+      "do": "choose",
+      "unchanged": true
+    },
+    {
+      "name": "Reading: `name` defaults to `q`, `sort` to relevance",
+      "file": "[{\"name\":\"A\",\"q\":\"a J.M.Maldacena.1\",\"sort\":\"mostrecent\",\"color\":0.50},{\"q\":\"t black hole\",\"pin\":true},{\"name\":\"C\",\"q\":\"refersto:recid:451647\",\"sort\":\"mostcited\"}]",
+      "list": [
+        [
+          "A",
+          "a J.M.Maldacena.1",
+          "mostrecent"
+        ],
+        [
+          "t black hole",
+          "t black hole",
+          null
+        ],
+        [
+          "C",
+          "refersto:recid:451647",
+          "mostcited"
+        ]
+      ]
+    },
+    {
+      "name": "Adding goes last; relevance has no `sort`",
+      "file": "[]",
+      "do": {
+        "add": [
+          "black holes",
+          "t black hole",
+          null
+        ]
+      },
+      "expect": "[\n  {\n    \"name\": \"black holes\",\n    \"q\": \"t black hole\"\n  }\n]\n"
+    },
+    {
+      "name": "Adding a query already saved does nothing",
+      "file": "[{\"name\":\"A\",\"q\":\"a J.M.Maldacena.1\",\"sort\":\"mostrecent\",\"color\":0.50},{\"q\":\"t black hole\",\"pin\":true},{\"name\":\"C\",\"q\":\"refersto:recid:451647\",\"sort\":\"mostcited\"}]",
+      "do": {
+        "add": [
+          "again",
+          "t black hole",
+          null
+        ]
+      },
+      "unchanged": true
+    },
+    {
+      "name": "The same `q` with another sort is another query",
+      "file": "[{\"q\":\"x\"}]",
+      "do": {
+        "add": [
+          "x",
+          "x",
+          "mostrecent"
+        ]
+      },
+      "expect": "[\n  {\n    \"q\": \"x\"\n  },\n  {\n    \"name\": \"x\",\n    \"q\": \"x\",\n    \"sort\": \"mostrecent\"\n  }\n]\n"
+    },
+    {
+      "name": "Removing keeps the others' unknown keys",
+      "file": "[{\"name\":\"A\",\"q\":\"a J.M.Maldacena.1\",\"sort\":\"mostrecent\",\"color\":0.50},{\"q\":\"t black hole\",\"pin\":true},{\"name\":\"C\",\"q\":\"refersto:recid:451647\",\"sort\":\"mostcited\"}]",
+      "do": {
+        "remove": 1
+      },
+      "expect": "[\n  {\n    \"name\": \"A\",\n    \"q\": \"a J.M.Maldacena.1\",\n    \"sort\": \"mostrecent\",\n    \"color\": 0.50\n  },\n  {\n    \"name\": \"C\",\n    \"q\": \"refersto:recid:451647\",\n    \"sort\": \"mostcited\"\n  }\n]\n"
+    },
+    {
+      "name": "Moving",
+      "file": "[{\"name\":\"A\",\"q\":\"a J.M.Maldacena.1\",\"sort\":\"mostrecent\",\"color\":0.50},{\"q\":\"t black hole\",\"pin\":true},{\"name\":\"C\",\"q\":\"refersto:recid:451647\",\"sort\":\"mostcited\"}]",
+      "do": {
+        "move": [
+          2,
+          0
+        ]
+      },
+      "expect": "[\n  {\n    \"name\": \"C\",\n    \"q\": \"refersto:recid:451647\",\n    \"sort\": \"mostcited\"\n  },\n  {\n    \"name\": \"A\",\n    \"q\": \"a J.M.Maldacena.1\",\n    \"sort\": \"mostrecent\",\n    \"color\": 0.50\n  },\n  {\n    \"q\": \"t black hole\",\n    \"pin\": true\n  }\n]\n"
+    },
+    {
+      "name": "Renaming adds `name` to an entry without one",
+      "file": "[{\"name\":\"A\",\"q\":\"a J.M.Maldacena.1\",\"sort\":\"mostrecent\",\"color\":0.50},{\"q\":\"t black hole\",\"pin\":true},{\"name\":\"C\",\"q\":\"refersto:recid:451647\",\"sort\":\"mostcited\"}]",
+      "do": {
+        "rename": [
+          1,
+          "Black holes"
+        ]
+      },
+      "expect": "[\n  {\n    \"name\": \"A\",\n    \"q\": \"a J.M.Maldacena.1\",\n    \"sort\": \"mostrecent\",\n    \"color\": 0.50\n  },\n  {\n    \"q\": \"t black hole\",\n    \"pin\": true,\n    \"name\": \"Black holes\"\n  },\n  {\n    \"name\": \"C\",\n    \"q\": \"refersto:recid:451647\",\n    \"sort\": \"mostcited\"\n  }\n]\n"
+    },
+    {
+      "name": "Not JSON",
+      "file": "[{",
+      "readable": false,
+      "do": {
+        "add": [
+          "x",
+          "x",
+          null
+        ]
+      }
+    },
+    {
+      "name": "Not an array",
+      "file": "{\"q\": \"x\"}",
+      "readable": false,
+      "do": "choose"
+    },
+    {
+      "name": "`q` missing",
+      "file": "[{\"name\": \"x\"}]",
+      "readable": false,
+      "do": {
+        "add": [
+          "x",
+          "x",
+          null
+        ]
+      }
+    },
+    {
+      "name": "`q` empty",
+      "file": "[{\"q\": \"\"}]",
+      "readable": false,
+      "do": {
+        "remove": 0
+      }
+    },
+    {
+      "name": "`sort` of the wrong type",
+      "file": "[{\"q\": \"x\", \"sort\": 1}]",
+      "readable": false,
+      "do": {
+        "remove": 0
+      }
+    }
+  ],
+  "history": [
+    {
+      "searches": [
+        "a",
+        " b ",
+        "",
+        "  ",
+        "a",
+        "c"
+      ],
+      "expect": [
+        "c",
+        "a",
+        "b"
+      ]
+    },
+    {
+      "searches": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22",
+        "23",
+        "24"
+      ],
+      "expect": [
+        "24",
+        "23",
+        "22",
+        "21",
+        "20",
+        "19",
+        "18",
+        "17",
+        "16",
+        "15",
+        "14",
+        "13",
+        "12",
+        "11",
+        "10",
+        "9",
+        "8",
+        "7",
+        "6",
+        "5"
+      ]
+    },
+    {
+      "searches": [
+        "a",
+        "b",
+        "c"
+      ],
+      "forget": [
+        "b",
+        "x"
+      ],
+      "expect": [
+        "c",
+        "a"
+      ]
+    }
+  ]
+}

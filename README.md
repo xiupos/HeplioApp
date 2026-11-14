@@ -1,52 +1,31 @@
-<p align="center" width="100%">
-<img alt="AppIcon" src="./Docs/logo.png" width="150px">
-</p>
+# HeplioApp
 
-<p align="center" width="100%">
-<h1 align="center">Heplio</h1>
-</p>
+An unofficial [INSPIRE-HEP](https://inspirehep.net) client for iPhone and iPad.
 
-<p align="center" width="100%">
-Unofficial INSPIRE-HEP client for iOS/iPadOS.
-</p>
+Everything it lists is the answer to an INSPIRE query: a search, an author's papers, a paper's references or citations. Queries and papers you keep are saved as JSON files in a folder you choose, which you can sync between devices.
 
-<p align="center" width="100%">
-<del>App Store</del> | <a href="https://testflight.apple.com/join/GtK8NEWV">TestFlight</a>
-</p>
+Heplio is not affiliated with INSPIRE.
 
-Heplio is an unofficial INSPIRE-HEP client for iPhone and iPad, designed for researchers and students in high-energy physics.
+## Building
 
-## Features
+Open `HeplioApp.swiftpm` in Swift Playgrounds on an iPad (iPadOS 26 or later) and run it. It has no dependencies. A build is also on [TestFlight](https://testflight.apple.com/join/GtK8NEWV).
 
-- **Search** — full-text search across INSPIRE-HEP's literature database, sortable by relevance, date, or citations
-- **New** — a time-ordered feed of recent papers, grouped by day and filterable by arXiv category
-- **Explore** — a static browsable catalog: arXiv categories, collaborations, and curated collections (reviews, lecture notes, landmark papers)
-- **Home** — personalized recommendations based on your saved papers and reading history
-- **Library & History** — save papers offline, and revisit your reading and search history
-- Paper detail screens with references, citations, related papers, figures, LaTeX/MathML rendering, and links to arXiv/DOI/PDF
+## Using
 
-## Requirements
+Search in the INSPIRE tab with INSPIRE's [search syntax](https://help.inspirehep.net/knowledge-base/inspire-paper-search/), for example `a Juan.M.Maldacena.1`, `t black hole and topcite 100+`, or `refersto:recid:451647`. Press Return to search.
 
-- iPadOS or iOS 26 or later
-- Swift Playgrounds (iPad) to build and run, or Xcode 26+ (untested — see [Build](#build))
+- **A paper's page** shows its details and figures, links to its authors, references, and citations, to arXiv and the DOI, and copies its BibTeX.
+- **Save** a paper with the star, or any list's query with the bookmark. Papers go to the Library tab, queries to the INSPIRE tab.
+- **Search** finds among the saved papers as you type, by title, author, or tag, and lists the tags by namespace before you type.
+- **Get PDF** downloads a paper's PDF from arXiv to the library. Papers with a PDF show its first page as their cover.
+- **The library** is a folder (Settings) laid out as a [refdir](https://github.com/xiupos/refdir) library, so other refdir apps can open it: one folder per paper, with its `entry.json` and its PDF, and the saved queries in `.heplio/queries.json`. Keep it in iCloud Drive, or a folder another app syncs. It is read again when you come back to the app.
 
-## Build
+With a keyboard: ⌘, opens Settings, and ⌘S saves the paper shown.
 
-### Swift Playgrounds on iPad
+## See also
 
-Requires iPadOS 26 or later. Clone this repository as `HeplioApp.swiftpm`, open it in Swift Playgrounds, and tap Run to build and launch on the device.
-
-### Xcode, etc.
-
-This is a standard `.swiftpm` App Project, so it should also open and build in Xcode 26+ on macOS — untested, since the maintainer has no Mac to verify it on.
+- [heplio-gtk](https://github.com/xiupos/heplio-gtk): Heplio for GNOME, whose `spec/SPEC.md` describes the behaviour the apps share
 
 ## License
 
-The source code is MIT licensed — see [LICENSE](LICENSE).
-
-This license covers the app's code only. Paper metadata, abstracts, figures, and PDFs are fetched live from the INSPIRE-HEP API and remain subject to INSPIRE-HEP's own terms of use and the copyright of the original authors and publishers. Heplio is not affiliated with or endorsed by INSPIRE-HEP or CERN.
-
-## Acknowledgments
-
-- [INSPIRE-HEP](https://inspirehep.net) — the literature database this app is a client for
-- [KaTeX](https://katex.org) and [MathJax](https://www.mathjax.org) — loaded from CDN at runtime to typeset LaTeX and MathML in titles and abstracts
+[MIT](LICENSE).
