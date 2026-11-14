@@ -1,5 +1,4 @@
-// The saved papers: covers, cards, the Library tab, searching the library, and tags' pages; and
-// the views pages share
+// The saved papers: covers, cards, the Library tab, searching the library, and tags' pages
 
 import CryptoKit
 import PDFKit
@@ -86,7 +85,7 @@ actor Covers {
 }
 
 /// The SHA-1 of a text, in hex
-func sha1(_ text: String) -> String {
+private func sha1(_ text: String) -> String {
     Insecure.SHA1.hash(data: Data(text.utf8)).map { String(format: "%02x", $0) }.joined()
 }
 
@@ -229,7 +228,7 @@ struct LibraryResults: View {
         return ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 if !tags.isEmpty {
-                    TagLinks(tags: tags, fullNames: true)
+                    TagLinks(tags: tags)
                 }
                 CardGrid(papers: papers)
             }
@@ -269,51 +268,9 @@ private func heading(_ namespace: String) -> String {
     namespace.isEmpty ? "Other Tags" : namespace.prefix(1).uppercased() + namespace.dropFirst()
 }
 
-/// A part of a page under its heading, as the App Store has them. The content has its own margins,
-/// so that a row of things can scroll to the edges
-struct Shelf<Content: View>: View {
-    let heading: String
-    @ViewBuilder let content: Content
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(verbatim: heading)
-                .font(.title3.bold())
-                .padding(.horizontal)
-            content
-        }
-    }
-}
-
-/// Its subviews with a line between each two: rows down, or tiles across
-struct Separated<Content: View>: View {
-    var axis = Axis.vertical
-    @ViewBuilder let content: Content
-
-    var body: some View {
-        let stack = axis == .vertical ? AnyLayout(VStackLayout(alignment: .leading, spacing: 0))
-                                      : AnyLayout(HStackLayout(spacing: 0))
-        stack {
-            Group(subviews: content) { subviews in
-                ForEach(subviews.indices, id: \.self) { i in
-                    if i > 0 {
-                        Divider()
-                            .padding(.leading, axis == .vertical ? 16 : 0)
-                    }
-                    subviews[i]
-                }
-            }
-        }
-    }
-}
-
-/// Tags side by side, each opening its page, with the number of its papers, and `trailing` after
-/// them
-struct TagLinks<Trailing: View>: View {
+/// Tags side by side, each opening its page, with the number of its papers
+private struct TagLinks: View {
     let tags: [TagCount]
-    /// With their namespace, where tags of several are shown together
-    let fullNames: Bool
-    @ViewBuilder var trailing: Trailing
 
     var body: some View {
         ScrollView(.horizontal) {
@@ -321,7 +278,7 @@ struct TagLinks<Trailing: View>: View {
                 ForEach(tags) { tag in
                     NavigationLink(value: Route.tag(tag.tag)) {
                         HStack(spacing: 4) {
-                            Text(verbatim: fullNames ? tag.tag : splitTag(tag.tag).value)
+                            Text(verbatim: tag.tag)
                             Text(tag.count, format: .number)
                                 .foregroundStyle(.secondary)
                         }
@@ -329,17 +286,10 @@ struct TagLinks<Trailing: View>: View {
                     .buttonStyle(.bordered)
                     .buttonBorderShape(.capsule)
                 }
-                trailing
             }
             .padding(.horizontal)
         }
         .scrollIndicators(.hidden)
-    }
-}
-
-extension TagLinks where Trailing == EmptyView {
-    init(tags: [TagCount], fullNames: Bool) {
-        self.init(tags: tags, fullNames: fullNames) { EmptyView() }
     }
 }
 
@@ -363,19 +313,5 @@ struct TagPage: View {
         .refreshable { await library.reload() }
         .navigationTitle(tag)
         .navigationBarTitleDisplayMode(.inline)
-    }
-}
-
-/// A tag in a row: its value, with its namespace after it
-struct TagLabel: View {
-    let tag: String
-
-    var body: some View {
-        let parts = splitTag(tag)
-        LabeledContent {
-            if let namespace = parts.namespace { Text(verbatim: namespace) }
-        } label: {
-            Text(verbatim: parts.value)
-        }
     }
 }

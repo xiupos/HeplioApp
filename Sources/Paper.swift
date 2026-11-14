@@ -1,5 +1,5 @@
-// One paper's page, laid out as the App Store lays out an app's: a hero, tiles of details, the
-// abstract, the tags of a saved paper, the figures, the authors, and the links
+// One paper's page: a hero, tiles of details, the abstract, the figures, the tags of a saved
+// paper, the authors, and the links
 
 import QuickLook
 import SwiftUI
@@ -25,8 +25,9 @@ struct PaperPage: View {
     @State private var reading: URL?
     @State private var removing = false
     @State private var removingPDF = false
-    @State private var editingTags = false
     @State private var sharing: Sharing?
+    /// A page pushed from a tile
+    @State private var pushed: Route?
     /// Counts copies, for the feedback
     @State private var copied = 0
 
@@ -64,10 +65,6 @@ struct PaperPage: View {
         .sheet(item: $sharing) { sharing in
             ShareSheet(item: sharing.item)
                 .presentationDetents([.medium, .large])
-        }
-        .sheet(isPresented: $editingTags) {
-            TagEditor(recid: recid)
-                .environment(library)
         }
         .confirmationDialog("Remove from Library", isPresented: $removing) {
             Button("Remove Paper", role: .destructive) { library.remove(recid) }
@@ -204,54 +201,50 @@ struct PaperPage: View {
 
     private func page(_ record: Record) -> some View {
         let entry = library.paper(recid)
-        return ScrollView {
-            VStack(alignment: .leading, spacing: 28) {
+        return List {
+            Section {
                 hero(record, entry)
-                    .padding(.horizontal)
+            }
+            .listRowBackground(Color.clear)
+            Section {
                 tiles(record)
-                if !abstract.isEmpty {
-                    Shelf(heading: "Abstract") {
-                        Abstract(text: abstract)
-                            .padding(.horizontal)
-                    }
-                }
-                if let entry {
-                    Shelf(heading: "Tags") {
-                        // In the paper's order, each with its count in the library
-                        let counts = Dictionary(library.tags.map { ($0.tag, $0.count) }, uniquingKeysWith: max)
-                        TagLinks(tags: entry.tags.map { TagCount(tag: $0, count: counts[$0] ?? 1) }, fullNames: true) {
-                            Button(entry.tags.isEmpty ? "Add Tags" : "Edit", systemImage: "pencil") { editingTags = true }
-                                .buttonStyle(.bordered)
-                                .buttonBorderShape(.capsule)
-                        }
-                    }
-                }
-                if !record.figures.isEmpty {
-                    Shelf(heading: "Figures") { figureRow(record) }
-                }
-                if !record.authors.isEmpty {
-                    Shelf(heading: "Authors") {
-                        Separated {
-                            ForEach(Array(record.authors.prefix(authorsShown).enumerated()), id: \.offset) { _, author in
-                                NavigationLink(value: Route.list(author.list)) {
-                                    LinkRow(title: author.fullName, systemImage: "chevron.forward")
-                                }
-                            }
-                            if record.authors.count > authorsShown {
-                                NavigationLink(value: Route.authors(record.authors)) {
-                                    LinkRow(title: "Show All \(record.authors.count.formatted()) Authors", systemImage: "chevron.forward")
-                                }
-                            }
-                        }
-                    }
-                }
-                if entry?.pdf != nil || record.arxiv != nil || record.doi != nil {
-                    Shelf(heading: "Links") { links(record, entry) }
+            }
+            .listRowInsets(EdgeInsets())
+            if !abstract.isEmpty {
+                Section("Abstract") {
+                    Abstract(text: abstract)
                 }
             }
-            .buttonStyle(.plain)
-            .padding(.vertical)
+            if !record.figures.isEmpty {
+                Section("Figures") {
+                    figureRow(record)
+                }
+                .listRowInsets(EdgeInsets())
+            }
+            if let entry {
+                PaperTags(recid: recid, tags: entry.tags)
+            }
+            if !record.authors.isEmpty {
+                Section("Authors") {
+                    ForEach(Array(record.authors.prefix(authorsShown).enumerated()), id: \.offset) { _, author in
+                        NavigationLink(value: Route.list(author.list)) {
+                            Text(verbatim: author.fullName)
+                        }
+                    }
+                    if record.authors.count > authorsShown {
+                        NavigationLink(value: Route.authors(record.authors)) {
+                            Text("Show All \(record.authors.count.formatted()) Authors")
+                        }
+                    }
+                }
+            }
+            if entry?.pdf != nil || record.arxiv != nil || record.doi != nil {
+                links(record, entry)
+            }
         }
+        .listStyle(.insetGrouped)
+        // The tiles' pages: links in a row that holds several would share the row's tap
+        .navigationDestination(item: $pushed) { Destination(route: $0) }
     }
 
     /// The cover, the title, the authors, the date and journal, and the main button
@@ -312,14 +305,18 @@ struct PaperPage: View {
         let year = record.date.map { String($0.prefix(4)) }
         let short = record.authors.isEmpty ? "record \(recid)" : record.byline + (year.map { " (\($0))" } ?? "")
         return ScrollView(.horizontal) {
-            Separated(axis: .horizontal) {
+            Separated {
                 if let citations = record.citations {
-                    NavigationLink(value: Route.list(Query(name: "Citations of \(short)", q: "refersto:recid:\(recid)", sort: "mostrecent"))) {
+                    Button {
+                        pushed = .list(Query(name: "Citations of \(short)", q: "refersto:recid:\(recid)", sort: "mostrecent"))
+                    } label: {
                         Tile(label: "Citations", value: citations.formatted(), caption: "Show All", link: true)
                     }
                 }
                 if let references = record.references {
-                    NavigationLink(value: Route.list(Query(name: "References of \(short)", q: "citedby:recid:\(recid)", sort: "mostrecent"))) {
+                    Button {
+                        pushed = .list(Query(name: "References of \(short)", q: "citedby:recid:\(recid)", sort: "mostrecent"))
+                    } label: {
                         Tile(label: "References", value: references.formatted(), caption: "Show All", link: true)
                     }
                 }
@@ -337,6 +334,8 @@ struct PaperPage: View {
                     Tile(label: "Date", value: year ?? date, caption: date)
                 }
             }
+            .buttonStyle(.plain)
+            .padding(.vertical, 12)
             .padding(.horizontal, 8)
         }
         .scrollIndicators(.hidden)
@@ -372,16 +371,17 @@ struct PaperPage: View {
                                 .frame(width: 220, alignment: .leading)
                         }
                     }
+                    .buttonStyle(.plain)
                 }
             }
-            .padding(.horizontal)
+            .padding()
         }
         .scrollIndicators(.hidden)
     }
 
     /// The PDF in the library, arXiv's abstract page and PDF, and the DOI
     private func links(_ record: Record, _ entry: SavedPaper?) -> some View {
-        Separated {
+        Section("Links") {
             if let pdf = entry?.pdf {
                 Button { reading = pdf } label: {
                     LinkRow(title: "PDF in the Library", detail: pdf.lastPathComponent, systemImage: "doc.richtext")
@@ -425,8 +425,9 @@ private struct Abstract: View {
                         .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { whole = $0 }
                 }
             if !expanded && whole > shown + 1 {
+                // Borderless: in a list row, a plain button would take the whole row's tap
                 Button("More") { expanded = true }
-                    .foregroundStyle(.tint)
+                    .buttonStyle(.borderless)
             }
         }
     }
@@ -459,86 +460,100 @@ private struct Tile: View {
     }
 }
 
-/// A row that opens something: its title, perhaps a detail under it, and a symbol at its end
+/// A row that opens something: its title, a detail under it, and a symbol at its end
 private struct LinkRow: View {
     let title: String
-    var detail: String?
+    let detail: String
     let systemImage: String
 
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
                 Text(verbatim: title)
-                if let detail {
-                    Text(verbatim: detail)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                        .truncationMode(.middle)
-                }
+                Text(verbatim: detail)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             Image(systemName: systemImage)
                 .font(.footnote.weight(.semibold))
                 .foregroundStyle(.tertiary)
         }
-        .padding(.horizontal)
-        .padding(.vertical, 10)
+        // `Color.primary`, not `.primary`: in a button, `.primary` is the button's tint
+        .foregroundStyle(Color.primary)
         .contentShape(.rect)
     }
 }
 
-/// Edits a saved paper's tags, in a sheet: each is removed by swiping, a field adds one on
-/// Return, and rows offer the library's other tags that start with what is typed. The field's
-/// text is never changed while the user types in it: an input method's unfinished text would be
-/// lost. It is emptied once a tag is added
-private struct TagEditor: View {
+/// A saved paper's tags, as illust-shelf-ios's Info has them: a row for each, its value with its
+/// namespace after it, opening its page, and removed by swiping or from its menu. Under them, a
+/// field adds a tag on Return, and rows offer the library's other tags that start with what is
+/// typed. The field's text is never changed while the user types in it, which would lose an input
+/// method's unfinished text; it is emptied once a tag is added
+private struct PaperTags: View {
     let recid: Int
+    let tags: [String]
     @Environment(Library.self) private var library
-    @Environment(\.dismiss) private var dismiss
     @State private var text = ""
     @FocusState private var focused: Bool
 
     var body: some View {
-        let tags = library.paper(recid)?.tags ?? []
-        NavigationStack {
-            Form {
-                Section {
-                    ForEach(tags, id: \.self) { TagLabel(tag: $0) }
-                        .onDelete { offsets in
-                            offsets.map { tags[$0] }.forEach { library.detach($0, from: recid) }
-                        }
-                    TextField("Add Tag", text: $text)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled()
-                        .focused($focused)
-                        .onSubmit {
-                            add(text)
-                            focused = true
-                        }
-                    ForEach(suggestions(library.tags.map(\.tag), own: tags, text: text), id: \.self) { tag in
-                        Button { add(tag) } label: {
-                            Label(tag, systemImage: "plus.circle")
-                        }
+        Section("Tags") {
+            ForEach(tags, id: \.self) { tag in
+                let parts = splitTag(tag)
+                NavigationLink(value: Route.tag(tag)) {
+                    LabeledContent {
+                        if let namespace = parts.namespace { Text(verbatim: namespace) }
+                    } label: {
+                        Text(verbatim: parts.value)
                     }
                 }
-            }
-            .navigationTitle("Tags")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") { dismiss() }
+                .contextMenu {
+                    Button("Copy", systemImage: "doc.on.doc") { UIPasteboard.general.string = tag }
+                    Button("Remove", systemImage: "trash", role: .destructive) { library.detach(tag, from: recid) }
                 }
             }
-            .showsErrors()
+            .onDelete { offsets in
+                offsets.map { tags[$0] }.forEach { library.detach($0, from: recid) }
+            }
+            TextField("Add Tag", text: $text)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+                .focused($focused)
+                .onSubmit {
+                    add(text)
+                    focused = true
+                }
+            ForEach(suggestions(library.tags.map(\.tag), own: tags, text: text), id: \.self) { tag in
+                Button { add(tag) } label: {
+                    Label(tag, systemImage: "plus.circle")
+                }
+            }
         }
-        .presentationDetents([.medium, .large])
     }
 
     private func add(_ tag: String) {
         guard !tag.trimmed.isEmpty else { return }
         library.attach(tag, to: recid)
         text = ""
+    }
+}
+
+/// Its subviews side by side, with a line between each two
+private struct Separated<Content: View>: View {
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        HStack(spacing: 0) {
+            Group(subviews: content) { subviews in
+                ForEach(subviews.indices, id: \.self) { i in
+                    if i > 0 { Divider() }
+                    subviews[i]
+                }
+            }
+        }
     }
 }
 
@@ -560,7 +575,7 @@ private struct ShareSheet: UIViewControllerRepresentable {
 }
 
 /// Draws an image over white: some figures are transparent, and would be unreadable on a dark page
-func onWhite(_ image: UIImage) -> UIImage {
+private func onWhite(_ image: UIImage) -> UIImage {
     let format = UIGraphicsImageRendererFormat()
     format.scale = image.scale
     format.opaque = true
