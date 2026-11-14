@@ -60,7 +60,7 @@ struct PaperPage: View {
         }
         // One after another; again for those not loaded when the page comes back
         .task(id: record?.recid) { await loadFigures() }
-        .quickLookPreview($reading)
+        .background { PDFReader(url: $reading) { library.refresh() } }
         .sensoryFeedback(.success, trigger: copied)
         .sheet(item: $sharing) { sharing in
             ShareSheet(item: sharing.item)
@@ -553,6 +553,66 @@ private struct Separated<Content: View>: View {
                     subviews[i]
                 }
             }
+        }
+    }
+}
+
+/// Shows a PDF with Quick Look, which saves the user's markup into the file itself. Presented from
+/// UIKit: `quickLookPreview` cannot allow editing
+private struct PDFReader: UIViewControllerRepresentable {
+    @Binding var url: URL?
+    /// Called when the markup has been saved
+    let saved: () -> Void
+
+    func makeUIViewController(context: Context) -> UIViewController {
+        UIViewController()
+    }
+
+    func updateUIViewController(_ host: UIViewController, context: Context) {
+        context.coordinator.parent = self
+        guard let url, host.presentedViewController == nil else { return }
+        context.coordinator.url = url
+        let preview = QLPreviewController()
+        preview.dataSource = context.coordinator
+        preview.delegate = context.coordinator
+        host.present(preview, animated: true)
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+
+    // Quick Look calls these on the main thread, though its protocols do not say so
+    @MainActor
+    final class Coordinator: NSObject, @preconcurrency QLPreviewControllerDataSource,
+                             @preconcurrency QLPreviewControllerDelegate {
+        var parent: PDFReader
+        var url: URL?
+
+        init(_ parent: PDFReader) {
+            self.parent = parent
+        }
+
+        func numberOfPreviewItems(in controller: QLPreviewController) -> Int {
+            url == nil ? 0 : 1
+        }
+
+        // Asked only while there is a URL: see `numberOfPreviewItems`
+        func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
+            url! as NSURL
+        }
+
+        func previewController(_ controller: QLPreviewController,
+                               editingModeFor previewItem: QLPreviewItem) -> QLPreviewItemEditingMode {
+            .updateContents
+        }
+
+        func previewController(_ controller: QLPreviewController, didUpdateContentsOf previewItem: QLPreviewItem) {
+            parent.saved()
+        }
+
+        func previewControllerDidDismiss(_ controller: QLPreviewController) {
+            parent.url = nil
         }
     }
 }
