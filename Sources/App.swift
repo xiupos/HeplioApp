@@ -55,6 +55,7 @@ final class Library {
         var stale = false
         if let url = try? URL(resolvingBookmarkData: bookmark, bookmarkDataIsStale: &stale) {
             open(url, remember: stale)
+            refresh()
         } else {
             error = "The library folder could not be found. Choose it again in Settings."
         }
@@ -69,12 +70,7 @@ final class Library {
         tags = []
         queries = .missing
         open(url, remember: true)
-        do {
-            try chooseFolder(url)
-        } catch {
-            self.error = message(error, "the saved queries")
-        }
-        refresh()
+        change("the saved queries", chooseFolder)
     }
 
     private func open(_ url: URL, remember: Bool) {
@@ -83,6 +79,16 @@ final class Library {
         folder = url
         if remember, let bookmark = try? url.bookmarkData() {
             defaults.set(bookmark, forKey: "folder")
+        }
+    }
+
+    /// Changes the folder, says why if that fails, and reads it again
+    private func change(_ what: String, _ change: (URL) throws -> Void) {
+        guard let folder else { return }
+        do {
+            try change(folder)
+        } catch {
+            self.error = message(error, what)
         }
         refresh()
     }
@@ -139,13 +145,7 @@ final class Library {
     /// Deletes the paper's entry, its folder with all it holds: there is no trash for the user's
     /// folders. Ask first
     func remove(_ recid: Int) {
-        guard let folder else { return }
-        do {
-            try removePaper(folder, recid) { try FileManager.default.removeItem(at: $0) }
-        } catch {
-            self.error = message(error, "the paper")
-        }
-        refresh()
+        change("the paper") { try removePaper($0, recid, delete: FileManager.default.removeItem) }
     }
 
     /// Keeps a PDF downloaded from arXiv in the paper's entry
@@ -157,33 +157,15 @@ final class Library {
 
     /// Deletes the PDF Heplio downloaded. Ask first
     func deletePDF(_ recid: Int) {
-        guard let folder else { return }
-        do {
-            try removePDF(folder, recid) { try FileManager.default.removeItem(at: $0) }
-        } catch {
-            self.error = message(error, "the PDF")
-        }
-        refresh()
+        change("the PDF") { try removePDF($0, recid, delete: FileManager.default.removeItem) }
     }
 
     func attach(_ tag: String, to recid: Int) {
-        guard let folder else { return }
-        do {
-            try addTag(folder, recid, tag)
-        } catch {
-            self.error = message(error, "the paper")
-        }
-        refresh()
+        change("the paper") { try addTag($0, recid, tag) }
     }
 
     func detach(_ tag: String, from recid: Int) {
-        guard let folder else { return }
-        do {
-            try removeTag(folder, recid, tag)
-        } catch {
-            self.error = message(error, "the paper")
-        }
-        refresh()
+        change("the paper") { try removeTag($0, recid, tag) }
     }
 
     // MARK: Saved queries
@@ -198,13 +180,7 @@ final class Library {
     }
 
     func saveQuery(_ query: Query) {
-        guard let folder else { return }
-        do {
-            try addQuery(folder, query)
-        } catch {
-            self.error = message(error, "the saved queries")
-        }
-        refresh()
+        change("the saved queries") { try addQuery($0, query) }
     }
 
     func deleteQuery(_ shown: Query, at index: Int) {
@@ -223,35 +199,34 @@ final class Library {
 
     /// Changes the query at `index`, if it is still the one shown: another device may have
     /// changed the file
-    private func changeQuery(_ shown: Query, at index: Int, _ change: (URL) throws -> Void) {
+    private func changeQuery(_ shown: Query, at index: Int, _ action: (URL) throws -> Void) {
         guard let folder else { return }
-        defer { refresh() }
         let list = readSavedQueries(folder).list
         guard list.indices.contains(index), list[index] == shown else {
             error = "The saved queries changed. Try again."
-            return
+            return refresh()
         }
-        do {
-            try change(folder)
-        } catch {
-            self.error = message(error, "the saved queries")
-        }
+        change("the saved queries", action)
     }
 
     // MARK: Search history
 
     func addToHistory(_ text: String) {
         remember(&history, text)
-        defaults.set(history, forKey: "history")
+        storeHistory()
     }
 
     func removeFromHistory(_ text: String) {
         forget(&history, text)
-        defaults.set(history, forKey: "history")
+        storeHistory()
     }
 
     func clearHistory() {
         history = []
+        storeHistory()
+    }
+
+    private func storeHistory() {
         defaults.set(history, forKey: "history")
     }
 }
@@ -279,9 +254,10 @@ func message(_ error: Error, _ what: String) -> String {
 
 // MARK: - Tabs
 
-/// Library and Search, for what the user keeps, and INSPIRE, for everything fetched
+/// Library, every saved paper, and Search, of INSPIRE or of the library
 struct RootView: View {
     @Environment(Library.self) private var library
+    @Environment(\.horizontalSizeClass) private var sizeClass
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
@@ -290,11 +266,16 @@ struct RootView: View {
             Tab("Library", systemImage: "books.vertical") {
                 Stack { LibraryPage() }
             }
-            Tab("Search", systemImage: "magnifyingglass") {
-                Stack { SearchPage() }
-            }
-            Tab("INSPIRE", systemImage: "globe") {
-                Stack { InspirePage() }
+            // A search tab only where the tab bar is at the top: at the bottom, it would turn the
+            // tab bar into its field
+            if sizeClass == .regular {
+                Tab(role: .search) {
+                    Stack { SearchPage() }
+                }
+            } else {
+                Tab("Search", systemImage: "magnifyingglass") {
+                    Stack { SearchPage() }
+                }
             }
         }
         // A synced change shows when the user comes back
@@ -312,6 +293,16 @@ extension View {
     func showsErrors() -> some View {
         modifier(ShowsErrors())
     }
+
+    /// The folder picker, which opens the folder chosen as the library
+    func choosesFolder(_ isPresented: Binding<Bool>) -> some View {
+        modifier(ChoosesFolder(isPresented: isPresented))
+    }
+
+    /// A button in the toolbar that shows Settings
+    func settingsButton() -> some View {
+        modifier(SettingsButton())
+    }
 }
 
 private struct ShowsErrors: ViewModifier {
@@ -323,13 +314,6 @@ private struct ShowsErrors: ViewModifier {
         } message: {
             Text(library.error ?? "")
         }
-    }
-}
-
-extension View {
-    /// The folder picker, which opens the folder chosen as the library
-    func choosesFolder(_ isPresented: Binding<Bool>) -> some View {
-        modifier(ChoosesFolder(isPresented: isPresented))
     }
 }
 
@@ -386,13 +370,6 @@ struct Destination: View {
 }
 
 // MARK: - Settings
-
-extension View {
-    /// A button in the toolbar that shows Settings
-    func settingsButton() -> some View {
-        modifier(SettingsButton())
-    }
-}
 
 private struct SettingsButton: ViewModifier {
     @Environment(Library.self) private var library

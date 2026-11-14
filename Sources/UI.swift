@@ -1,5 +1,5 @@
-// The saved papers: covers, cards, the Library and Search tabs, and tags' pages; and how a tag
-// is shown
+// The saved papers: covers, cards, the Library tab, searching the library, and tags' pages; and
+// the views pages share
 
 import CryptoKit
 import PDFKit
@@ -41,20 +41,21 @@ struct Cover: View {
 }
 
 /// Covers are rendered on the device with PDFKit, one at a time, off the main thread, and kept as
-/// PNG in the app's caches (`Caches/covers/2/`: the covers in `covers/` were drawn in the wrong
-/// place), named by the SHA-1 of the PDF's path. One older
-/// than its PDF is rendered again. No PDF is downloaded for a cover
+/// PNG in the app's caches, named by the SHA-1 of the PDF's path. One older than its PDF is
+/// rendered again. No PDF is downloaded for a cover
 actor Covers {
     static let shared = Covers()
     /// In points: a little more than the cards' width
     private let width: CGFloat = 200
+    /// Changed when covers are rendered otherwise, so that the old ones are not used
+    private let version = 2
     private let memory = NSCache<NSString, UIImage>()
 
     func image(of pdf: URL) -> UIImage? {
         guard let modified = modified(pdf) else { return nil }
         let key = "\(pdf.path)\n\(modified.timeIntervalSince1970)" as NSString
         if let hit = memory.object(forKey: key) { return hit }
-        let file = URL.cachesDirectory.appendingPathComponent("covers/2/\(sha1(pdf.path)).png")
+        let file = URL.cachesDirectory.appendingPathComponent("covers/\(version)/\(sha1(pdf.path)).png")
         if let made = self.modified(file), made >= modified, let image = UIImage(contentsOfFile: file.path) {
             memory.setObject(image, forKey: key)
             return image
@@ -177,34 +178,23 @@ private struct NoFolder: View {
     }
 }
 
-// MARK: - Search
+// MARK: - Searching the library
 
-/// The Search tab: a field that finds among the saved papers as the user types, with the tags
-/// that match above them. While it is empty, the library's tags by namespace. Nothing here uses
+/// What the Search tab shows for the library: the saved papers that `text` finds, with the tags
+/// that match above them; while it is empty, the library's tags by namespace. Nothing here uses
 /// the network
-struct SearchPage: View {
+struct LibraryResults: View {
+    let text: String
     @Environment(Library.self) private var library
-    @State private var search = ""
 
     var body: some View {
-        let text = search.trimmed
-        Group {
-            if library.folder == nil {
-                NoFolder()
-            } else if text.isEmpty {
-                tags
-            } else {
-                found(text)
-            }
+        if library.folder == nil {
+            NoFolder()
+        } else if text.isEmpty {
+            tags
+        } else {
+            found
         }
-        .navigationTitle("Search")
-        .toolbarTitleDisplayMode(.inlineLarge)
-        // Always shown: finding is what the tab is for
-        .searchable(text: $search, placement: .navigationBarDrawer(displayMode: .always),
-                    prompt: "Search Library")
-        .textInputAutocapitalization(.never)
-        .autocorrectionDisabled()
-        .settingsButton()
     }
 
     /// The library's tags under their namespace, capitalized, and those without one last
@@ -233,7 +223,7 @@ struct SearchPage: View {
         .refreshable { await library.reload() }
     }
 
-    private func found(_ text: String) -> some View {
+    private var found: some View {
         let papers = library.papers.filter { $0.matches(text) }
         let tags = library.tags.filter { tagMatches($0.tag, text) }
         return ScrollView {
@@ -295,8 +285,30 @@ struct Shelf<Content: View>: View {
     }
 }
 
-/// Tags side by side, each opening its page, with the number of its papers if it is counted, and
-/// `trailing` after them
+/// Its subviews with a line between each two: rows down, or tiles across
+struct Separated<Content: View>: View {
+    var axis = Axis.vertical
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        let stack = axis == .vertical ? AnyLayout(VStackLayout(alignment: .leading, spacing: 0))
+                                      : AnyLayout(HStackLayout(spacing: 0))
+        stack {
+            Group(subviews: content) { subviews in
+                ForEach(subviews.indices, id: \.self) { i in
+                    if i > 0 {
+                        Divider()
+                            .padding(.leading, axis == .vertical ? 16 : 0)
+                    }
+                    subviews[i]
+                }
+            }
+        }
+    }
+}
+
+/// Tags side by side, each opening its page, with the number of its papers, and `trailing` after
+/// them
 struct TagLinks<Trailing: View>: View {
     let tags: [TagCount]
     /// With their namespace, where tags of several are shown together
@@ -310,10 +322,8 @@ struct TagLinks<Trailing: View>: View {
                     NavigationLink(value: Route.tag(tag.tag)) {
                         HStack(spacing: 4) {
                             Text(verbatim: fullNames ? tag.tag : splitTag(tag.tag).value)
-                            if tag.count > 0 {
-                                Text(tag.count, format: .number)
-                                    .foregroundStyle(.secondary)
-                            }
+                            Text(tag.count, format: .number)
+                                .foregroundStyle(.secondary)
                         }
                     }
                     .buttonStyle(.bordered)

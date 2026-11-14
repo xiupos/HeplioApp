@@ -1,5 +1,5 @@
 // Fetching from INSPIRE and arXiv, the lists of a query's papers, a page at a time, and the
-// INSPIRE tab
+// Search tab, which searches INSPIRE or the library
 
 import SwiftUI
 
@@ -130,7 +130,19 @@ struct PaperList: View {
                         }
                     }
                 } header: {
-                    Text(total == 1 ? "1 result" : "\(total.formatted()) results")
+                    HStack {
+                        Text(total == 1 ? "1 result" : "\(total.formatted()) results")
+                        Spacer()
+                        Menu {
+                            Picker("Sort", selection: $sort) {
+                                ForEach(sorts, id: \.self) { Text($0.name).tag($0.sort) }
+                            }
+                        } label: {
+                            Label(sorts.first { $0.sort == sort }?.name ?? "Sort", systemImage: "arrow.up.arrow.down")
+                        }
+                        saveButton
+                            .labelStyle(.iconOnly)
+                    }
                 }
                 if loading != nil {
                     ProgressView()
@@ -165,16 +177,6 @@ struct PaperList: View {
                                            description: Text("Nothing on INSPIRE matches this query."))
                 } else {
                     ProgressView()
-                }
-            }
-        }
-        .toolbar {
-            ToolbarItemGroup(placement: .topBarTrailing) {
-                saveButton
-                Menu("Sort", systemImage: "arrow.up.arrow.down") {
-                    Picker("Sort", selection: $sort) {
-                        ForEach(sorts, id: \.self) { Text($0.name).tag($0.sort) }
-                    }
                 }
             }
         }
@@ -301,60 +303,78 @@ extension Author {
     }
 }
 
-// MARK: - INSPIRE
+// MARK: - Search
 
-/// The INSPIRE tab: a field that searches on Return, and, while it is empty, the saved queries and
-/// the recent searches, or examples of the syntax while there are none. A search's list shows in
-/// place of them until the field is emptied
-struct InspirePage: View {
+/// Where the Search tab searches
+enum Scope: String {
+    case inspire, library
+}
+
+/// The Search tab: one field, and a toggle of where it searches, INSPIRE or the library, as
+/// Music has. The scope is kept. INSPIRE is searched on Return, the library as the user types;
+/// the text stays when the scope changes, and is searched again there
+struct SearchPage: View {
     @Environment(Library.self) private var library
+    @AppStorage("scope") private var scope = Scope.inspire
     @State private var text = ""
-    /// The search shown, and a count that lists it again when it is searched again
+    /// The INSPIRE search shown, and a count that lists it again when it is searched again
     @State private var searched: (query: Query, count: Int)?
-    @State private var renaming: (index: Int, query: Query)?
-    @State private var newName = ""
 
     private static let tips = URL(string: "https://help.inspirehep.net/knowledge-base/inspire-paper-search/")!
-    private static let examples = ["a Juan.M.Maldacena.1", "t black hole and topcite 100+", "refersto:recid:451647",
-                                   "arxiv_eprints.categories:hep-th and de > today - 7"]
 
     var body: some View {
         Group {
-            if let searched {
-                PaperList(query: searched.query)
-                    .id(searched.count)
-            } else {
-                home
+            switch scope {
+            case .inspire:
+                if let searched {
+                    PaperList(query: searched.query)
+                        .id(searched.count)
+                } else {
+                    InspireHome(run: run)
+                }
+            case .library:
+                LibraryResults(text: text.trimmed)
             }
         }
-        .navigationTitle("INSPIRE")
+        // Under the field, always shown
+        .safeAreaInset(edge: .top, spacing: 0) {
+            Picker("Search In", selection: $scope) {
+                Text("INSPIRE").tag(Scope.inspire)
+                Text("Library").tag(Scope.library)
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal)
+            .padding(.bottom, 8)
+        }
+        .navigationTitle("Search")
         .toolbarTitleDisplayMode(.inlineLarge)
         // Always shown: searching is what the tab is for
-        .searchable(text: $text, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search INSPIRE")
+        .searchable(text: $text, placement: .navigationBarDrawer(displayMode: .always),
+                    prompt: scope == .inspire ? "Search INSPIRE" : "Search Library")
         .textInputAutocapitalization(.never)
         .autocorrectionDisabled()
-        .onSubmit(of: .search) { search() }
+        .onSubmit(of: .search) {
+            if scope == .inspire { search() }
+        }
         .onChange(of: text) { _, text in
             if text.isEmpty { searched = nil }
         }
+        .onChange(of: scope) { _, scope in
+            if scope == .inspire { search() }
+        }
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Link(destination: Self.tips) {
-                    Label("Search Tips", systemImage: "questionmark.circle")
+            if scope == .inspire {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Link(destination: Self.tips) {
+                        Label("Search Tips", systemImage: "questionmark.circle")
+                    }
                 }
             }
         }
         .settingsButton()
-        .alert("Rename Query", isPresented: Binding { renaming != nil } set: { if !$0 { renaming = nil } }) {
-            TextField("Name", text: $newName)
-            Button("Cancel", role: .cancel) {}
-            Button("Rename") {
-                if let renaming { library.rename(renaming.query, at: renaming.index, to: newName) }
-            }
-        }
     }
 
-    /// Searches for the field's text, trimmed, and remembers it
+    /// Searches INSPIRE for the field's text, trimmed, and remembers it
     private func search() {
         let text = text.trimmed
         guard !text.isEmpty else { return }
@@ -362,13 +382,25 @@ struct InspirePage: View {
         searched = (Query(name: text, q: text, sort: nil), (searched?.count ?? 0) + 1)
     }
 
-    /// Shows a search again, as if typed
+    /// Searches INSPIRE again for a recent search or an example, as if typed
     private func run(_ text: String) {
         self.text = text
         search()
     }
+}
 
-    private var home: some View {
+/// What the Search tab shows for INSPIRE while its field is empty: the saved queries, and the
+/// recent searches, or examples of the syntax while there are none
+private struct InspireHome: View {
+    let run: (String) -> Void
+    @Environment(Library.self) private var library
+    @State private var renaming: (index: Int, query: Query)?
+    @State private var newName = ""
+
+    private static let examples = ["a Juan.M.Maldacena.1", "t black hole and topcite 100+", "refersto:recid:451647",
+                                   "arxiv_eprints.categories:hep-th and de > today - 7"]
+
+    var body: some View {
         List {
             Section {
                 switch library.queries {
@@ -404,8 +436,6 @@ struct InspirePage: View {
                         .foregroundStyle(.secondary)
                 }
             } header: {
-                // Here, not in the toolbar, where on an iPad it is folded into a menu beside the
-                // tab bar
                 HStack {
                     Text("Saved Queries")
                     Spacer()
@@ -414,33 +444,34 @@ struct InspirePage: View {
             }
             Section {
                 if library.history.isEmpty {
-                    ForEach(Self.examples, id: \.self) { example in
-                        Button { run(example) } label: {
-                            Label {
-                                Text(verbatim: example)
-                                    .foregroundStyle(Color.primary)
-                            } icon: {
-                                Image(systemName: "magnifyingglass")
-                            }
-                        }
-                    }
+                    ForEach(Self.examples, id: \.self) { searchRow($0, systemImage: "magnifyingglass") }
                 } else {
-                    ForEach(library.history, id: \.self) { recent in
-                        Button { run(recent) } label: {
-                            Label {
-                                Text(verbatim: recent)
-                                    .foregroundStyle(Color.primary)
-                            } icon: {
-                                Image(systemName: "clock.arrow.circlepath")
-                            }
-                        }
-                    }
+                    ForEach(library.history, id: \.self) { searchRow($0, systemImage: "clock.arrow.circlepath") }
                     .onDelete { offsets in
                         offsets.map { library.history[$0] }.forEach(library.removeFromHistory)
                     }
                 }
             } header: {
                 Text(library.history.isEmpty ? "Examples" : "Recent Searches")
+            }
+        }
+        .alert("Rename Query", isPresented: Binding { renaming != nil } set: { if !$0 { renaming = nil } }) {
+            TextField("Name", text: $newName)
+            Button("Cancel", role: .cancel) {}
+            Button("Rename") {
+                if let renaming { library.rename(renaming.query, at: renaming.index, to: newName) }
+            }
+        }
+    }
+
+    /// A search to run again: its text in the text's colour, not the button's
+    private func searchRow(_ text: String, systemImage: String) -> some View {
+        Button { run(text) } label: {
+            Label {
+                Text(verbatim: text)
+                    .foregroundStyle(Color.primary)
+            } icon: {
+                Image(systemName: systemImage)
             }
         }
     }

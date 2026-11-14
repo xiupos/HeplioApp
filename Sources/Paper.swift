@@ -167,8 +167,8 @@ struct PaperPage: View {
                 Button("Save to Library", systemImage: "star") { library.save(record) }
                     .keyboardShortcut("s")
             }
-            // Buttons that open the share sheet from the page: a ShareLink in a toolbar menu
-            // anchors the sheet to the menu, squeezed into the navigation bar
+            // Buttons, which open the sheet from the page: a ShareLink in a menu squeezes it into
+            // the navigation bar
             Menu("Share", systemImage: "square.and.arrow.up") {
                 if let pdf = entry?.pdf {
                     Button("Share PDF", systemImage: "doc.richtext") { sharing = Sharing(item: pdf) }
@@ -217,7 +217,9 @@ struct PaperPage: View {
                 }
                 if let entry {
                     Shelf(heading: "Tags") {
-                        TagLinks(tags: entry.tags.map { TagCount(tag: $0, count: 0) }, fullNames: true) {
+                        // In the paper's order, each with its count in the library
+                        let counts = Dictionary(library.tags.map { ($0.tag, $0.count) }, uniquingKeysWith: max)
+                        TagLinks(tags: entry.tags.map { TagCount(tag: $0, count: counts[$0] ?? 1) }, fullNames: true) {
                             Button(entry.tags.isEmpty ? "Add Tags" : "Edit", systemImage: "pencil") { editingTags = true }
                                 .buttonStyle(.bordered)
                                 .buttonBorderShape(.capsule)
@@ -229,12 +231,11 @@ struct PaperPage: View {
                 }
                 if !record.authors.isEmpty {
                     Shelf(heading: "Authors") {
-                        VStack(spacing: 0) {
+                        Separated {
                             ForEach(Array(record.authors.prefix(authorsShown).enumerated()), id: \.offset) { _, author in
                                 NavigationLink(value: Route.list(author.list)) {
                                     LinkRow(title: author.fullName, systemImage: "chevron.forward")
                                 }
-                                Divider().padding(.leading)
                             }
                             if record.authors.count > authorsShown {
                                 NavigationLink(value: Route.authors(record.authors)) {
@@ -294,7 +295,7 @@ struct PaperPage: View {
             } else if let pdf = entry?.pdf {
                 Button("Read") { reading = pdf }
             } else if let arxiv = record.arxiv {
-                // Not over Heplio's PDF, which is there though another file comes first
+                // Not again over Heplio's PDF, there behind another file
                 if library.folder != nil && entry?.arxivPDF == nil {
                     Button("Get PDF") { Task { await getPDF(record) } }
                 } else {
@@ -306,55 +307,39 @@ struct PaperPage: View {
         .buttonBorderShape(.capsule)
     }
 
-    /// The details it has, side by side, with a line between each two. Citations and References
-    /// open their lists. Nothing if it has none
-    @ViewBuilder
+    /// The details it has, side by side. Citations and References open their lists
     private func tiles(_ record: Record) -> some View {
-        let details = self.details(record)
-        if !details.isEmpty {
-            ScrollView(.horizontal) {
-                HStack(spacing: 0) {
-                    ForEach(Array(details.enumerated()), id: \.offset) { i, detail in
-                        if i > 0 { Divider() }
-                        if let route = detail.route {
-                            NavigationLink(value: route) { detail.tile }
-                        } else {
-                            detail.tile
-                        }
-                    }
-                }
-                .padding(.horizontal, 8)
-            }
-            .scrollIndicators(.hidden)
-        }
-    }
-
-    private func details(_ record: Record) -> [Detail] {
         let year = record.date.map { String($0.prefix(4)) }
         let short = record.authors.isEmpty ? "record \(recid)" : record.byline + (year.map { " (\($0))" } ?? "")
-        var details: [Detail] = []
-        if let citations = record.citations {
-            details.append(Detail(tile: Tile(label: "Citations", value: citations.formatted(), caption: "Show All", link: true),
-                                  route: .list(Query(name: "Citations of \(short)", q: "refersto:recid:\(recid)", sort: "mostrecent"))))
+        return ScrollView(.horizontal) {
+            Separated(axis: .horizontal) {
+                if let citations = record.citations {
+                    NavigationLink(value: Route.list(Query(name: "Citations of \(short)", q: "refersto:recid:\(recid)", sort: "mostrecent"))) {
+                        Tile(label: "Citations", value: citations.formatted(), caption: "Show All", link: true)
+                    }
+                }
+                if let references = record.references {
+                    NavigationLink(value: Route.list(Query(name: "References of \(short)", q: "citedby:recid:\(recid)", sort: "mostrecent"))) {
+                        Tile(label: "References", value: references.formatted(), caption: "Show All", link: true)
+                    }
+                }
+                if let pages = record.pages {
+                    Tile(label: "Length", value: pages.formatted(), caption: pages == 1 ? "page" : "pages")
+                }
+                if let category = record.category {
+                    Tile(label: "arXiv", value: category, caption: record.arxiv ?? "")
+                }
+                if let p = record.publication {
+                    Tile(label: "Journal", value: p.journalTitle ?? "",
+                         caption: [p.journalVolume, p.year.map { "(\($0))" }].compactMap { $0 }.joined(separator: " "))
+                }
+                if let date = record.date {
+                    Tile(label: "Date", value: year ?? date, caption: date)
+                }
+            }
+            .padding(.horizontal, 8)
         }
-        if let references = record.references {
-            details.append(Detail(tile: Tile(label: "References", value: references.formatted(), caption: "Show All", link: true),
-                                  route: .list(Query(name: "References of \(short)", q: "citedby:recid:\(recid)", sort: "mostrecent"))))
-        }
-        if let pages = record.pages {
-            details.append(Detail(tile: Tile(label: "Length", value: pages.formatted(), caption: pages == 1 ? "page" : "pages")))
-        }
-        if let category = record.category {
-            details.append(Detail(tile: Tile(label: "arXiv", value: category, caption: record.arxiv ?? "")))
-        }
-        if let p = record.publication {
-            details.append(Detail(tile: Tile(label: "Journal", value: p.journalTitle ?? "",
-                                             caption: [p.journalVolume, p.year.map { "(\($0))" }].compactMap { $0 }.joined(separator: " "))))
-        }
-        if let date = record.date {
-            details.append(Detail(tile: Tile(label: "Date", value: year ?? date, caption: date)))
-        }
-        return details
+        .scrollIndicators(.hidden)
     }
 
     /// The figures side by side, each opening its image in the browser
@@ -396,22 +381,19 @@ struct PaperPage: View {
 
     /// The PDF in the library, arXiv's abstract page and PDF, and the DOI
     private func links(_ record: Record, _ entry: SavedPaper?) -> some View {
-        VStack(spacing: 0) {
+        Separated {
             if let pdf = entry?.pdf {
                 Button { reading = pdf } label: {
                     LinkRow(title: "PDF in the Library", detail: pdf.lastPathComponent, systemImage: "doc.richtext")
                 }
-                Divider().padding(.leading)
             }
             if let arxiv = record.arxiv {
                 Link(destination: URL(string: "https://arxiv.org/abs/\(arxiv)")!) {
                     LinkRow(title: "arXiv", detail: arxiv, systemImage: "arrow.up.forward")
                 }
-                Divider().padding(.leading)
                 Link(destination: URL(string: pdfURL(arxiv))!) {
                     LinkRow(title: "PDF on arXiv", detail: pdfURL(arxiv), systemImage: "arrow.up.forward")
                 }
-                Divider().padding(.leading)
             }
             if let doi = record.doi, let url = URL(string: "https://doi.org/\(doi)") {
                 Link(destination: url) {
@@ -448,12 +430,6 @@ private struct Abstract: View {
             }
         }
     }
-}
-
-/// A tile of the paper's details, and the page it opens, if any
-private struct Detail {
-    let tile: Tile
-    var route: Route?
 }
 
 /// A detail, as the App Store shows an app's: a label, a value, and a caption under it
