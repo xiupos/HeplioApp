@@ -1,31 +1,27 @@
-# HeplioApp
+# heplio-ios
 
-An unofficial [INSPIRE-HEP](https://inspirehep.net) client for iPhone and iPad.
-
-Everything it lists is the answer to an INSPIRE query: a search, an author's papers, a paper's references or citations. Queries and papers you keep are saved as JSON files in a folder you choose, which you can sync between devices.
+A search of [INSPIRE-HEP](https://inspirehep.net) for iPhone and iPad. It shows what INSPIRE finds: the papers a query finds, with the start of their abstracts, and each paper in detail. It keeps no papers: copy a paper's key, and add it to your library with [refdir-ios](https://github.com/xiupos/refdir-ios). Its behaviour is [heplio-gtk's SPEC.md](https://github.com/xiupos/heplio-gtk/blob/main/SPEC.md), with its examples in [cases.json](cases.json).
 
 Heplio is not affiliated with INSPIRE.
 
+## Usage
+
+- Search in INSPIRE's [search syntax](https://help.inspirehep.net/knowledge-base/inspire-paper-search/),
+  or by an arXiv number, DOI, texkey, or link, sorted by date, citations, or relevance
+- See a paper's abstract, authors and their affiliations, journals, arXiv number, DOIs, and
+  keywords; its citations, references, and each author open as searches
+- Copy its key or its BibTeX; read its PDF from arXiv
+- Save the queries you come back to, starting with the week's hep-th
+
 ## Building
 
-Open `HeplioApp.swiftpm` in Swift Playgrounds on an iPad (iPadOS 26 or later) and run it. It has no dependencies. A build is also on [TestFlight](https://testflight.apple.com/join/GtK8NEWV).
-
-## Using
-
-Search INSPIRE in the Search tab with INSPIRE's [search syntax](https://help.inspirehep.net/knowledge-base/inspire-paper-search/), for example `a Juan.M.Maldacena.1`, `t black hole and topcite 100+`, or `refersto:recid:451647`. Press Return to search.
-
-- **A paper's page** shows its details and figures, links to its authors, references, and citations, to arXiv and the DOI, and copies its BibTeX.
-- **Save** a paper with the star, or any list's query with the bookmark. Papers go to the Library tab; saved queries are in the Search tab.
-- **Search** has two scopes, INSPIRE and Library, as Music has. In Library it finds among the saved papers as you type, by title, author, or tag, and lists the tags by namespace before you type.
-- **Get PDF** downloads a paper's PDF from arXiv to the library. Papers with a PDF show its first page as their cover.
-- **The library** is a folder (Settings) laid out as a [refdir](https://github.com/xiupos/refdir) library, so other refdir apps can open it: one folder per paper, with its `entry.json` and its PDF, and the saved queries in `.heplio/queries.json`. Keep it in iCloud Drive, or a folder another app syncs. It is read again when you come back to the app.
-
-With a keyboard: ⌘, opens Settings, and ⌘S saves the paper shown.
+Open `HeplioApp.swiftpm` in Swift Playgrounds on an iPad (iPadOS 26 or later) and run it. It has no dependencies.
 
 ## See also
 
-- [heplio-gtk](https://github.com/xiupos/heplio-gtk): Heplio for GNOME, whose `spec/SPEC.md` describes the behaviour the apps share
+- [heplio-gtk](https://github.com/xiupos/heplio-gtk): Heplio for GNOME, with the `heplio` command
+- [refdir-ios](https://github.com/xiupos/refdir-ios): the library the keys go to
 
 ## License
 
-[MIT](LICENSE).
+[MIT](LICENSE)

@@ -1,466 +1,421 @@
-// The app: the library's state (`Library`), the folder and its bookmark, the tabs, navigation,
-// and settings
+// The app: the list's state (`Store`), the saved queries, the places, the list and its pages,
+// copying, and PDFs in Quick Look
 
+import QuickLook
 import SwiftUI
-import UniformTypeIdentifiers
 
 @main
 struct HeplioApp: App {
-    @State private var library = Library()
+    @State private var store = Store()
 
     var body: some Scene {
         WindowGroup {
             RootView()
-                .environment(library)
+                .environment(store)
         }
     }
 }
 
-// MARK: - Library
+// MARK: - The store
 
-/// A tag of the library, and the number of its papers
-struct TagCount: Hashable, Identifiable {
-    let tag: String
-    let count: Int
-    var id: String { tag }
+/// A paper of the list, with what its row shows, made once, off the main thread
+struct Paper: Identifiable, Hashable, Sendable {
+    let record: Record
+    let title: String
+    let subtitle: String
+    /// The start: enough for two lines, and quicker to make
+    let abstract: String
+    var id: Int { record.recid }
+
+    init(_ record: Record) {
+        self.record = record
+        title = plain(record.title)
+        let citations = record.citations.map { counted($0, "citation") }
+        subtitle = [record.byline, record.date, citations].compactMap { $0 }.filter { !$0.isEmpty }
+            .joined(separator: " · ")
+        abstract = plain(String((record.abstract ?? "").prefix(400)))
+    }
 }
 
-/// The library folder, as last read, and the search history. One for the app. Every change to
-/// the folder reads it again after, off the main thread
+/// A place of the sidebar
+enum Place: Hashable {
+    case inspire
+    case saved(Query)
+}
+
+/// What the list shows
+enum ListState: Equatable {
+    /// Nothing searched yet
+    case start
+    case loading
+    case failed(String)
+    /// The pages loaded, of how many papers in all
+    case shown(total: Int, pages: Int)
+}
+
 @MainActor
 @Observable
-final class Library {
-    /// The chosen folder, while the app has access to it
-    private(set) var folder: URL?
-    /// Newest `added` first, then by folder name
-    private(set) var papers: [SavedPaper] = []
-    /// The recids of the papers
-    private(set) var saved: Set<Int> = []
-    private(set) var tags: [TagCount] = []
-    private(set) var queries: Queries = .missing
-    /// Newest first
-    private(set) var history: [String]
-    /// Shown in an alert
-    var error: String?
-    /// Whether the folder picker is shown
-    var choosingFolder = false
+final class Store {
+    /// The PDFs downloaded to read, of this launch: emptied at the next
+    static let pdfs = FileManager.default.temporaryDirectory.appendingPathComponent("PDFs")
 
-    private let defaults = UserDefaults.standard
-    /// Counts the reads begun: one overtaken by a newer one is dropped
-    private var started = 0
+    var saved: [Query] {
+        didSet {
+            UserDefaults.standard.set(saved.map { [$0.q, $0.sort] }, forKey: "queries")
+            // The place follows the query shown, saved or not
+            if let query { place = saved.contains(query) ? .saved(query) : .inspire }
+        }
+    }
+    /// The order of a search: the query shown's
+    private(set) var sort: String {
+        didSet { UserDefaults.standard.set(sort, forKey: "sort") }
+    }
+    /// The sidebar's selection. A saved query chosen is shown; INSPIRE leaves the search shown,
+    /// unless that is a saved query
+    var place: Place? = .inspire {
+        didSet {
+            switch place {
+            case .saved(let q) where q != query: show(q)
+            case .inspire where isSaved: clear()
+            default: break
+            }
+        }
+    }
+    private(set) var query: Query?
+    private(set) var papers: [Paper] = []
+    private(set) var state = ListState.start
+    /// Whether the next page is being loaded
+    private(set) var loadingMore = false
+    /// Each search is numbered, so that an answer to one replaced by another is dropped
+    private var searchNumber = 0
+    /// The list's selection, and the paper on the page, which stays when the list changes
+    var selection: Int? {
+        didSet {
+            if let paper = papers.first(where: { $0.id == selection }) { self.paper = paper.record }
+        }
+    }
+    private(set) var paper: Record?
+    /// The column shown where only one fits, as on an iPhone
+    var column = NavigationSplitViewColumn.sidebar
+    /// The PDF in Quick Look, and the paper whose PDF is being downloaded to show
+    var reading: URL?
+    private(set) var downloading: Int?
+    var problem: String?
 
     init() {
-        history = defaults.stringArray(forKey: "history") ?? []
-        guard let bookmark = defaults.data(forKey: "folder") else { return }
-        var stale = false
-        if let url = try? URL(resolvingBookmarkData: bookmark, bookmarkDataIsStale: &stale) {
-            open(url, remember: stale)
-            refresh()
-        } else {
-            error = "The library folder could not be found. Choose it again in Settings."
-        }
+        let stored = UserDefaults.standard.array(forKey: "queries") as? [[String]]
+        saved = stored?.compactMap { $0.count == 2 ? Query(q: $0[0], sort: $0[1]) : nil } ?? firstSaved
+        sort = UserDefaults.standard.string(forKey: "sort") ?? "mostrecent"
+        try? FileManager.default.removeItem(at: Store.pdfs)
     }
 
-    /// Opens a folder the user chose, in place of the current one. A new library gets an example
-    /// query
-    func choose(_ url: URL) {
-        folder?.stopAccessingSecurityScopedResource()
+    var isSaved: Bool { query.map(saved.contains) ?? false }
+
+    // MARK: Searching
+
+    /// What was typed into the search field, in the sort chosen
+    func search(_ typed: String) {
+        let q = inspireQuery(typed)
+        if !q.isEmpty { show(Query(q: q, sort: sort)) }
+    }
+
+    /// Searches INSPIRE for the query, from its first page
+    func show(_ query: Query) {
+        self.query = query
+        sort = query.sort
+        place = saved.contains(query) ? .saved(query) : .inspire
+        searchNumber += 1
         papers = []
-        saved = []
-        tags = []
-        queries = .missing
-        open(url, remember: true)
-        change("the saved queries", chooseFolder)
+        loadingMore = false
+        state = .loading
+        let n = searchNumber
+        Task { await load(query, page: 1, search: n) }
     }
 
-    private func open(_ url: URL, remember: Bool) {
-        // false for folders the app may read anyway, such as its own
-        _ = url.startAccessingSecurityScopedResource()
-        folder = url
-        if remember, let bookmark = try? url.bookmarkData() {
-            defaults.set(bookmark, forKey: "folder")
-        }
+    /// A paper's citations, references, or author's papers, by date, in the list
+    func open(_ q: String) {
+        show(Query(q: q, sort: "mostrecent"))
+        selection = nil
+        column = .content
     }
 
-    /// Changes the folder, says why if that fails, and reads it again
-    private func change(_ what: String, _ change: (URL) throws -> Void) {
-        guard let folder else { return }
+    func clear() {
+        query = nil
+        searchNumber += 1
+        papers = []
+        state = .start
+    }
+
+    func retry() {
+        if let query { show(query) }
+    }
+
+    /// Another order searches the query shown again
+    func setSort(_ new: String) {
+        sort = new
+        if let query, query.sort != new { show(Query(q: query.q, sort: new)) }
+    }
+
+    func toggleSaved() {
+        if let query { saved = toggled(saved, query) }
+    }
+
+    /// The next page, at the end of the list. One that fails says why, and the list keeps what it
+    /// has: reaching its end again tries again
+    func more() {
+        guard case .shown(let total, let pages) = state, let query, !loadingMore,
+              hasMore(total: total, page: pages) else { return }
+        loadingMore = true
+        let n = searchNumber
+        Task { await load(query, page: pages + 1, search: n) }
+    }
+
+    private func load(_ query: Query, page: Int, search n: Int) async {
         do {
-            try change(folder)
+            let (total, records) = try await Fetch.search(query, page: page)
+            let made = await Task.detached { records.map(Paper.init) }.value
+            guard n == searchNumber else { return }
+            // A paper INSPIRE gives again on a later page is not listed twice
+            let listed = Set(papers.map(\.id))
+            papers += made.filter { !listed.contains($0.id) }
+            state = .shown(total: total, pages: page)
         } catch {
-            self.error = message(error, what)
+            guard n == searchNumber else { return }
+            if page == 1 { state = .failed(error.localizedDescription) } else { problem = error.localizedDescription }
         }
-        refresh()
+        if n == searchNumber { loadingMore = false }
     }
 
-    /// Reads the folder again
-    func reload() async {
-        guard let folder else { return }
-        started += 1
-        let mine = started
-        let (found, read) = await Task.detached {
-            downloadEvicted(folder)
-            return (readLibrary(folder), readSavedQueries(folder))
-        }.value
-        guard mine == started else { return }
-        papers = found
-        saved = Set(found.compactMap(\.recid))
-        tags = tagCounts(found).map { TagCount(tag: $0.tag, count: $0.count) }
-        queries = read
+    // MARK: A paper
+
+    func copyKey(_ record: Record) {
+        UIPasteboard.general.string = record.texkey
     }
 
-    /// Reads the folder again, without waiting for it
-    func refresh() {
-        Task { await reload() }
-    }
-
-    /// The paper's entry: of those with its recid, the first by folder name
-    func paper(_ recid: Int) -> SavedPaper? {
-        papers.filter { $0.recid == recid }.min { namePrecedes($0.name, $1.name) }
-    }
-
-    /// Saves the paper: creates its entry, or updates it. false if it could not
-    @discardableResult
-    func save(_ record: Record) -> Bool {
-        guard let folder else {
-            choosingFolder = true
-            return false
-        }
-        defer { refresh() }
+    func copyBibtex(_ record: Record) async {
         do {
-            try savePaper(folder, record, now: timestamp())
-            return true
+            UIPasteboard.general.string = try await Fetch.bibtex(record.recid)
         } catch {
-            self.error = message(error, "the paper")
-            return false
+            problem = error.localizedDescription
         }
     }
 
-    /// Updates a saved paper's entry from the record its page loaded
-    func update(_ record: Record) {
-        guard let folder, saved.contains(record.recid) else { return }
-        if (try? savePaper(folder, record, now: timestamp())) == true { refresh() }
-    }
-
-    /// Deletes the paper's entry, its folder with all it holds: there is no trash for the user's
-    /// folders. Ask first
-    func remove(_ recid: Int) {
-        change("the paper") { try removePaper($0, recid, delete: FileManager.default.removeItem) }
-    }
-
-    /// Keeps a PDF downloaded from arXiv in the paper's entry
-    func keepPDF(_ recid: Int, _ data: Data) throws {
-        guard let folder else { return }
-        defer { refresh() }
-        try savePDF(folder, recid, data)
-    }
-
-    /// Deletes the PDF Heplio downloaded. Ask first
-    func deletePDF(_ recid: Int) {
-        change("the PDF") { try removePDF($0, recid, delete: FileManager.default.removeItem) }
-    }
-
-    func attach(_ tag: String, to recid: Int) {
-        change("the paper") { try addTag($0, recid, tag) }
-    }
-
-    func detach(_ tag: String, from recid: Int) {
-        change("the paper") { try removeTag($0, recid, tag) }
-    }
-
-    // MARK: Saved queries
-
-    /// Whether a query can be saved: there is a folder, and its queries.json is readable
-    var canSaveQueries: Bool {
-        folder != nil && queries != .unreadable
-    }
-
-    func isSaved(_ query: Query) -> Bool {
-        queries.list.contains { $0.q == query.q && $0.sort == query.sort }
-    }
-
-    func saveQuery(_ query: Query) {
-        change("the saved queries") { try addQuery($0, query) }
-    }
-
-    func deleteQuery(_ shown: Query, at index: Int) {
-        changeQuery(shown, at: index) { try removeQuery($0, at: index) }
-    }
-
-    func reorderQuery(_ shown: Query, from: Int, to: Int) {
-        changeQuery(shown, at: from) { try moveQuery($0, from: from, to: to) }
-    }
-
-    func rename(_ shown: Query, at index: Int, to name: String) {
-        let name = name.trimmed
-        guard !name.isEmpty else { return }
-        changeQuery(shown, at: index) { try renameQuery($0, at: index, to: name) }
-    }
-
-    /// Changes the query at `index`, if it is still the one shown: another device may have
-    /// changed the file
-    private func changeQuery(_ shown: Query, at index: Int, _ action: (URL) throws -> Void) {
-        guard let folder else { return }
-        let list = readSavedQueries(folder).list
-        guard list.indices.contains(index), list[index] == shown else {
-            error = "The saved queries changed. Try again."
-            return refresh()
+    /// Shows the paper's PDF in Quick Look, downloaded first, unless another is asked for meanwhile
+    func read(_ record: Record) {
+        guard let arxiv = record.arxiv else { return }
+        let file = Store.pdfs.appendingPathComponent(pdfName(arxiv))
+        if FileManager.default.fileExists(atPath: file.path) {
+            reading = file
+            return
         }
-        change("the saved queries", action)
-    }
-
-    // MARK: Search history
-
-    func addToHistory(_ text: String) {
-        remember(&history, text)
-        storeHistory()
-    }
-
-    func removeFromHistory(_ text: String) {
-        forget(&history, text)
-        storeHistory()
-    }
-
-    func clearHistory() {
-        history = []
-        storeHistory()
-    }
-
-    private func storeHistory() {
-        defaults.set(history, forKey: "history")
-    }
-}
-
-/// iCloud Drive leaves a file that is not on the device as `.<name>.icloud`, so an entry whose
-/// `entry.json` was evicted is not an entry. Asks for those files, for a later reload to find
-private func downloadEvicted(_ folder: URL) {
-    let fm = FileManager.default
-    for name in (try? fm.contentsOfDirectory(atPath: folder.path)) ?? [] where !isHidden(name) {
-        let dir = folder.appendingPathComponent(name)
-        if fm.fileExists(atPath: dir.appendingPathComponent(".\(entryFile).icloud").path) {
-            try? fm.startDownloadingUbiquitousItem(at: dir.appendingPathComponent(entryFile))
+        downloading = record.recid
+        Task {
+            do {
+                let data = try await Fetch.pdf(arxiv)
+                try FileManager.default.createDirectory(at: Store.pdfs, withIntermediateDirectories: true)
+                try data.write(to: file, options: .atomic)
+                if downloading == record.recid { reading = file }
+            } catch {
+                problem = error.localizedDescription
+            }
+            if downloading == record.recid { downloading = nil }
         }
     }
 }
 
-/// A short message for a failed read or write of `what`
-func message(_ error: Error, _ what: String) -> String {
-    if let error = error as? CoreError { return error.localizedDescription }
-    if let error = error as? CocoaError, [.fileWriteNoPermission, .fileReadNoPermission].contains(error.code) {
-        return "No permission to write \(what)."
-    }
-    return "Could not write \(what)."
-}
+// MARK: - The views
 
-// MARK: - Tabs
-
-/// Library, every saved paper, and Search, of INSPIRE or of the library
 struct RootView: View {
-    @Environment(Library.self) private var library
-    @Environment(\.horizontalSizeClass) private var sizeClass
-    @Environment(\.scenePhase) private var scenePhase
+    @Environment(Store.self) private var store
 
     var body: some View {
-        @Bindable var library = library
-        TabView {
-            Tab("Library", systemImage: "books.vertical") {
-                Stack { LibraryPage() }
-            }
-            // A search tab only where the tab bar is at the top: at the bottom, it would turn the
-            // tab bar into its field
-            if sizeClass == .regular {
-                Tab(role: .search) {
-                    Stack { SearchPage() }
-                }
+        @Bindable var store = store
+        NavigationSplitView(preferredCompactColumn: $store.column) {
+            Places()
+        } content: {
+            PaperList()
+        } detail: {
+            if let paper = store.paper {
+                // A page for each paper, which loads its details
+                PaperPage(start: paper).id(paper.recid)
             } else {
-                Tab("Search", systemImage: "magnifyingglass") {
-                    Stack { SearchPage() }
-                }
+                ContentUnavailableView("No Paper Selected", systemImage: "doc.text")
             }
         }
-        // A synced change shows when the user comes back
-        .onChange(of: scenePhase) { _, phase in
-            if phase == .active { library.refresh() }
-        }
-        .choosesFolder($library.choosingFolder)
-        .showsErrors()
-    }
-}
-
-extension View {
-    /// The library's errors in an alert. On the root, and on sheets, over which the root's alert
-    /// cannot be presented
-    func showsErrors() -> some View {
-        modifier(ShowsErrors())
-    }
-
-    /// The folder picker, which opens the folder chosen as the library
-    func choosesFolder(_ isPresented: Binding<Bool>) -> some View {
-        modifier(ChoosesFolder(isPresented: isPresented))
-    }
-
-    /// A button in the toolbar that shows Settings
-    func settingsButton() -> some View {
-        modifier(SettingsButton())
-    }
-}
-
-private struct ShowsErrors: ViewModifier {
-    @Environment(Library.self) private var library
-
-    func body(content: Content) -> some View {
-        content.alert("Error", isPresented: Binding { library.error != nil } set: { if !$0 { library.error = nil } }) {
+        .quickLookPreview($store.reading)
+        .alert("Heplio", isPresented: Binding { store.problem != nil } set: { if !$0 { store.problem = nil } }) {
             Button("OK") {}
         } message: {
-            Text(library.error ?? "")
+            Text(store.problem ?? "")
         }
     }
 }
 
-private struct ChoosesFolder: ViewModifier {
-    @Binding var isPresented: Bool
-    @Environment(Library.self) private var library
-
-    func body(content: Content) -> some View {
-        content.fileImporter(isPresented: $isPresented, allowedContentTypes: [.folder]) { result in
-            switch result {
-            case .success(let url): library.choose(url)
-            case .failure(let error): library.error = error.localizedDescription
-            }
-        }
-    }
-}
-
-// MARK: - Navigation
-
-/// The pages pushed over a tab's first
-enum Route: Hashable {
-    /// The papers of a query; `name` is the page's title
-    case list(Query)
-    case paper(Int)
-    /// All the authors of a paper
-    case authors([Author])
-    /// The saved papers with a tag
-    case tag(String)
-}
-
-/// A tab's navigation stack
-struct Stack<Root: View>: View {
-    @ViewBuilder let root: Root
+/// INSPIRE, then the saved queries
+private struct Places: View {
+    @Environment(Store.self) private var store
+    @State private var showingAbout = false
 
     var body: some View {
-        NavigationStack {
-            root.navigationDestination(for: Route.self) { Destination(route: $0) }
-        }
-    }
-}
-
-/// The page of a route
-struct Destination: View {
-    let route: Route
-
-    var body: some View {
-        switch route {
-        case .list(let query): ListPage(query: query)
-        case .paper(let recid): PaperPage(recid: recid)
-        case .authors(let authors): AuthorsPage(authors: authors)
-        case .tag(let tag): TagPage(tag: tag)
-        }
-    }
-}
-
-// MARK: - Settings
-
-private struct SettingsButton: ViewModifier {
-    @Environment(Library.self) private var library
-    @State private var showing = false
-
-    func body(content: Content) -> some View {
-        content
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Settings", systemImage: "gearshape") { showing = true }
-                        .keyboardShortcut(",")
-                }
-            }
-            // From the page, not the toolbar item, where it may not appear
-            .sheet(isPresented: $showing) {
-                SettingsView()
-                    .environment(library)
-            }
-    }
-}
-
-/// The library folder, the search history, and About
-struct SettingsView: View {
-    @Environment(Library.self) private var library
-    @Environment(\.dismiss) private var dismiss
-    @State private var choosing = false
-    @State private var clearing = false
-
-    var body: some View {
-        NavigationStack {
-            Form {
-                Section {
-                    LabeledContent("Folder") {
-                        Text(verbatim: library.folder?.lastPathComponent ?? "None")
-                            .lineLimit(1)
-                            .truncationMode(.middle)
+        @Bindable var store = store
+        List(selection: $store.place) {
+            Label("INSPIRE", systemImage: "magnifyingglass")
+                .tag(Place.inspire)
+            if !store.saved.isEmpty {
+                Section("Saved") {
+                    ForEach(store.saved, id: \.self) { query in
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(query.q)
+                                .lineLimit(2)
+                            Text(sortName(query.sort))
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        .tag(Place.saved(query))
+                        .contextMenu {
+                            Button("Remove", systemImage: "star.slash", role: .destructive) {
+                                store.saved = toggled(store.saved, query)
+                            }
+                        }
+                        .swipeActions(edge: .trailing) {
+                            Button("Remove", systemImage: "star.slash") { store.saved = toggled(store.saved, query) }
+                                .tint(.red)
+                        }
                     }
-                    Button("Choose Folder…") { choosing = true }
-                    Button("Reload") { library.refresh() }
-                        .keyboardShortcut("r")
-                        .disabled(library.folder == nil)
-                } header: {
-                    Text("Library")
-                } footer: {
-                    Text("Saved papers and queries are files in this folder, which other refdir apps can open too. To use it on other devices, keep it in iCloud Drive or in a folder another app syncs.")
                 }
-                Section {
-                    Button("Clear Search History", role: .destructive) { clearing = true }
-                        .disabled(library.history.isEmpty)
-                } footer: {
-                    Text("Recent searches are kept on this device only.")
-                }
-                Section {
-                    NavigationLink("About Heplio") { About() }
-                }
-            }
-            .navigationTitle("Settings")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") { dismiss() }
-                }
-            }
-            .choosesFolder($choosing)
-            .showsErrors()
-            .confirmationDialog("Clear Search History", isPresented: $clearing) {
-                Button("Clear Search History", role: .destructive) { library.clearHistory() }
-            }
-        }
-    }
-}
-
-/// What the app is, and its version
-private struct About: View {
-    var body: some View {
-        Form {
-            Section {
-                LabeledContent("Version", value: appVersion)
-                LabeledContent("License", value: "MIT")
-            } footer: {
-                Text("An unofficial client for INSPIRE-HEP, the literature database of high-energy physics. Heplio is not affiliated with or endorsed by INSPIRE or CERN. Records, abstracts, and figures come from INSPIRE, and PDFs from arXiv, under their own terms.")
-            }
-            Section {
-                Link("INSPIRE-HEP", destination: URL(string: "https://inspirehep.net")!)
-                Link("The refdir Library Format", destination: URL(string: "https://github.com/xiupos/refdir")!)
-                Link("Source Code", destination: URL(string: "https://github.com/xiupos/HeplioApp")!)
             }
         }
         .navigationTitle("Heplio")
-        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            Menu {
+                Link(destination: searchTips) { Label("Search Tips", systemImage: "questionmark.circle") }
+                Button("About Heplio", systemImage: "info.circle") { showingAbout = true }
+            } label: {
+                Label("Menu", systemImage: "ellipsis.circle")
+            }
+        }
+        .alert("Heplio", isPresented: $showingAbout) {
+            Button("OK") {}
+        } message: {
+            Text("A search of INSPIRE-HEP. Copy a paper's key, and add it to your library with Refdir.\nHeplio is not affiliated with INSPIRE.")
+        }
     }
 }
 
-let appVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? ""
+/// The query's papers, a page at a time
+private struct PaperList: View {
+    @Environment(Store.self) private var store
+    @State private var text = ""
+
+    var body: some View {
+        @Bindable var store = store
+        List(selection: $store.selection) {
+            if case .shown(let total, _) = store.state, total > 0 {
+                Section {
+                    ForEach(store.papers) { paper in
+                        PaperRow(paper: paper)
+                            .tag(paper.id)
+                            .contextMenu { PaperMenu(record: paper.record) }
+                            .onAppear {
+                                if paper.id == store.papers.last?.id { store.more() }
+                            }
+                    }
+                    if store.loadingMore {
+                        ProgressView()
+                            .frame(maxWidth: .infinity)
+                    }
+                } header: {
+                    Text(counted(total, "result"))
+                }
+            }
+        }
+        .overlay {
+            switch store.state {
+            case .start:
+                ContentUnavailableView {
+                    Label("Search INSPIRE", systemImage: "magnifyingglass")
+                } description: {
+                    Text("By title, author, arXiv number, DOI, texkey, or link, in INSPIRE's [search syntax](https://help.inspirehep.net/knowledge-base/inspire-paper-search/)")
+                }
+            case .loading:
+                ProgressView()
+            case .failed(let why):
+                ContentUnavailableView {
+                    Label("Could Not Search", systemImage: "wifi.exclamationmark")
+                } description: {
+                    Text(why)
+                } actions: {
+                    Button("Try Again") { store.retry() }
+                        .buttonStyle(.bordered)
+                }
+            case .shown(0, _):
+                ContentUnavailableView.search(text: store.query?.q ?? "")
+            case .shown:
+                EmptyView()
+            }
+        }
+        .searchable(text: $text, prompt: "Search INSPIRE")
+        .autocorrectionDisabled()
+        .textInputAutocapitalization(.never)
+        .onSubmit(of: .search) { store.search(text) }
+        // The field shows the query shown: a paper's citations, a saved query
+        .onChange(of: store.query) { text = store.query?.q ?? text }
+        .refreshable { store.retry() }
+        .navigationTitle("INSPIRE")
+        .toolbar {
+            ToolbarItemGroup(placement: .primaryAction) {
+                Button(store.isSaved ? "Remove Saved Query" : "Save Query",
+                       systemImage: store.isSaved ? "star.fill" : "star") { store.toggleSaved() }
+                    .disabled(store.query == nil)
+                Menu {
+                    Picker("Sort", selection: Binding { store.sort } set: { store.setSort($0) }) {
+                        ForEach(sorts, id: \.0) { Text($0.1).tag($0.0) }
+                    }
+                } label: {
+                    Label("Sort", systemImage: "arrow.up.arrow.down")
+                }
+            }
+        }
+    }
+}
+
+/// What a paper's long press, in the list, offers
+struct PaperMenu: View {
+    @Environment(Store.self) private var store
+    let record: Record
+
+    var body: some View {
+        if record.texkey != nil {
+            Button("Copy Key", systemImage: "doc.on.doc") { store.copyKey(record) }
+        }
+        Button("Copy BibTeX", systemImage: "doc.on.clipboard") {
+            Task { await store.copyBibtex(record) }
+        }
+        if let arxiv = record.arxivURL {
+            Button("Read PDF", systemImage: "book") { store.read(record) }
+            Link(destination: arxiv) { Label("Open on arXiv", systemImage: "safari") }
+        }
+        Link(destination: record.url) { Label("Open on INSPIRE", systemImage: "safari") }
+    }
+}
+
+private struct PaperRow: View {
+    let paper: Paper
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(paper.title)
+                .lineLimit(3)
+            Text(paper.subtitle)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            if !paper.abstract.isEmpty {
+                Text(paper.abstract)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+                    .padding(.top, 2)
+            }
+        }
+    }
+}

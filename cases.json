@@ -1,0 +1,1193 @@
+{
+  "about": "The rules of SPEC.md as examples, which every Heplio program runs as tests. Programs in other repositories keep a copy of this file.",
+  "query": [
+    [
+      "https://inspirehep.net/literature/451647?ui-citation-summary=true",
+      "recid:451647"
+    ],
+    [
+      "https://arxiv.org/abs/1207.7214v2",
+      "arxiv:1207.7214v2"
+    ],
+    [
+      "https://arxiv.org/pdf/hep-th/9711200.pdf",
+      "arxiv:hep-th/9711200"
+    ],
+    [
+      "https://arxiv.org/abs/hep-th/9711200/",
+      "arxiv:hep-th/9711200"
+    ],
+    [
+      "https://doi.org/10.1103/PhysRevD.49.6587",
+      "doi:10.1103/PhysRevD.49.6587"
+    ],
+    [
+      " Maldacena:1997re ",
+      "Maldacena:1997re"
+    ],
+    [
+      "t black hole and topcite 100+",
+      "t black hole and topcite 100+"
+    ],
+    [
+      "  ",
+      ""
+    ]
+  ],
+  "urls": [
+    {
+      "about": "A list's page, in its order",
+      "list": [
+        "ads/cft entanglement",
+        "mostrecent",
+        1
+      ],
+      "expect": "https://inspirehep.net/api/literature?q=ads%2Fcft%20entanglement&sort=mostrecent&size=25&page=1&fields=control_number%2Ctitles.title%2Cfirst_author.full_name%2Cauthor_count%2Ccollaborations.value%2Cearliest_date%2Cabstracts.value%2Carxiv_eprints.value%2Ctexkeys%2Ccitation_count"
+    },
+    {
+      "about": "`+` is encoded, as INSPIRE reads a bare `+` as a space; non-ASCII is UTF-8",
+      "list": [
+        "topcite 1000+ and a Hänisch",
+        "mostcited",
+        3
+      ],
+      "expect": "https://inspirehep.net/api/literature?q=topcite%201000%2B%20and%20a%20H%C3%A4nisch&sort=mostcited&size=25&page=3&fields=control_number%2Ctitles.title%2Cfirst_author.full_name%2Cauthor_count%2Ccollaborations.value%2Cearliest_date%2Cabstracts.value%2Carxiv_eprints.value%2Ctexkeys%2Ccitation_count"
+    },
+    {
+      "about": "A list's page as BibTeX, for the command",
+      "list_bibtex": [
+        "a J.M.Maldacena.1",
+        "mostrecent",
+        2
+      ],
+      "expect": "https://inspirehep.net/api/literature?q=a%20J.M.Maldacena.1&sort=mostrecent&size=25&page=2&format=bibtex"
+    },
+    {
+      "about": "A paper, by its recid: `/api/literature/N` ignores `fields`",
+      "paper": 451647,
+      "expect": "https://inspirehep.net/api/literature?q=recid%3A451647&size=1&fields=control_number%2Ctitles.title%2Cauthors.full_name%2Cauthors.ids%2Cauthors.affiliations.value%2Ccollaborations.value%2Cearliest_date%2Cabstracts.value%2Carxiv_eprints%2Cdois.value%2Ctexkeys%2Ccitation_count%2Ccitation_count_without_self_citations%2Cpublication_info%2Cnumber_of_pages%2Creferences.record%2Cdocument_type%2Ckeywords%2Creport_numbers.value"
+    },
+    {
+      "about": "A paper's BibTeX",
+      "bibtex": 451647,
+      "expect": "https://inspirehep.net/api/literature/451647?format=bibtex"
+    },
+    {
+      "about": "A list on INSPIRE's site",
+      "site": [
+        "a J.M.Maldacena.1",
+        "bestmatch"
+      ],
+      "expect": "https://inspirehep.net/search?p=a%20J.M.Maldacena.1&sort=bestmatch"
+    },
+    {
+      "about": "A paper's PDF on arXiv",
+      "pdf": "hep-th/9711200",
+      "expect": "https://arxiv.org/pdf/hep-th/9711200"
+    }
+  ],
+  "paging": [
+    {
+      "total": 0,
+      "page": 1,
+      "more": false
+    },
+    {
+      "total": 25,
+      "page": 1,
+      "more": false
+    },
+    {
+      "total": 26,
+      "page": 1,
+      "more": true
+    },
+    {
+      "total": 92,
+      "page": 3,
+      "more": true
+    },
+    {
+      "total": 92,
+      "page": 4,
+      "more": false
+    },
+    {
+      "total": 22814,
+      "page": 399,
+      "more": true
+    },
+    {
+      "total": 22814,
+      "page": 400,
+      "more": false
+    }
+  ],
+  "short_names": [
+    [
+      "Maldacena, Juan Martin",
+      "J.M. Maldacena"
+    ],
+    [
+      "He, Zhi-Guo",
+      "Z.-G. He"
+    ],
+    [
+      "Toro, Julian H.",
+      "J.H. Toro"
+    ],
+    [
+      "'t Hooft, Gerard",
+      "G. 't Hooft"
+    ],
+    [
+      "Witten, Edward",
+      "E. Witten"
+    ],
+    [
+      "Aad, Georges",
+      "G. Aad"
+    ],
+    [
+      "Smith,",
+      "Smith"
+    ],
+    [
+      "CMS Collaboration",
+      "CMS Collaboration"
+    ]
+  ],
+  "counts": [
+    [
+      0,
+      "0"
+    ],
+    [
+      999,
+      "999"
+    ],
+    [
+      1000,
+      "1,000"
+    ],
+    [
+      22814,
+      "22,814"
+    ],
+    [
+      1234567,
+      "1,234,567"
+    ]
+  ],
+  "records": [
+    {
+      "about": "A paper, with its details: the publication before the reprint, references with a record",
+      "hit": {
+        "metadata": {
+          "citation_count_without_self_citations": 22757,
+          "report_numbers": [
+            {
+              "value": "HUTP-97-A097"
+            },
+            {
+              "value": "HUTP-98-A097"
+            }
+          ],
+          "authors": [
+            {
+              "full_name": "Maldacena, Juan Martin",
+              "ids": [
+                {
+                  "schema": "INSPIRE ID",
+                  "value": "INSPIRE-00304313"
+                },
+                {
+                  "schema": "INSPIRE BAI",
+                  "value": "Juan.M.Maldacena.1"
+                },
+                {
+                  "schema": "ORCID",
+                  "value": "0000-0002-9127-1687"
+                }
+              ],
+              "affiliations": [
+                {
+                  "value": "Harvard U."
+                }
+              ]
+            }
+          ],
+          "publication_info": [
+            {
+              "journal_volume": "38",
+              "material": "reprint",
+              "page_end": "1133",
+              "year": 1999,
+              "journal_record": {
+                "$ref": "https://inspirehep.net/api/journals/1214707"
+              },
+              "page_start": "1113",
+              "journal_title": "Int.J.Theor.Phys."
+            },
+            {
+              "journal_volume": "2",
+              "material": "publication",
+              "page_end": "252",
+              "year": 1998,
+              "journal_record": {
+                "$ref": "https://inspirehep.net/api/journals/1212914"
+              },
+              "page_start": "231",
+              "journal_title": "Adv.Theor.Math.Phys."
+            }
+          ],
+          "citation_count": 22814,
+          "texkeys": [
+            "Maldacena:1997re"
+          ],
+          "keywords": [
+            {
+              "schema": "INSPIRE",
+              "value": "field theory: conformal"
+            },
+            {
+              "schema": "INSPIRE",
+              "value": "expansion 1/N"
+            },
+            {
+              "schema": "INSPIRE",
+              "value": "supergravity"
+            },
+            {
+              "schema": "INSPIRE",
+              "value": "Hilbert space"
+            },
+            {
+              "schema": "INSPIRE",
+              "value": "space-time: anti-de Sitter"
+            },
+            {
+              "schema": "INSPIRE",
+              "value": "membrane model"
+            },
+            {
+              "schema": "INSPIRE",
+              "value": "string model"
+            },
+            {
+              "schema": "INSPIRE",
+              "value": "geometry: horizon"
+            },
+            {
+              "schema": "INSPIRE",
+              "value": "gauge field theory: U(N)"
+            },
+            {
+              "schema": "INSPIRE",
+              "value": "supersymmetry"
+            },
+            {
+              "schema": "INSPIRE",
+              "value": "duality"
+            },
+            {
+              "schema": "INSPIRE",
+              "value": "M-theory"
+            },
+            {
+              "schema": "INSPIRE",
+              "value": "bibliography"
+            },
+            {
+              "schema": "INSPIRE",
+              "value": "AdS/CFT correspondence"
+            }
+          ],
+          "references": [
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/449261"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/443604"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/90850"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/120988"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/184470"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/338985"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/440361"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/35378"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/164314"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/13913"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/14743"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/206013"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/16700"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/229800"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/263090"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/266855"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/205047"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/15859"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/15064"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/207663"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/215788"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/219727"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/252628"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/262142"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/262681"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/38055"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/451355"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/29494"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/378026"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/426259"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/426372"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/440886"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/427006"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/442887"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/444186"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/450631"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/448354"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/416208"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/440239"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/440932"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/446757"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/415759"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/417717"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/403446"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/397499"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/416413"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/448411"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/449214"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/449124"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/443130"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/440339"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/428842"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/443496"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/420682"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/415163"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/416822"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/427144"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/398357"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/416207"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/416706"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/415906"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/426056"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/446062"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/445371"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/445490"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/32290"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/441733"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/444839"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/451243"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/450748"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/415870"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/419157"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/420130"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/420861"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/422847"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/422122"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/424930"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/426887"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/442119"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/444287"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/447394"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/450945"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/446238"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/443498"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/444185"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/450836"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/424833"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/440076"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/417444"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/424266"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/377340"
+              }
+            },
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/452060"
+              }
+            }
+          ],
+          "number_of_pages": 21,
+          "abstracts": [
+            {
+              "value": "We show that the large $N$ limit of certain conformal field theories in various dimensions include in their Hilbert space a sector describing supergravity on the product of Anti-deSitter spacetimes, spheres and other compact manifolds. This is shown by taking some branes in the full M/string theory and then taking a low energy limit where the field theory on the brane decouples from the bulk. We observe that, in this limit, we can still trust the near horizon geometry for large $N$. The enhanced supersymmetries of the near horizon geometry correspond to the extra supersymmetry generators present in the superconformal group (as opposed to just the super-Poincare group). The 't Hooft limit of 4-d ${\\cal N} =4$ super-Yang-Mills at the conformal point is shown to contain strings: they are IIB strings. We conjecture that compactifications of M/string theory on various Anti-deSitter spacetimes are dual to various conformal field theories. This leads to a new proposal for a definition of M-theory which could be extended to include five non-compact dimensions."
+            }
+          ],
+          "titles": [
+            {
+              "title": "The Large $N$ limit of superconformal field theories and supergravity"
+            },
+            {
+              "title": "The large N limit of superconformal field theories and supergravity."
+            },
+            {
+              "title": "The Large N Limit of Superconformal Field Theories and Supergravity"
+            }
+          ],
+          "control_number": 451647,
+          "dois": [
+            {
+              "value": "10.4310/ATMP.1998.v2.n2.a1"
+            },
+            {
+              "value": "10.1023/A:1026654312961"
+            }
+          ],
+          "arxiv_eprints": [
+            {
+              "categories": [
+                "hep-th"
+              ],
+              "value": "hep-th/9711200"
+            }
+          ],
+          "earliest_date": "1997-11",
+          "document_type": [
+            "article"
+          ]
+        },
+        "id": "451647"
+      },
+      "expect": {
+        "recid": 451647,
+        "title": "The Large $N$ limit of superconformal field theories and supergravity",
+        "byline": "J.M. Maldacena",
+        "date": "1997-11",
+        "arxiv": "hep-th/9711200",
+        "categories": [
+          "hep-th"
+        ],
+        "dois": [
+          "10.4310/ATMP.1998.v2.n2.a1",
+          "10.1023/A:1026654312961"
+        ],
+        "texkey": "Maldacena:1997re",
+        "citations": 22814,
+        "citations_without_self": 22757,
+        "journals": [
+          "Adv.Theor.Math.Phys. 2 (1998) 231",
+          "Int.J.Theor.Phys. 38 (1999) 1113 (reprint)"
+        ],
+        "pages": 21,
+        "references": 92,
+        "document_types": [
+          "article"
+        ],
+        "report_numbers": [
+          "HUTP-97-A097",
+          "HUTP-98-A097"
+        ],
+        "authors": [
+          [
+            "Maldacena, Juan Martin",
+            "a Juan.M.Maldacena.1",
+            [
+              "Harvard U."
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "about": "A list's paper: its first author, and how many there are; the first texkey; a collaboration's byline",
+      "hit": {
+        "id": "1124337",
+        "metadata": {
+          "citation_count": 17829,
+          "texkeys": [
+            "ATLAS:2012yve",
+            "Aad:2012tfa"
+          ],
+          "collaborations": [
+            {
+              "value": "ATLAS"
+            }
+          ],
+          "abstracts": [
+            {
+              "value": "A search for the Standard Model Higgs boson in proton–proton collisions with the ATLAS detector at the LHC is presented. The datasets used correspond to integrated luminosities of approximately 4.8 fb −1 collected at s=7 TeV in 2011 and 5.8 fb −1 at s=8 TeV in 2012. Individual searches in the channels H→ZZ(⁎)→4ℓ , H→γγ and H→WW(⁎)→eνμν in the 8 TeV data are combined with previously published results of searches for H→ZZ(⁎) , WW(⁎) , bb¯ and τ+τ− in the 7 TeV data and results from improved analyses of the H→ZZ(⁎)→4ℓ and H→γγ channels in the 7 TeV data. Clear evidence for the production of a neutral boson with a measured mass of 126.0±0.4(stat)±0.4(sys) GeV is presented. This observation, which has a significance of 5.9 standard deviations, corresponding to a background fluctuation probability of 1.7×10−9 , is compatible with the production and decay of the Standard Model Higgs boson."
+            },
+            {
+              "value": "A search for the Standard Model Higgs boson in proton-proton collisions with the ATLAS detector at the LHC is presented. The datasets used correspond to integrated luminosities of approximately 4.8 fb^-1 collected at sqrt(s) = 7 TeV in 2011 and 5.8 fb^-1 at sqrt(s) = 8 TeV in 2012. Individual searches in the channels H->ZZ^(*)->llll, H->gamma gamma and H->WW->e nu mu nu in the 8 TeV data are combined with previously published results of searches for H->ZZ^(*), WW^(*), bbbar and tau^+tau^- in the 7 TeV data and results from improved analyses of the H->ZZ^(*)->llll and H->gamma gamma channels in the 7 TeV data. Clear evidence for the production of a neutral boson with a measured mass of 126.0 +/- 0.4(stat) +/- 0.4(sys) GeV is presented. This observation, which has a significance of 5.9 standard deviations, corresponding to a background fluctuation probability of 1.7x10^-9, is compatible with the production and decay of the Standard Model Higgs boson."
+            }
+          ],
+          "first_author": {
+            "full_name": "Aad, Georges"
+          },
+          "control_number": 1124337,
+          "arxiv_eprints": [
+            {
+              "value": "1207.7214"
+            }
+          ],
+          "titles": [
+            {
+              "title": "Observation of a new particle in the search for the Standard Model Higgs boson with the ATLAS detector at the LHC"
+            },
+            {
+              "title": "Observation of a new particle in the search for the Standard Model Higgs boson with the ATLAS detector at the LHC"
+            }
+          ],
+          "author_count": 2932,
+          "earliest_date": "2012-07"
+        }
+      },
+      "expect": {
+        "recid": 1124337,
+        "byline": "ATLAS Collaboration",
+        "date": "2012-07",
+        "arxiv": "1207.7214",
+        "categories": [],
+        "dois": [],
+        "texkey": "ATLAS:2012yve",
+        "citations": 17829,
+        "citations_without_self": null,
+        "journals": [],
+        "pages": null,
+        "references": null,
+        "document_types": [],
+        "report_numbers": [],
+        "authors": [
+          [
+            "Aad, Georges",
+            "a \"Aad, Georges\"",
+            []
+          ]
+        ]
+      }
+    },
+    {
+      "about": "Of several authors, the first, with et al.",
+      "hit": {
+        "metadata": {
+          "citation_count": 26,
+          "texkeys": [
+            "Maldacena:2026jqd"
+          ],
+          "abstracts": [
+            {
+              "value": "Some of the simplest wormhole solutions involve massless scalar fields that take imaginary values. Massless fields can be interpreted as coupling constants in asymptotically flat or asymptotically AdS gravity theories. We argue that wormhole effects imply an imaginary distance bound, an upper limit for the analytic continuation of the theory to imaginary values of these couplings. In string theory examples, we find explicit effects that render the low-energy theory invalid either before or precisely at this wormhole limit. We argue that the existence of such effects enforcing the distance bound is a general feature of string theories containing wormholes. In some cases, the bounds we discuss coincide with the weak gravity conjecture, and with the Kontsevich-Segal-Witten condition on complex metrics."
+            }
+          ],
+          "first_author": {
+            "full_name": "Maldacena, Juan"
+          },
+          "control_number": 3152730,
+          "titles": [
+            {
+              "title": "Wormholes and the imaginary distance bound"
+            }
+          ],
+          "arxiv_eprints": [
+            {
+              "value": "2605.05336"
+            }
+          ],
+          "author_count": 3,
+          "earliest_date": "2026-05-06"
+        },
+        "id": "3152730"
+      },
+      "expect": {
+        "recid": 3152730,
+        "byline": "J. Maldacena et al.",
+        "date": "2026-05-06"
+      }
+    },
+    {
+      "about": "An article ID before the first page; a number as a string or a number; an entry without a journal left out; references without a record not counted",
+      "hit": {
+        "metadata": {
+          "control_number": 1,
+          "collaborations": [
+            {
+              "value": "CMS Collaboration"
+            }
+          ],
+          "publication_info": [
+            {
+              "cnum": "C97-06-01",
+              "year": 1997
+            },
+            {
+              "journal_title": "JHEP",
+              "journal_volume": 10,
+              "year": "2020",
+              "artid": "123",
+              "page_start": "1"
+            },
+            {
+              "journal_title": "Phys.Rept.",
+              "journal_volume": "323",
+              "year": 2000,
+              "page_start": "183",
+              "material": "erratum"
+            }
+          ],
+          "references": [
+            {
+              "record": {
+                "$ref": "https://inspirehep.net/api/literature/2"
+              }
+            },
+            {
+              "reference": {
+                "misc": [
+                  "Unlinked"
+                ]
+              }
+            }
+          ],
+          "keywords": [
+            {
+              "schema": "INSPIRE",
+              "value": "supergravity"
+            },
+            {
+              "value": "author's own"
+            }
+          ]
+        }
+      },
+      "expect": {
+        "recid": 1,
+        "byline": "CMS Collaboration",
+        "journals": [
+          "JHEP 10 (2020) 123",
+          "Phys.Rept. 323 (2000) 183 (erratum)"
+        ],
+        "references": 1,
+        "keywords": [
+          "supergravity"
+        ]
+      }
+    },
+    {
+      "about": "A hit without a recid is left out",
+      "hit": {
+        "metadata": {
+          "titles": [
+            {
+              "title": "x"
+            }
+          ]
+        }
+      },
+      "expect": null
+    }
+  ],
+  "toggle": [
+    {
+      "saved": [
+        [
+          "a E.Witten.1",
+          "mostrecent"
+        ]
+      ],
+      "query": [
+        "t black hole",
+        "mostcited"
+      ],
+      "expect": [
+        [
+          "a E.Witten.1",
+          "mostrecent"
+        ],
+        [
+          "t black hole",
+          "mostcited"
+        ]
+      ]
+    },
+    {
+      "about": "The same query in another order is another",
+      "saved": [
+        [
+          "t black hole",
+          "mostrecent"
+        ],
+        [
+          "a E.Witten.1",
+          "mostrecent"
+        ]
+      ],
+      "query": [
+        "t black hole",
+        "mostcited"
+      ],
+      "expect": [
+        [
+          "t black hole",
+          "mostrecent"
+        ],
+        [
+          "a E.Witten.1",
+          "mostrecent"
+        ],
+        [
+          "t black hole",
+          "mostcited"
+        ]
+      ]
+    },
+    {
+      "about": "Removing removes every copy",
+      "saved": [
+        [
+          "x",
+          "mostrecent"
+        ],
+        [
+          "y",
+          "mostrecent"
+        ],
+        [
+          "x",
+          "mostrecent"
+        ]
+      ],
+      "query": [
+        "x",
+        "mostrecent"
+      ],
+      "expect": [
+        [
+          "y",
+          "mostrecent"
+        ]
+      ]
+    }
+  ],
+  "plain": [
+    [
+      "The Large $N$ limit of superconformal field theories and supergravity",
+      "The Large N limit of superconformal field theories and supergravity"
+    ],
+    [
+      "$H\\to\\gamma\\gamma$",
+      "H→γγ"
+    ],
+    [
+      "Upper limit at 95% CL",
+      "Upper limit at 95% CL"
+    ],
+    [
+      "Costs $5",
+      "Costs $5"
+    ],
+    [
+      "Search for $t\\bar{t}$ & $W$ #1",
+      "Search for tt̅ & W #1"
+    ],
+    [
+      "AdS<sub>3</sub> and S<sup>2</sup>",
+      "AdS₃ and S²"
+    ],
+    [
+      "<i>Ab initio</i> &lt;x&gt; study",
+      "Ab initio <x> study"
+    ],
+    [
+      "x < y and z",
+      "x < y and z"
+    ],
+    [
+      "Spin  and\n unitary",
+      "Spin and unitary"
+    ]
+  ],
+  "bibtex_entries": [
+    {
+      "about": "Entries apart by blank lines, as INSPIRE writes them",
+      "text": "@article{A:2020a,\n    title = \"{X}\"\n}\n\n@article{B:2021b,\n    title = \"{Y}\"\n}\n",
+      "expect": [
+        "@article{A:2020a,\n    title = \"{X}\"\n}",
+        "@article{B:2021b,\n    title = \"{Y}\"\n}"
+      ]
+    },
+    {
+      "about": "Text before the first entry is left out; an `@` inside a line starts nothing",
+      "text": "\n\n@misc{C,\n    note = \"a @ b\"\n}",
+      "expect": [
+        "@misc{C,\n    note = \"a @ b\"\n}"
+      ]
+    },
+    {
+      "about": "No entries",
+      "text": "",
+      "expect": []
+    }
+  ],
+  "pdf_names": [
+    [
+      "hep-th/9711200",
+      "hep-th-9711200.pdf"
+    ],
+    [
+      "1207.7214",
+      "1207.7214.pdf"
+    ],
+    [
+      "2301.00001v2",
+      "2301.00001v2.pdf"
+    ]
+  ]
+}
