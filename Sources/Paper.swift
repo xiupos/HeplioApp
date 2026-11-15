@@ -61,8 +61,7 @@ struct PaperPage: View {
                 detail("Type", r.documentTypes.joined(separator: ", "))
                 detail("Keywords", r.keywords.joined(separator: ", "))
             }
-            // Only once the whole record is in: the list's has only the first author, and rows that
-            // change from it to all of them leave an empty row behind
+            // Only once the whole record is in: the list's has only the first author
             if full != nil && (!r.authors.isEmpty || !r.collaborations.isEmpty) {
                 Section("Authors") {
                     // By place, not by value: an author is the same row whatever it shows
@@ -78,6 +77,9 @@ struct PaperPage: View {
                 }
             }
         }
+        // Made again, not changed, when the whole record is in: changed, with rows added in every
+        // section at once, the list drew some rows in the wrong places, and left one empty
+        .id(full == nil)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             if loading {
