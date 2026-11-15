@@ -22,7 +22,8 @@ enum Fetch {
         return "Heplio/\(version) (iOS; https://github.com/xiupos/HeplioApp)"
     }()
 
-    /// Without a cache: INSPIRE's, 30 seconds; arXiv's PDFs, 5 minutes
+    /// Without a cache: INSPIRE's, 30 seconds; arXiv's PDFs, 5 minutes. Either fails after 30
+    /// seconds without data, so that a stalled network says so
     private static let short = session(30)
     private static let long = session(300)
 
@@ -30,6 +31,7 @@ enum Fetch {
         let config = URLSessionConfiguration.ephemeral
         config.urlCache = nil
         config.requestCachePolicy = .reloadIgnoringLocalCacheData
+        config.timeoutIntervalForRequest = 30
         config.timeoutIntervalForResource = seconds
         config.httpAdditionalHeaders = ["User-Agent": userAgent]
         return URLSession(configuration: config)
