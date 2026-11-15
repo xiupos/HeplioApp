@@ -26,15 +26,10 @@ struct PaperPage: View {
                     .listRowBackground(Color.clear)
                     .listRowInsets(EdgeInsets())
             }
-            if r.citations != nil || r.references != nil {
+            let lists = listRows(r)
+            if !lists.isEmpty {
                 Section {
-                    if let n = r.citations {
-                        let without = r.citationsWithoutSelf.map { " · \(count($0)) without self-citations" } ?? ""
-                        opening("Citations", "\(count(n))\(without)", r.citationsQuery)
-                    }
-                    if let n = r.references {
-                        opening("References", count(n), r.referencesQuery)
-                    }
+                    ForEach(lists) { row($0) }
                 }
             }
             if let abstract = r.abstract {
@@ -44,36 +39,13 @@ struct PaperPage: View {
                 }
             }
             Section("Details") {
-                detail("Key", r.texkey)
-                detail("Date", r.date)
-                ForEach(r.journals, id: \.self) { detail("Journal", $0) }
-                if let arxiv = r.arxiv, let url = r.arxivURL {
-                    let categories = r.categories.isEmpty ? "" : " [\(r.categories.joined(separator: ", "))]"
-                    Link(destination: url) { LabeledContent("arXiv", value: arxiv + categories) }
-                }
-                ForEach(r.dois, id: \.self) { doi in
-                    if let url = URL(string: "https://doi.org/\(doi)") {
-                        Link(destination: url) { LabeledContent("DOI", value: doi) }
-                    }
-                }
-                detail("Report Numbers", r.reportNumbers.joined(separator: ", "))
-                detail("Pages", r.pages.map { "\($0)" })
-                detail("Type", r.documentTypes.joined(separator: ", "))
-                detail("Keywords", r.keywords.joined(separator: ", "))
+                ForEach(details(r)) { row($0) }
             }
             // Only once the whole record is in: the list's has only the first author
-            if full != nil && (!r.authors.isEmpty || !r.collaborations.isEmpty) {
+            let authors = full == nil ? [] : authorRows(r)
+            if !authors.isEmpty {
                 Section("Authors") {
-                    // By place, not by value: an author is the same row whatever it shows
-                    ForEach(Array(r.collaborations.enumerated()), id: \.offset) { _, c in
-                        opening(c, "Collaboration", "cn \"\(c)\"")
-                    }
-                    ForEach(Array(r.authors.prefix(shownAuthors).enumerated()), id: \.offset) { _, a in
-                        opening(a.fullName, a.affiliations.joined(separator: "; "), a.query)
-                    }
-                    if r.authorCount > shownAuthors && r.authors.count > 1 {
-                        Link("\(count(r.authorCount - shownAuthors)) more on INSPIRE", destination: r.url)
-                    }
+                    ForEach(authors) { row($0) }
                 }
             }
         }
@@ -166,29 +138,89 @@ struct PaperPage: View {
         return paper.collaborations.isEmpty ? line : "\(paper.byline) · \(line)"
     }
 
-    /// A row that shows a list of INSPIRE's in the list's column
-    private func opening(_ title: String, _ value: String, _ q: String) -> some View {
-        Button {
-            store.open(q)
-        } label: {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .foregroundStyle(.primary)
-                if !value.isEmpty {
-                    Text(value)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
-        }
+    /// A row of the details or the authors: one kind of row, from data, each there, as a section of
+    /// rows made by `if`s and several `ForEach`es was drawn with rows missing and one left empty
+    private struct Row: Identifiable {
+        let id: String
+        let title: String
+        var value = ""
+        /// Opens a list of INSPIRE's in the list's column
+        var query: String?
+        var link: URL?
     }
 
-    /// A detail it has, which can be selected and copied
+    /// Its citations and references
+    private func listRows(_ r: Record) -> [Row] {
+        var rows: [Row] = []
+        if let n = r.citations {
+            let without = r.citationsWithoutSelf.map { " · \(count($0)) without self-citations" } ?? ""
+            rows.append(Row(id: "citations", title: "Citations", value: "\(count(n))\(without)", query: r.citationsQuery))
+        }
+        if let n = r.references {
+            rows.append(Row(id: "references", title: "References", value: count(n), query: r.referencesQuery))
+        }
+        return rows
+    }
+
+    private func details(_ r: Record) -> [Row] {
+        var rows: [Row] = []
+        func add(_ title: String, _ value: String?, link: URL? = nil) {
+            if let value, !value.isEmpty {
+                rows.append(Row(id: "\(rows.count)", title: title, value: value, link: link))
+            }
+        }
+        add("Key", r.texkey)
+        add("Date", r.date)
+        r.journals.forEach { add("Journal", $0) }
+        if let arxiv = r.arxiv {
+            let categories = r.categories.isEmpty ? "" : " [\(r.categories.joined(separator: ", "))]"
+            add("arXiv", arxiv + categories, link: r.arxivURL)
+        }
+        r.dois.forEach { add("DOI", $0, link: URL(string: "https://doi.org/\($0)")) }
+        add("Report Numbers", r.reportNumbers.joined(separator: ", "))
+        add("Pages", r.pages.map { "\($0)" })
+        add("Type", r.documentTypes.joined(separator: ", "))
+        add("Keywords", r.keywords.joined(separator: ", "))
+        return rows
+    }
+
+    /// Each collaboration, the first authors, then how many more on INSPIRE
+    private func authorRows(_ r: Record) -> [Row] {
+        var rows = r.collaborations.enumerated().map { i, c in
+            Row(id: "c\(i)", title: c, value: "Collaboration", query: "cn \"\(c)\"")
+        }
+        rows += r.authors.prefix(shownAuthors).enumerated().map { i, a in
+            Row(id: "a\(i)", title: a.fullName, value: a.affiliations.joined(separator: "; "), query: a.query)
+        }
+        if r.authorCount > shownAuthors && r.authors.count > 1 {
+            rows.append(Row(id: "more", title: "\(count(r.authorCount - shownAuthors)) more on INSPIRE", link: r.url))
+        }
+        return rows
+    }
+
     @ViewBuilder
-    private func detail(_ title: String, _ value: String?) -> some View {
-        if let value, !value.isEmpty {
-            LabeledContent(title) {
-                Text(value)
+    private func row(_ row: Row) -> some View {
+        if let q = row.query {
+            Button {
+                store.open(q)
+            } label: {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(row.title)
+                        .foregroundStyle(.primary)
+                    if !row.value.isEmpty {
+                        Text(row.value)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+        } else if let url = row.link {
+            Link(destination: url) {
+                if row.value.isEmpty { Text(row.title) } else { LabeledContent(row.title, value: row.value) }
+            }
+        } else {
+            LabeledContent(row.title) {
+                Text(row.value)
                     .textSelection(.enabled)
             }
         }
