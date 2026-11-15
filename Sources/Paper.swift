@@ -61,12 +61,15 @@ struct PaperPage: View {
                 detail("Type", r.documentTypes.joined(separator: ", "))
                 detail("Keywords", r.keywords.joined(separator: ", "))
             }
-            if !r.authors.isEmpty || !r.collaborations.isEmpty {
+            // Only once the whole record is in: the list's has only the first author, and rows that
+            // change from it to all of them leave an empty row behind
+            if full != nil && (!r.authors.isEmpty || !r.collaborations.isEmpty) {
                 Section("Authors") {
-                    ForEach(r.collaborations, id: \.self) { c in
+                    // By place, not by value: an author is the same row whatever it shows
+                    ForEach(Array(r.collaborations.enumerated()), id: \.offset) { _, c in
                         opening(c, "Collaboration", "cn \"\(c)\"")
                     }
-                    ForEach(r.authors.prefix(shownAuthors), id: \.self) { a in
+                    ForEach(Array(r.authors.prefix(shownAuthors).enumerated()), id: \.offset) { _, a in
                         opening(a.fullName, a.affiliations.joined(separator: "; "), a.query)
                     }
                     if r.authorCount > shownAuthors && r.authors.count > 1 {

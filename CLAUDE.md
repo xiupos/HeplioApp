@@ -96,6 +96,9 @@ Everything that imports SwiftUI needs the iPad.
   the query shown; a saved query's long press or a swipe to the left removes it.
 - **Copying.** Copy Key and Copy BibTeX are a long press on a row, and buttons on the paper's
   page, which say "Copied". BibTeX is INSPIRE's, asked for when copied.
+- **The paper's authors** are shown once its whole record is in, as rows by place
+  (`enumerated`, `\.offset`): the list's record has the first author only, without its ids, and
+  rows by value, changing from that one to all of them, left an empty row at the end.
 - **PDFs** are downloaded from arXiv into a launch's temporary folder (`Store.pdfs`, emptied at
   launch). The one read is downloaded first, then shown with Quick Look (`PDFReader`, a
   `QLPreviewController` presented from UIKit, as refdir-ios's is), which has the list's PDFs
