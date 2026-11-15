@@ -89,8 +89,11 @@ final class Store {
     private(set) var paper: Record?
     /// The column shown where only one fits, as on an iPhone
     var column = NavigationSplitViewColumn.sidebar
-    /// The PDF in Quick Look, and the paper whose PDF is being downloaded to show
-    var reading: URL?
+    /// The paper whose PDF Quick Look shows first, and the papers a swipe goes through: the list's
+    /// with an arXiv number, or that one alone
+    var reading: Int?
+    private(set) var readingItems: [Record] = []
+    /// The paper whose PDF is being downloaded to show
     private(set) var downloading: Int?
     var problem: String?
 
@@ -211,24 +214,39 @@ final class Store {
 
     /// Shows the paper's PDF in Quick Look, downloaded first, unless another is asked for meanwhile
     func read(_ record: Record) {
-        guard let arxiv = record.arxiv else { return }
-        let file = Store.pdfs.appendingPathComponent(pdfName(arxiv))
-        if FileManager.default.fileExists(atPath: file.path) {
-            reading = file
-            return
-        }
+        guard record.arxiv != nil else { return }
         downloading = record.recid
         Task {
             do {
-                let data = try await Fetch.pdf(arxiv)
-                try FileManager.default.createDirectory(at: Store.pdfs, withIntermediateDirectories: true)
-                try data.write(to: file, options: .atomic)
-                if downloading == record.recid { reading = file }
+                _ = try await download(record)
+                if downloading == record.recid {
+                    let listed = papers.map(\.record).filter { $0.arxiv != nil }
+                    readingItems = listed.contains { $0.recid == record.recid } ? listed : [record]
+                    reading = record.recid
+                }
             } catch {
                 problem = error.localizedDescription
             }
             if downloading == record.recid { downloading = nil }
         }
+    }
+
+    /// The paper's PDF, if it is downloaded
+    func downloaded(_ record: Record) -> URL? {
+        guard let arxiv = record.arxiv else { return nil }
+        let file = Store.pdfs.appendingPathComponent(pdfName(arxiv))
+        return FileManager.default.fileExists(atPath: file.path) ? file : nil
+    }
+
+    /// The paper's PDF, downloaded from arXiv if it is not yet
+    func download(_ record: Record) async throws -> URL {
+        if let file = downloaded(record) { return file }
+        guard let arxiv = record.arxiv else { throw Failure("It has no PDF on arXiv.") }
+        let data = try await Fetch.pdf(arxiv)
+        try FileManager.default.createDirectory(at: Store.pdfs, withIntermediateDirectories: true)
+        let file = Store.pdfs.appendingPathComponent(pdfName(arxiv))
+        try data.write(to: file, options: .atomic)
+        return file
     }
 }
 
@@ -251,7 +269,8 @@ struct RootView: View {
                 ContentUnavailableView("No Paper Selected", systemImage: "doc.text")
             }
         }
-        .quickLookPreview($store.reading)
+        // Read here, so that a change of it updates the reader
+        .background { PDFReader(store: store, reading: store.reading) }
         .alert("Heplio", isPresented: Binding { store.problem != nil } set: { if !$0 { store.problem = nil } }) {
             Button("OK") {}
         } message: {
@@ -425,6 +444,119 @@ private struct PaperRow: View {
                     .lineLimit(2)
                     .padding(.top, 2)
             }
+        }
+    }
+}
+
+/// Quick Look over the list's PDFs, from the paper read, so that a swipe goes on to the one before
+/// or after. It is presented from UIKit: `quickLookPreview` takes files only, and these are
+/// downloaded as they are shown. The one shown and its neighbours are downloaded; one shown before
+/// its PDF was in says so in its title, and is shown again once it is in
+struct PDFReader: UIViewControllerRepresentable {
+    let store: Store
+    let reading: Int?
+
+    func makeUIViewController(context: Context) -> UIViewController {
+        UIViewController()
+    }
+
+    func updateUIViewController(_ host: UIViewController, context: Context) {
+        let coordinator = context.coordinator
+        coordinator.store = store
+        guard let recid = reading, host.presentedViewController == nil else { return }
+        coordinator.items = store.readingItems
+        let preview = QLPreviewController()
+        preview.dataSource = coordinator
+        preview.delegate = coordinator
+        preview.currentPreviewItemIndex = coordinator.items.firstIndex { $0.recid == recid } ?? 0
+        coordinator.start(preview)
+        host.present(preview, animated: true)
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(store)
+    }
+
+    /// An item whose PDF is not in: its title says why
+    final class Waiting: NSObject, QLPreviewItem {
+        let previewItemTitle: String?
+        var previewItemURL: URL? { nil }
+
+        init(_ title: String) {
+            previewItemTitle = title
+        }
+    }
+
+    // Quick Look calls these on the main thread, though its protocols do not say so
+    @MainActor
+    final class Coordinator: NSObject, QLPreviewControllerDataSource,
+                             @preconcurrency QLPreviewControllerDelegate {
+        var store: Store
+        var items: [Record] = []
+        private weak var controller: QLPreviewController?
+        /// The items shown waiting for their PDF, by index
+        private var waiting: Set<Int> = []
+        /// The downloads started, and those that failed, by recid
+        private var started: Set<Int> = []
+        private var failures: [Int: String] = [:]
+        private var timer: Timer?
+
+        init(_ store: Store) {
+            self.store = store
+        }
+
+        func start(_ controller: QLPreviewController) {
+            self.controller = controller
+            waiting = []
+            timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
+                Task { @MainActor in self?.tick() }
+            }
+        }
+
+        /// Quick Look tells no swipe: the item shown is looked at twice a second. Its neighbours
+        /// are downloaded, and it is shown again if it was waiting and its PDF, or why not, is in
+        private func tick() {
+            guard let controller else { return }
+            let i = controller.currentPreviewItemIndex
+            for j in [i, i + 1, i - 1] where items.indices.contains(j) { load(items[j]) }
+            guard waiting.contains(i), items.indices.contains(i) else { return }
+            let r = items[i]
+            if store.downloaded(r) != nil || failures[r.recid] != nil {
+                waiting.remove(i)
+                controller.refreshCurrentPreviewItem()
+            }
+        }
+
+        private func load(_ r: Record) {
+            guard store.downloaded(r) == nil, !started.contains(r.recid) else { return }
+            started.insert(r.recid)
+            Task {
+                do {
+                    _ = try await store.download(r)
+                } catch {
+                    failures[r.recid] = error.localizedDescription
+                }
+            }
+        }
+
+        func numberOfPreviewItems(in controller: QLPreviewController) -> Int {
+            items.count
+        }
+
+        func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
+            let r = items[index]
+            if let file = store.downloaded(r) { return file as NSURL }
+            if let why = failures[r.recid] { return Waiting("No PDF: \(why)") }
+            waiting.insert(index)
+            load(r)
+            return Waiting("Downloading…")
+        }
+
+        func previewControllerDidDismiss(_ controller: QLPreviewController) {
+            timer?.invalidate()
+            timer = nil
+            items = []
+            store.reading = nil
         }
     }
 }

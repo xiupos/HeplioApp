@@ -97,9 +97,14 @@ Everything that imports SwiftUI needs the iPad.
 - **Copying.** Copy Key and Copy BibTeX are a long press on a row, and buttons on the paper's
   page, which say "Copied". BibTeX is INSPIRE's, asked for when copied.
 - **PDFs** are downloaded from arXiv into a launch's temporary folder (`Store.pdfs`, emptied at
-  launch), then shown with Quick Look (`quickLookPreview`: there is no markup to save, which
-  refdir-ios's `PDFReader` is for). One already there shows at once. A download is shown only if
-  it is still the paper asked for last (`downloading`).
+  launch). The one read is downloaded first, then shown with Quick Look (`PDFReader`, a
+  `QLPreviewController` presented from UIKit, as refdir-ios's is), which has the list's PDFs
+  (`readingItems`), so that a swipe goes on to the one before or after. Those are downloaded as
+  they are shown: `quickLookPreview` takes files only, hence UIKit. Quick Look tells no swipe,
+  so the item shown is looked at twice a second (`tick`): it and its neighbours are downloaded,
+  and one shown before its PDF was in (`Waiting`, its title "Downloading…") is shown again once
+  it is in, or says why not. A download is shown first only if it is still the paper asked for
+  last (`downloading`).
 
 ## Not verified
 
