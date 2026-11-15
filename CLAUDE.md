@@ -74,18 +74,23 @@ Everything that imports SwiftUI needs the iPad.
 - **One list.** A paper's citations, references, and authors are queries shown in the list, with
   the query in the search field (`Store.open`), and the list's column shown where only one fits;
   the paper's page stays (`Store.paper`) until another is chosen.
-- **The place follows the query shown** (`Store.show`, `saved`'s `didSet`): a saved one's, else
-  INSPIRE. Choosing a saved query shows it; choosing INSPIRE leaves the search shown, unless
-  that is a saved query, which it leaves for an empty one. Setting `place` inside its own
-  `didSet` does not call it again, which is what keeps this from going round.
+- **The place follows the query shown** (`Store.follow`, from `show` and `saved`'s `didSet`): a
+  saved one's, else INSPIRE, set only when it changes. Only what the user chooses acts
+  (`Store.choose`, the sidebar's selection binding's setter): a saved query is shown; INSPIRE
+  leaves the search shown, unless that is a saved query, which it leaves for an empty one.
+  `place` itself has no `didSet`: SwiftUI may write a selection back, and a search started by
+  each write would drop the one before, the list loading for ever.
 - **The sort** is the query shown's: showing a query sets it, and choosing another searches the
   query again. It is kept in `UserDefaults`, as the order of the next search.
 - **Searches are numbered** (`Store.searchNumber`): a page answering a search that another has replaced
   is dropped. The next page is asked for when the last row appears, once at a time; one that
   fails says why, and the list keeps what it has. A paper INSPIRE gives again on a later page is
   not listed twice: the list's rows are identified by recid.
-- **Rows are made off the main thread** (`Paper`): their TeX made plain once, the abstract's
-  first 400 characters only, enough for two lines.
+- **Rows are made once** (`Paper`), when a page is in: their TeX made plain, the abstract's
+  first 400 characters only, enough for two lines. 25 take milliseconds, on the main actor.
+- **A search that does not answer** fails after 30 seconds, with Try Again; the request and its
+  error go to the console. An iPad whose network was stuck answered nothing until it was
+  restarted, while INSPIRE answered other machines at once: look there before at the code.
 - **Saved queries** are `UserDefaults`' (`queries`, `[[q, sort]]`): there is no folder, and none
   is wanted for this alone. At first, the week's hep-th (`firstSaved`). The star saves or removes
   the query shown; a saved query's long press or a swipe to the left removes it.

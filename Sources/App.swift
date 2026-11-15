@@ -63,24 +63,16 @@ final class Store {
         didSet {
             UserDefaults.standard.set(saved.map { [$0.q, $0.sort] }, forKey: "queries")
             // The place follows the query shown, saved or not
-            if let query { place = saved.contains(query) ? .saved(query) : .inspire }
+            if let query { follow(query) }
         }
     }
     /// The order of a search: the query shown's
     private(set) var sort: String {
         didSet { UserDefaults.standard.set(sort, forKey: "sort") }
     }
-    /// The sidebar's selection. A saved query chosen is shown; INSPIRE leaves the search shown,
-    /// unless that is a saved query
-    var place: Place? = .inspire {
-        didSet {
-            switch place {
-            case .saved(let q) where q != query: show(q)
-            case .inspire where isSaved: clear()
-            default: break
-            }
-        }
-    }
+    /// The sidebar's selection: the saved query shown, else INSPIRE. Setting it does nothing more:
+    /// what the user chooses goes through `choose`
+    private(set) var place: Place? = .inspire
     private(set) var query: Query?
     private(set) var papers: [Paper] = []
     private(set) var state = ListState.start
@@ -111,6 +103,23 @@ final class Store {
 
     var isSaved: Bool { query.map(saved.contains) ?? false }
 
+    /// A place the user chose: a saved query is shown; INSPIRE leaves the search shown, unless that
+    /// is a saved query
+    func choose(_ chosen: Place?) {
+        place = chosen
+        switch chosen {
+        case .saved(let q) where q != query: show(q)
+        case .inspire where isSaved: clear()
+        default: break
+        }
+    }
+
+    /// The place of the query shown, set only when it changes
+    private func follow(_ query: Query) {
+        let new = saved.contains(query) ? Place.saved(query) : .inspire
+        if place != new { place = new }
+    }
+
     // MARK: Searching
 
     /// What was typed into the search field, in the sort chosen
@@ -123,7 +132,7 @@ final class Store {
     func show(_ query: Query) {
         self.query = query
         sort = query.sort
-        place = saved.contains(query) ? .saved(query) : .inspire
+        follow(query)
         searchNumber += 1
         papers = []
         loadingMore = false
@@ -173,8 +182,8 @@ final class Store {
     private func load(_ query: Query, page: Int, search n: Int) async {
         do {
             let (total, records) = try await Fetch.search(query, page: page)
-            let made = await Task.detached { records.map(Paper.init) }.value
             guard n == searchNumber else { return }
+            let made = records.map(Paper.init)
             // A paper INSPIRE gives again on a later page is not listed twice
             let listed = Set(papers.map(\.id))
             papers += made.filter { !listed.contains($0.id) }
@@ -258,7 +267,7 @@ private struct Places: View {
 
     var body: some View {
         @Bindable var store = store
-        List(selection: $store.place) {
+        List(selection: Binding { store.place } set: { store.choose($0) }) {
             Label("INSPIRE", systemImage: "magnifyingglass")
                 .tag(Place.inspire)
             if !store.saved.isEmpty {
