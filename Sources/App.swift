@@ -542,10 +542,10 @@ private struct PaperRow: View {
 }
 
 /// Quick Look over the list's PDFs, from the paper read, so that a swipe goes on to the one before
-/// or after. It is presented from UIKit: `quickLookPreview` takes files only, and these are
-/// downloaded as they are shown. The one shown and its neighbours are downloaded; one shown before
-/// its PDF was in is a text file saying so, and is shown again once it is in. Never an item
-/// without a file: Quick Look waits on one for ever, and swipes no further either way
+/// or after. It is presented from UIKit: `quickLookPreview` takes files only, and its items change
+/// while it shows them. They are the PDFs downloaded alone: Quick Look, given an item to be filled
+/// in later, with no file or a stand-in, kept it as it was, and swiped no further. The papers
+/// before and after the one shown are downloaded meanwhile, and join its items when they are in
 struct PDFReader: UIViewControllerRepresentable {
     let store: Store
     let reading: Int?
@@ -558,7 +558,8 @@ struct PDFReader: UIViewControllerRepresentable {
         let coordinator = context.coordinator
         coordinator.store = store
         guard let recid = reading, host.presentedViewController == nil else { return }
-        coordinator.items = store.readingItems
+        coordinator.all = store.readingItems
+        coordinator.items = coordinator.available()
         let preview = QLPreviewController()
         preview.dataSource = coordinator
         preview.delegate = coordinator
@@ -571,43 +572,32 @@ struct PDFReader: UIViewControllerRepresentable {
         Coordinator(store)
     }
 
-    /// An item whose PDF is not in: a text file says why, one for each paper and state, so that
-    /// Quick Look, given another, shows it anew
-    final class Waiting: NSObject, QLPreviewItem {
-        static let folder = FileManager.default.temporaryDirectory.appendingPathComponent("Waiting")
-        let previewItemTitle: String?
-        let previewItemURL: URL?
-
-        init(_ r: Record, _ title: String, _ name: String) {
-            previewItemTitle = title
-            let file = Waiting.folder.appendingPathComponent("\(r.recid)-\(name).txt")
-            try? FileManager.default.createDirectory(at: Waiting.folder, withIntermediateDirectories: true)
-            try? Data("\(plain(r.title))\n\n\(title)\n".utf8).write(to: file, options: .atomic)
-            previewItemURL = file
-        }
-    }
-
     // Quick Look calls these on the main thread, though its protocols do not say so
     @MainActor
     final class Coordinator: NSObject, QLPreviewControllerDataSource,
                              @preconcurrency QLPreviewControllerDelegate {
+        /// Papers downloaded ahead each way
+        private static let ahead = 2
         var store: Store
+        /// The list's papers with an arXiv number, and those of them whose PDF is in: Quick Look's
+        var all: [Record] = []
         var items: [Record] = []
         private weak var controller: QLPreviewController?
-        /// The items shown waiting for their PDF, by index
-        private var waiting: Set<Int> = []
-        /// The downloads started, and those that failed, by recid
+        /// The downloads started, and those that failed, which are passed over, by recid
         private var started: Set<Int> = []
-        private var failures: [Int: String] = [:]
+        private var failed: Set<Int> = []
         private var timer: Timer?
 
         init(_ store: Store) {
             self.store = store
         }
 
+        func available() -> [Record] {
+            all.filter { store.downloaded($0) != nil }
+        }
+
         func start(_ controller: QLPreviewController) {
             self.controller = controller
-            waiting = []
             let timer = Timer(timeInterval: 0.5, repeats: true) { [weak self] _ in
                 Task { @MainActor in self?.tick() }
             }
@@ -616,17 +606,22 @@ struct PDFReader: UIViewControllerRepresentable {
             self.timer = timer
         }
 
-        /// Quick Look tells no swipe: the item shown is looked at twice a second. Its neighbours
-        /// are downloaded, and it is shown again if it was waiting and its PDF, or why not, is in
+        /// Quick Look tells no swipe: the item shown is looked at twice a second. The papers
+        /// around it are downloaded, and those in join the items, the one shown staying shown
         private func tick() {
-            guard let controller else { return }
-            let i = controller.currentPreviewItemIndex
-            for j in [i, i + 1, i - 1] where items.indices.contains(j) { load(items[j]) }
-            guard waiting.contains(i), items.indices.contains(i) else { return }
-            let r = items[i]
-            if store.downloaded(r) != nil || failures[r.recid] != nil {
-                waiting.remove(i)
-                controller.refreshCurrentPreviewItem()
+            guard let controller, items.indices.contains(controller.currentPreviewItemIndex) else { return }
+            let shown = items[controller.currentPreviewItemIndex].recid
+            if let p = all.firstIndex(where: { $0.recid == shown }) {
+                let left = { (r: Record) in !self.failed.contains(r.recid) }
+                all[..<p].reversed().filter(left).prefix(Coordinator.ahead).forEach(load)
+                all[(p + 1)...].filter(left).prefix(Coordinator.ahead).forEach(load)
+            }
+            let now = available()
+            guard now.map(\.recid) != items.map(\.recid) else { return }
+            items = now
+            controller.reloadData()
+            if let i = items.firstIndex(where: { $0.recid == shown }), i != controller.currentPreviewItemIndex {
+                controller.currentPreviewItemIndex = i
             }
         }
 
@@ -637,7 +632,7 @@ struct PDFReader: UIViewControllerRepresentable {
                 do {
                     _ = try await store.download(r)
                 } catch {
-                    failures[r.recid] = error.localizedDescription
+                    failed.insert(r.recid)
                 }
             }
         }
@@ -648,16 +643,13 @@ struct PDFReader: UIViewControllerRepresentable {
 
         func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
             let r = items[index]
-            if let file = store.downloaded(r) { return file as NSURL }
-            if let why = failures[r.recid] { return Waiting(r, "No PDF: \(why)", "failed") }
-            waiting.insert(index)
-            load(r)
-            return Waiting(r, "Downloading…", "waiting")
+            return (store.downloaded(r) ?? Store.pdfs.appendingPathComponent(pdfName(r.arxiv ?? ""))) as NSURL
         }
 
         func previewControllerDidDismiss(_ controller: QLPreviewController) {
             timer?.invalidate()
             timer = nil
+            all = []
             items = []
             store.reading = nil
         }
