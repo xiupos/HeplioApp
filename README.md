@@ -1,6 +1,6 @@
 # heplio-ios
 
-A search of [INSPIRE-HEP](https://inspirehep.net) for iPhone and iPad. It shows what INSPIRE finds: the papers a query finds, with the start of their abstracts, and each paper in detail. It keeps no papers: copy a paper's key, and add it to your library with [refdir-ios](https://github.com/xiupos/refdir-ios). Its behaviour is [heplio-gtk's SPEC.md](https://github.com/xiupos/heplio-gtk/blob/main/SPEC.md), with its examples in [cases.json](cases.json).
+A search of [INSPIRE-HEP](https://inspirehep.net) for iPhone and iPad. It shows what INSPIRE finds: the papers a query finds, with the start of their abstracts, and each paper in detail. It keeps no papers: copy a paper's key, and add it to your library with [refdir-ios](https://github.com/xiupos/refdir-ios). Its behaviour is [heplio-gtk's SPEC.md](https://github.com/xiupos/heplio/blob/main/SPEC.md), with its examples in [cases.json](cases.json).
 
 Heplio is not affiliated with INSPIRE.
 
@@ -19,7 +19,7 @@ Open `HeplioApp.swiftpm` in Swift Playgrounds on an iPad (iPadOS 26 or later) an
 
 ## See also
 
-- [heplio-gtk](https://github.com/xiupos/heplio-gtk): Heplio for GNOME, with the `heplio` command
+- [heplio-gtk](https://github.com/xiupos/heplio): Heplio for GNOME, with the `heplio` command
 - [refdir-ios](https://github.com/xiupos/refdir-ios): the library the keys go to
 
 ## License
