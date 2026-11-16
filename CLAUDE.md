@@ -120,7 +120,9 @@ Everything that imports SwiftUI needs the iPad.
   they are shown: `quickLookPreview` takes files only, hence UIKit. Quick Look tells no swipe,
   so the item shown is looked at twice a second (`tick`): it and its neighbours are downloaded,
   and one shown before its PDF was in (`Waiting`, its title "Downloading…") is shown again once
-  it is in, or says why not. A download is shown first only if it is still the paper asked for
+  it is in, or says why not. Swiping on through items still "Downloading…" may stop there until
+  they are in; the user would rather wait. Tried and dropped: a text file standing in (the same),
+  and items of the PDFs downloaded alone, more joining by `reloadData`. A download is shown first only if it is still the paper asked for
   last (`downloading`).
 
 ## Not verified
