@@ -13,6 +13,8 @@ struct PaperPage: View {
     let start: Record
     @State private var full: Record?
     @State private var loading = true
+    /// Asked for again by the menu
+    @State private var attempt = 0
     /// What was copied last: shown on its button
     @State private var copied: String?
 
@@ -57,10 +59,16 @@ struct PaperPage: View {
             if loading {
                 ToolbarItem(placement: .primaryAction) { ProgressView() }
             }
+            ToolbarItem(placement: .primaryAction) { more }
         }
-        .task {
+        // Again when the page shows again, if its request went with it, and when asked for
+        .task(id: attempt) {
+            guard full == nil else { return }
+            loading = true
             do {
                 full = try await Fetch.paper(start.recid)
+            } catch is CancellationError {
+                return
             } catch {
                 store.problem = error.localizedDescription
             }
@@ -95,6 +103,28 @@ struct PaperPage: View {
             .padding(.top, 8)
         }
         .padding(.vertical)
+    }
+
+    /// What the page does besides its buttons, as refdir's entry page has it
+    private var more: some View {
+        Menu {
+            Button("Get Again from INSPIRE", systemImage: "arrow.clockwise") {
+                full = nil
+                attempt += 1
+            }
+            .disabled(loading)
+            if let pdf = store.downloaded(paper) {
+                ShareLink(item: pdf) { Label("Share PDF", systemImage: "doc.richtext") }
+            }
+            ShareLink(item: paper.url, subject: Text(plain(paper.title))) {
+                Label("Share Link", systemImage: "square.and.arrow.up")
+            }
+            if let arxiv = paper.arxivURL {
+                Link(destination: arxiv) { Label("Open on arXiv", systemImage: "safari") }
+            }
+        } label: {
+            Label("More", systemImage: "ellipsis.circle")
+        }
     }
 
     @ViewBuilder

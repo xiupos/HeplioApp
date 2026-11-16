@@ -1,8 +1,10 @@
 // The app: the list's state (`Store`), the saved queries, the places, the list and its pages,
 // copying, and PDFs in Quick Look
 
+import PDFKit
 import QuickLook
 import SwiftUI
+import UniformTypeIdentifiers
 
 @main
 struct HeplioApp: App {
@@ -301,6 +303,8 @@ private struct Places: View {
                         }
                         .tag(Place.saved(query))
                         .contextMenu {
+                            Button("Copy Query", systemImage: "doc.on.doc") { UIPasteboard.general.string = query.q }
+                            Link(destination: query.url) { Label("Open on INSPIRE", systemImage: "safari") }
                             Button("Remove", systemImage: "star.slash", role: .destructive) {
                                 store.saved = toggled(store.saved, query)
                             }
@@ -341,12 +345,29 @@ private struct PaperList: View {
             if case .shown(let total, _) = store.state, total > 0 {
                 Section {
                     ForEach(store.papers) { paper in
-                        PaperRow(paper: paper)
-                            .tag(paper.id)
-                            .contextMenu { PaperMenu(record: paper.record) }
-                            .onAppear {
-                                if paper.id == store.papers.last?.id { store.more() }
+                        Group {
+                            // With an arXiv number, its PDF's first page over the menu, as
+                            // refdir's rows show theirs
+                            if paper.record.arxiv != nil {
+                                PaperRow(paper: paper)
+                                    .contextMenu { PaperMenu(record: paper.record) } preview: {
+                                        FirstPage(store: store, record: paper.record)
+                                    }
+                            } else {
+                                PaperRow(paper: paper).contextMenu { PaperMenu(record: paper.record) }
                             }
+                        }
+                        .tag(paper.id)
+                        // Only to the left: a swipe to the right goes back to the places
+                        .swipeActions(edge: .trailing) {
+                            if paper.record.texkey != nil {
+                                Button("Copy Key", systemImage: "doc.on.doc") { store.copyKey(paper.record) }
+                                    .tint(.orange)
+                            }
+                        }
+                        .onAppear {
+                            if paper.id == store.papers.last?.id { store.more() }
+                        }
                     }
                     if store.loadingMore {
                         ProgressView()
@@ -402,28 +423,100 @@ private struct PaperList: View {
                 } label: {
                     Label("Sort", systemImage: "arrow.up.arrow.down")
                 }
+                if let query = store.query, case .shown(let total, let pages) = store.state, total > 0 {
+                    ShareLink(item: ListBib(query: query, pages: pages),
+                              preview: SharePreview("\(ListBib.name(query)).bib")) {
+                        Label("Export", systemImage: "square.and.arrow.up")
+                    }
+                } else {
+                    Button("Export", systemImage: "square.and.arrow.up") {}
+                        .disabled(true)
+                }
             }
         }
     }
 }
 
-/// What a paper's long press, in the list, offers
+/// The BibTeX of the list's pages loaded, as a file to share, asked for of INSPIRE when shared:
+/// a page at a time, 350 ms apart, as INSPIRE allows about 15 requests in 5 seconds
+struct ListBib: Transferable {
+    let query: Query
+    let pages: Int
+
+    static func name(_ query: Query) -> String {
+        String(query.q.replacingOccurrences(of: "/", with: "-").prefix(60))
+    }
+
+    static var transferRepresentation: some TransferRepresentation {
+        FileRepresentation(exportedContentType: UTType(filenameExtension: "bib") ?? .plainText) { list in
+            var entries: [String] = []
+            for page in 1...max(list.pages, 1) {
+                if page > 1 { try await Task.sleep(nanoseconds: 350_000_000) }
+                entries.append(try await Fetch.listBibtex(list.query, page: page))
+            }
+            let url = FileManager.default.temporaryDirectory.appendingPathComponent("\(name(list.query)).bib")
+            try Data((entries.filter { !$0.isEmpty }.joined(separator: "\n\n") + "\n").utf8).write(to: url)
+            return SentTransferredFile(url)
+        }
+    }
+}
+
+/// What a paper's long press, in the list, offers: in refdir's order, the PDF first, then
+/// copying, then the links
 struct PaperMenu: View {
     @Environment(Store.self) private var store
     let record: Record
 
     var body: some View {
+        if record.arxiv != nil {
+            Button("Read", systemImage: "book") { store.read(record) }
+        }
+        ShareLink(item: record.url, subject: Text(plain(record.title))) {
+            Label("Share Link", systemImage: "square.and.arrow.up")
+        }
         if record.texkey != nil {
             Button("Copy Key", systemImage: "doc.on.doc") { store.copyKey(record) }
         }
         Button("Copy BibTeX", systemImage: "doc.on.clipboard") {
             Task { await store.copyBibtex(record) }
         }
+        Link(destination: record.url) { Label("Open on INSPIRE", systemImage: "safari") }
         if let arxiv = record.arxivURL {
-            Button("Read PDF", systemImage: "book") { store.read(record) }
             Link(destination: arxiv) { Label("Open on arXiv", systemImage: "safari") }
         }
-        Link(destination: record.url) { Label("Open on INSPIRE", systemImage: "safari") }
+    }
+}
+
+/// A paper's PDF's first page, over its menu, as refdir's rows show theirs: downloaded when the
+/// menu shows it, and kept, so that Read then shows it at once. Its size is fixed, so that the
+/// preview does not jump when the page comes
+private struct FirstPage: View {
+    let store: Store
+    let record: Record
+    @State private var page: UIImage?
+    @State private var failed = false
+
+    var body: some View {
+        Group {
+            if let page {
+                Image(uiImage: page)
+                    .resizable()
+                    .scaledToFit()
+            } else if failed {
+                Image(systemName: "doc.richtext")
+                    .font(.largeTitle)
+                    .foregroundStyle(.secondary)
+            } else {
+                ProgressView()
+            }
+        }
+        .frame(width: 300, height: 400)
+        .task {
+            if let url = try? await store.download(record) {
+                page = PDFDocument(url: url)?.page(at: 0)?.thumbnail(of: CGSize(width: 600, height: 800), for: .mediaBox)
+            }
+            failed = page == nil
+        }
     }
 }
 

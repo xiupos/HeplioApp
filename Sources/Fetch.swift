@@ -58,6 +58,11 @@ enum Fetch {
         String(decoding: try await get(bibtexURL(recid)), as: UTF8.self).trimmed + "\n"
     }
 
+    /// A page of a query's papers as BibTeX, as INSPIRE writes it
+    static func listBibtex(_ query: Query, page: Int) async throws -> String {
+        String(decoding: try await get(listBibtexURL(query, page: page)), as: UTF8.self).trimmed
+    }
+
     /// A paper's PDF from arXiv: what does not start as a PDF is refused
     static func pdf(_ arxiv: String) async throws -> Data {
         let data = try await get(pdfURL(arxiv), session: long)
@@ -65,18 +70,30 @@ enum Fetch {
         return data
     }
 
+    /// Failures of a connection kept from before, which the network dropped meanwhile: the first
+    /// request on it fails, and the next, on a new one, does not
+    private static let dropped: Set<URLError.Code> = [.networkConnectionLost, .cannotConnectToHost,
+                                                      .secureConnectionFailed]
+
     /// A response. Errors are short sentences naming the host, INSPIRE or arXiv; the details go to
-    /// the console
+    /// the console. A request whose task was cancelled, as a view's is when it goes, is a
+    /// `CancellationError`, which is no failure to show
     private static func get(_ url: URL, session: URLSession = short) async throws -> Data {
         let host = url.host?.contains("arxiv") == true ? "arXiv" : "INSPIRE"
-        let data: Data
-        let response: URLResponse
-        do {
-            (data, response) = try await session.data(from: url)
-        } catch {
-            print("\(url): \(error)")
-            throw Failure("\(host) cannot be reached.")
+        var answer: (Data, URLResponse)?
+        for attempt in 1...2 where answer == nil {
+            do {
+                answer = try await session.data(from: url)
+            } catch {
+                let code = (error as? URLError)?.code
+                if Task.isCancelled || code == .cancelled { throw CancellationError() }
+                print("\(url): \(error)")
+                guard attempt == 1, let code, dropped.contains(code) else {
+                    throw Failure("\(host) cannot be reached.")
+                }
+            }
         }
+        guard let (data, response) = answer else { throw Failure("\(host) cannot be reached.") }
         switch (response as? HTTPURLResponse)?.statusCode ?? 0 {
         case 200..<300: return data
         case 404: throw Failure("\(host) does not have it.")

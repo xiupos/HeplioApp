@@ -94,8 +94,20 @@ Everything that imports SwiftUI needs the iPad.
 - **Saved queries** are `UserDefaults`' (`queries`, `[[q, sort]]`): there is no folder, and none
   is wanted for this alone. At first, the week's hep-th (`firstSaved`). The star saves or removes
   the query shown; a saved query's long press or a swipe to the left removes it.
-- **Copying.** Copy Key and Copy BibTeX are a long press on a row, and buttons on the paper's
-  page, which say "Copied". BibTeX is INSPIRE's, asked for when copied.
+- **Menus as refdir-ios's**, in its order. A row's long press: Read, Share Link; Copy Key, Copy
+  BibTeX; Open on INSPIRE, Open on arXiv; over it, with an arXiv number, the PDF's first page
+  (`FirstPage`), downloaded when the menu shows it and kept, so that Read is then at once. A swipe
+  to the left copies the key (only to the left: to the right goes back). The list's toolbar: the
+  star, the sort, Export, the BibTeX of the pages loaded, asked for of INSPIRE when shared
+  (`ListBib`, a `FileRepresentation`, whose closure is async). The paper's More: Get Again from
+  INSPIRE, Share PDF (if downloaded), Share Link, Open on arXiv. A saved query's long press: Copy
+  Query, Open on INSPIRE, Remove. Copy Key and Copy BibTeX are also buttons on the paper's page,
+  which say "Copied". BibTeX is INSPIRE's, asked for when copied.
+- **A request that fails at once is sent again, once** (`Fetch.get`, `dropped`): the first
+  request after a while failed, and the same at once after did not, as iOS keeps a connection that
+  the network has dropped meanwhile. A request whose view went (`.task`, cancelled) is a
+  `CancellationError`, not "cannot be reached": the paper's page shows nothing for it, and asks
+  again when it shows again.
 - **The paper's rows are data**: its lists, details, and authors are each one `ForEach` of
   `Row`s, one kind of row, not `if`s and several `ForEach`es in a section, which iOS 26 drew with
   rows missing and an empty one left (2611.16908: three of five authors, then a blank row). The
