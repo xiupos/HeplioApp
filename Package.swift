@@ -19,7 +19,7 @@ let package = Package(
             bundleIdentifier: "net.xiupos.heplio",
             teamIdentifier: "YL679VBY6X",
             displayVersion: "0.1",
-            bundleVersion: "7",
+            bundleVersion: "8",
             appIcon: .asset("AppIcon"),
             accentColor: .presetColor(.orange),
             supportedDeviceFamilies: [
