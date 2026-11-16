@@ -544,8 +544,7 @@ private struct PaperRow: View {
 /// Quick Look over the list's PDFs, from the paper read, so that a swipe goes on to the one before
 /// or after. It is presented from UIKit: `quickLookPreview` takes files only, and these are
 /// downloaded as they are shown. The one shown and its neighbours are downloaded; one shown before
-/// its PDF was in is a text file saying so, and is shown again once it is in. Never an item
-/// without a file: Quick Look waits on one for ever, and swipes no further either way
+/// its PDF was in says so in its title, and is shown again once it is in
 struct PDFReader: UIViewControllerRepresentable {
     let store: Store
     let reading: Int?
@@ -571,19 +570,13 @@ struct PDFReader: UIViewControllerRepresentable {
         Coordinator(store)
     }
 
-    /// An item whose PDF is not in: a text file says why, one for each paper and state, so that
-    /// Quick Look, given another, shows it anew
+    /// An item whose PDF is not in: its title says why
     final class Waiting: NSObject, QLPreviewItem {
-        static let folder = FileManager.default.temporaryDirectory.appendingPathComponent("Waiting")
         let previewItemTitle: String?
-        let previewItemURL: URL?
+        var previewItemURL: URL? { nil }
 
-        init(_ r: Record, _ title: String, _ name: String) {
+        init(_ title: String) {
             previewItemTitle = title
-            let file = Waiting.folder.appendingPathComponent("\(r.recid)-\(name).txt")
-            try? FileManager.default.createDirectory(at: Waiting.folder, withIntermediateDirectories: true)
-            try? Data("\(plain(r.title))\n\n\(title)\n".utf8).write(to: file, options: .atomic)
-            previewItemURL = file
         }
     }
 
@@ -608,12 +601,9 @@ struct PDFReader: UIViewControllerRepresentable {
         func start(_ controller: QLPreviewController) {
             self.controller = controller
             waiting = []
-            let timer = Timer(timeInterval: 0.5, repeats: true) { [weak self] _ in
+            timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
                 Task { @MainActor in self?.tick() }
             }
-            // In the common modes: in the default one alone, it stops while a swipe is tracked
-            RunLoop.main.add(timer, forMode: .common)
-            self.timer = timer
         }
 
         /// Quick Look tells no swipe: the item shown is looked at twice a second. Its neighbours
@@ -649,10 +639,10 @@ struct PDFReader: UIViewControllerRepresentable {
         func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
             let r = items[index]
             if let file = store.downloaded(r) { return file as NSURL }
-            if let why = failures[r.recid] { return Waiting(r, "No PDF: \(why)", "failed") }
+            if let why = failures[r.recid] { return Waiting("No PDF: \(why)") }
             waiting.insert(index)
             load(r)
-            return Waiting(r, "Downloading…", "waiting")
+            return Waiting("Downloading…")
         }
 
         func previewControllerDidDismiss(_ controller: QLPreviewController) {
